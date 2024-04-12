@@ -3,8 +3,7 @@ name: Build release zip
 on:
   push:
     branches:
-      - refactor
-      - add-release-workflow
+      - main
 
 jobs:
   build:
