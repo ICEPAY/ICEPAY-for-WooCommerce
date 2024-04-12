@@ -1,0 +1,28 @@
+name: Build release zip
+
+on:
+  push:
+    branches:
+      - refactor
+      - add-release-workflow
+
+jobs:
+  build:
+    name: Build release zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: npm run build-plugin
+
+      - name: Unzip # GH currently always zips, so if we upload a zip we get a zip inside a zip
+        run: unzip icepay-for-woocommerce.zip -d dist
+
+      - name: Upload the ZIP file
+        uses: actions/upload-artifact@v3
+        with:
+          name: icepay-for-woocommerce
+          path: dist/
+          retention-days: 5

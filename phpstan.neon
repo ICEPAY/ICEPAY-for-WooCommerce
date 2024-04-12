@@ -1,0 +1,6 @@
+parameters:
+    bootstrapFiles:
+        - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    dynamicConstantNames:
+        - ICEPAY_URL
+        - ICEPAY_FILE

@@ -1,0 +1,15 @@
+wordpress/*
+node_modules/*
+.git/*
+.github/*
+.gitignore
+composer.*
+*.MD
+*.json
+.env*
+Makefile
+webpack.config.js
+exclude.lst
+docker/*
+docker-compose.yml
+phpstan.neon

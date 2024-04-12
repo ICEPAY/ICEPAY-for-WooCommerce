@@ -1,0 +1,28 @@
+{
+  "name": "icepay-for-woocommerce",
+  "version": "1.0.0",
+  "description": "```bash cp .env.example .env docker compose up -d make install ```",
+  "scripts": {
+    "build": "wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "lint:md:docs": "wp-scripts lint-md-docs",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js",
+    "build-plugin": "composer install --no-dev && npm install && npm run build && npm run archive",
+    "archive": "zip -r $npm_package_name.zip . -x@exclude.lst"
+  },
+  "author": "",
+  "license": "GPLV3",
+  "devDependencies": {
+    "@woocommerce/dependency-extraction-webpack-plugin": "^2.3.0",
+    "@wordpress/scripts": "^27.6.0"
+  }
+}
