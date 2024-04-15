@@ -9,7 +9,7 @@
 
 1. Clone the repository:
     ```console
-    git clone https://github.com/icepay/woocommerce.git
+    git clone https://github.com/ICEPAY/ICEPAY-for-WooCommerce
     ```
 2. Create a copy of the example env file and modify the necessary settings in the .env file:
     ```console
