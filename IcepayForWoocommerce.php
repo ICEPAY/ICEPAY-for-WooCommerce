@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: ICEPAY for WooCommerce
- * Plugin URI: https://github.com/ICEPAY/WooCommerce
+ * Plugin URI: https://github.com/ICEPAY/ICEPAY-for-WooCommerce
  * Description: Accept payments on your WooCommerce store via ICEPAY.
  * Author: ICEPAY
  * Author URI: http://www.icepay.com
