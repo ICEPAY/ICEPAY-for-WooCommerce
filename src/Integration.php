@@ -17,7 +17,7 @@ class Integration {
 		$this->addSettings();
 		$this->addGateways();
 
-		//$this->addGatewayFilters();
+		$this->addGatewayFilters();
 
 		$this->addBlocks();
 		$this->addWebhook();
