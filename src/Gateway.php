@@ -103,7 +103,7 @@ class Gateway extends WC_Payment_Gateway {
 			Icepay::getSecret(),
 		);
 
-		[ $isSuccesful, $refund ] = $client->refund( $paymentKey, [
+		[ $isSuccessful, $refund ] = $client->refund( $paymentKey, [
 			'amount'      => [
 				'value'    => $amount * 100,
 				'currency' => $order->get_currency(),
@@ -112,7 +112,7 @@ class Gateway extends WC_Payment_Gateway {
 			'description' => $reason,
 		] );
 
-		if ( ! $isSuccesful ) {
+		if ( ! $isSuccessful ) {
 			$this->log->error( 'Unable to refund payment for #' . $order_id, $refund );
 
 			return new WP_Error( '1', 'Unable to refund order, could not refund payment. ' . $refund['message'] );

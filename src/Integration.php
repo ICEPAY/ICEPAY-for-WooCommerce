@@ -64,13 +64,13 @@ class Integration {
 	}
 
 	protected function addGateways(): void {
-		$gateways = [];
+        $icepayGateways = [];
 
 		foreach ( PaymentMethod::getAll() as $paymentMethod ) {
-			$gateways[ $paymentMethod->getId() ] = new Gateway( $paymentMethod );
+            $icepayGateways[ $paymentMethod->getId() ] = new Gateway( $paymentMethod );
 		}
 
-		add_filter( 'woocommerce_payment_gateways', fn() => $gateways );
+		add_filter( 'woocommerce_payment_gateways', fn($gateways) =>array_merge($gateways, $icepayGateways) );
 	}
 
 	protected function addBlocks(): void {
