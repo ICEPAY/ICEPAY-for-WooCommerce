@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 
-define( 'ICEPAY_FILE', plugin_basename( Integration::ID . '/IcepayForWoocommerce.php' ) );
+define( 'ICEPAY_FILE', plugin_basename( __DIR__ . '/IcepayForWoocommerce.php' ) );
 define( 'ICEPAY_URL', untrailingslashit( plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) ) );
 
 function onError( Throwable $throwable ): void {
