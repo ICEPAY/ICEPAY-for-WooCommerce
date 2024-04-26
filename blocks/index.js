@@ -34,8 +34,8 @@ stylesheet.replaceSync(`
 		object-position: center;
 	}
 `);
-document.adoptedStyleSheets = [stylesheet];
 
+document.adoptedStyleSheets = [stylesheet];
 icepay.paymentMethods.forEach((paymentMethod) => {
     registerPaymentMethod({
         name: paymentMethod.id,
