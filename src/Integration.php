@@ -11,7 +11,7 @@ use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
 class Integration {
 	public const NAME = 'ICEPAY for WooCommerce';
 	public const ID = 'icepay-for-woocommerce';
-	public const VERSION = '1.0.1';
+	public const VERSION = '1.0.2';
 
 	public function __invoke(): void {
 		$this->addSettings();
