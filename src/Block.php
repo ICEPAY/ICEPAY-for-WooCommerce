@@ -14,6 +14,9 @@ class Block extends AbstractPaymentMethodType {
 		wp_register_script(
 			Block::HANDLE,
 			ICEPAY_URL . '/build/index.js',
+            ['wc-blocks-registry'],
+            Integration::VERSION,
+            true,
 		);
 
 		$paymentMethods = [];
