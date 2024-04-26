@@ -23,7 +23,7 @@ class Webhook {
 
 		$data = json_decode( $data, true );
 
-		if ( $signature !== $headers['icepay-signature'] ) {
+		if ( $signature !== ($headers['Icepay-Signature'] ?? $headers['icepay-signature'])) {
 			$log->warning( 'got postback, but could not validate it.' );
 			status_header( 200 );
 			exit;
