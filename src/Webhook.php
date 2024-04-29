@@ -17,13 +17,13 @@ class Webhook {
 		}
 
 		$data      = file_get_contents( 'php://input' );
-		$headers   = $this->getHeader() ?: [];
+		$headers   = array_change_key_case($this->getHeader() ?: []);
 		$secret    = Icepay::getSecret();
 		$signature = base64_encode( hash_hmac( 'sha256', $data, $secret, true ) );
 
 		$data = json_decode( $data, true );
 
-		if ( $signature !== ($headers['Icepay-Signature'] ?? $headers['icepay-signature'])) {
+		if ( $signature !== $headers['icepay-signature']) {
 			$log->warning( 'got postback, but could not validate it.' );
 			status_header( 200 );
 			exit;
