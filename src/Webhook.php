@@ -39,9 +39,8 @@ class Webhook {
 		}
 
 		$status = match ( $data['status'] ) {
-			'completed' => 'completed',
+			'completed' => 'processing',
 			'cancelled', 'expired' => 'cancelled',
-			'pending' => 'processing',
 			default => 'pending',
 		};
 
