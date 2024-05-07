@@ -1,7 +1,7 @@
 {
   "name": "icepay/icepay-woocommerce",
   "description": "ICEPAY for WooCommerce",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "library",
   "keywords": [
     "icepay",
