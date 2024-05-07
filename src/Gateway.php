@@ -53,7 +53,7 @@ class Gateway extends WC_Payment_Gateway {
 			[
 				'reference'     => $reference,
 				'amount'        => [
-					'value'    => $order->get_total() * 100,
+					'value'    => (int) round($order->get_total() * 100) ,
 					'currency' => $order->get_currency(),
 				],
 				'paymentMethod' => [
@@ -105,7 +105,7 @@ class Gateway extends WC_Payment_Gateway {
 
 		[ $isSuccessful, $refund ] = $client->refund( $paymentKey, [
 			'amount'      => [
-				'value'    => $amount * 100,
+				'value'    => (int) round($amount * 100),
 				'currency' => $order->get_currency(),
 			],
 			'reference'   => $reason,
