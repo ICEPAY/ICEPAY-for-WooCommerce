@@ -1,6 +1,6 @@
 {
   "name": "icepay-for-woocommerce",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "```bash cp .env.example .env docker compose up -d make install ```",
   "scripts": {
     "build": "wp-scripts build",
