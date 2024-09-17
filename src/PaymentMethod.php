@@ -92,6 +92,7 @@ class PaymentMethod {
 			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
 			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
             new PaymentMethod( 'onlineUeberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
+            new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
 		];
 	}
 }
