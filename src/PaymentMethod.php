@@ -87,7 +87,7 @@ class PaymentMethod {
 
 	public static function getAll() {
 		return [
-			new PaymentMethod( 'ideal', 'iDEAL', '', 'ideal.webp' ),
+			new PaymentMethod( 'ideal', 'iDEAL', '', 'ideal.svg' ),
 			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
 			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
 			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
