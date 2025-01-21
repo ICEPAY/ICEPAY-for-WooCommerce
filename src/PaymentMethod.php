@@ -90,14 +90,14 @@ class PaymentMethod {
 
 	public static function getAll() {
 		return [
-			new PaymentMethod( 'ideal', 'iDEAL', '', 'ideal.svg' ),
-			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
-			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
-			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
-			new PaymentMethod( 'onlineUeberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
-			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
-			new PaymentMethod('carteBancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
-			new PaymentMethod('dankort', 'Dankort', '', 'dankort.svg'),
+			new PaymentMethod( 'ideal', 'ICEPAY iDEAL', '', 'ideal.svg' ),
+			new PaymentMethod( 'card', 'ICEPAY Card', '', 'card.svg' ),
+			new PaymentMethod( 'bancontact', 'ICEPAY Bancontact', '', 'bancontact.svg' ),
+			new PaymentMethod( 'paypal', 'ICEPAY PayPal', '', 'paypal.jpg' ),
+			new PaymentMethod( 'onlineUeberweisen', 'ICEPAY Online Überweisen', '', 'onlineUeberweisen.svg' ),
+			new PaymentMethod( 'eps', 'ICEPAY EPS', '', 'eps.png' ),
+			new PaymentMethod('carteBancaire', 'ICEPAY Carte Bancaire', '', 'carteBancaire.svg'),
+			new PaymentMethod('dankort', 'ICEPAY Dankort', '', 'dankort.svg'),
 		];
 	}
 }
