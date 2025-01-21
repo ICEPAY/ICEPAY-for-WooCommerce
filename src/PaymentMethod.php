@@ -21,7 +21,10 @@ class PaymentMethod {
 	}
 
 	public function getType(): string {
-		return $this->type;
+		return match($this->type) {
+			'carteBancaire' => 'card',
+			default => $this->type,
+		};
 	}
 
 	public function isEnabled(): string {
@@ -91,8 +94,9 @@ class PaymentMethod {
 			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
 			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
 			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
-            new PaymentMethod( 'onlineUeberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
-            new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
+			new PaymentMethod( 'onlineUeberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
+			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
+			new PaymentMethod('carteBancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
 		];
 	}
 }
