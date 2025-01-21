@@ -22,7 +22,7 @@ class PaymentMethod {
 
 	public function getType(): string {
 		return match($this->type) {
-			'carteBancaire' => 'card',
+			'carteBancaire', 'dankort' => 'card',
 			default => $this->type,
 		};
 	}
@@ -97,6 +97,7 @@ class PaymentMethod {
 			new PaymentMethod( 'onlineUeberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
 			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
 			new PaymentMethod('carteBancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
+			new PaymentMethod('dankort', 'Dankort', '', 'dankort.svg'),
 		];
 	}
 }
