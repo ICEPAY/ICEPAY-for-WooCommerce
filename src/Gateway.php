@@ -14,7 +14,7 @@ class Gateway extends WC_Payment_Gateway {
 	) {
 		$this->id                 = $this->paymentMethod->getId();
 		$this->icon               = $this->paymentMethod->getIcon();
-		$this->method_title       = $this->paymentMethod->getDefaultName();
+		$this->method_title       = 'ICEPAY ' . $this->paymentMethod->getDefaultName();
 		$this->method_description = $this->paymentMethod->getDefaultDescription();;
 		$this->title       = $this->paymentMethod->getName();
 		$this->description = $this->paymentMethod->getDescription();

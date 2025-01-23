@@ -22,7 +22,7 @@ class PaymentMethod {
 
 	public function getType(): string {
 		return match($this->type) {
-			'carteBancaire', 'dankort' => 'card',
+			'cartebancaire', 'dankort' => 'card',
 			default => $this->type,
 		};
 	}
@@ -81,7 +81,7 @@ class PaymentMethod {
 	}
 
 	protected function getOption( string $key ): ?string {
-		if ( isset( $this->options[ $key ] ) ) {
+		if ( isset( $this->options[ $key ] ) && !empty( $this->options[ $key ] ) ) {
 			return $this->options[ $key ];
 		}
 
@@ -90,14 +90,14 @@ class PaymentMethod {
 
 	public static function getAll() {
 		return [
-			new PaymentMethod( 'ideal', 'ICEPAY iDEAL', '', 'ideal.svg' ),
-			new PaymentMethod( 'card', 'ICEPAY Card', '', 'card.svg' ),
-			new PaymentMethod( 'bancontact', 'ICEPAY Bancontact', '', 'bancontact.svg' ),
-			new PaymentMethod( 'paypal', 'ICEPAY PayPal', '', 'paypal.jpg' ),
-			new PaymentMethod( 'onlineUeberweisen', 'ICEPAY Online Überweisen', '', 'onlineUeberweisen.svg' ),
-			new PaymentMethod( 'eps', 'ICEPAY EPS', '', 'eps.png' ),
-			new PaymentMethod('carteBancaire', 'ICEPAY Carte Bancaire', '', 'carteBancaire.svg'),
-			new PaymentMethod('dankort', 'ICEPAY Dankort', '', 'dankort.svg'),
+			new PaymentMethod( 'ideal', 'iDEAL', '', 'ideal.svg' ),
+			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
+			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
+			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
+			new PaymentMethod( 'onlineueberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
+			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
+			new PaymentMethod( 'cartebancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
+			new PaymentMethod( 'dankort', 'Dankort', '', 'dankort.svg'),
 		];
 	}
 }
