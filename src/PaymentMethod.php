@@ -22,7 +22,7 @@ class PaymentMethod {
 
 	public function getType(): string {
 		return match($this->type) {
-			'carteBancaire', 'dankort' => 'card',
+			'cartebancaire', 'dankort' => 'card',
 			default => $this->type,
 		};
 	}
@@ -81,7 +81,7 @@ class PaymentMethod {
 	}
 
 	protected function getOption( string $key ): ?string {
-		if ( isset( $this->options[ $key ] ) ) {
+		if ( isset( $this->options[ $key ] ) && !empty( $this->options[ $key ] ) ) {
 			return $this->options[ $key ];
 		}
 
@@ -94,10 +94,10 @@ class PaymentMethod {
 			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
 			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
 			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
-			new PaymentMethod( 'onlineUeberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
+			new PaymentMethod( 'onlineueberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
 			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
-			new PaymentMethod('carteBancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
-			new PaymentMethod('dankort', 'Dankort', '', 'dankort.svg'),
+			new PaymentMethod( 'cartebancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
+			new PaymentMethod( 'dankort', 'Dankort', '', 'dankort.svg'),
 		];
 	}
 }
