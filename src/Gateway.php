@@ -52,6 +52,7 @@ class Gateway extends WC_Payment_Gateway {
 		[ $isSuccessful, $payment ] = $client->create(
 			[
 				'reference'     => $reference,
+                'description'   => $order->get_order_number(),
 				'amount'        => [
 					'value'    => (int) round($order->get_total() * 100) ,
 					'currency' => $order->get_currency(),
@@ -67,6 +68,10 @@ class Gateway extends WC_Payment_Gateway {
 						'version'   => Integration::VERSION,
 						'developer' => 'ICEPAY',
 					],
+                    'order' => [
+                        'id' => $order->get_id(),
+                        'number' => $order->get_order_number(),
+                    ]
 				]
 			]
 		);
