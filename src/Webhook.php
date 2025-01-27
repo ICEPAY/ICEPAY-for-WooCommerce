@@ -47,12 +47,12 @@ class Webhook {
         $orderStatus = $order->get_status();
 
 		if ($orderStatus === 'pending' || $orderStatus === 'on-hold' || $orderStatus === 'cancelled' || $orderStatus === 'checkout-draft' ) {
-			$log->info( 'Updating ' . (str_replace( '{ORDER_ID}', (string) $order->get_id(), Icepay::getDescription() )) . ' status to ' . $status . ' for ' . ($data['key'] ?? 'key-not-found')  );
+			$log->info( 'Updating ' . (str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() )) . ' status to ' . $status . ' for ' . ($data['key'] ?? 'key-not-found')  );
 			$order->update_status( $status );
 		} else {
             $log->info(
                 'Did not update '
-                . (str_replace( '{ORDER_ID}', (string) $order->get_id(), Icepay::getDescription() ))
+                . (str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ))
                 . ' status to ' . $status . ' for ' . ($data['key'] ?? 'key-not-found')
                 . 'because the current status was ' . $order->get_status()
             );
