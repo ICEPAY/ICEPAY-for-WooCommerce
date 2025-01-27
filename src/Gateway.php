@@ -47,7 +47,7 @@ class Gateway extends WC_Payment_Gateway {
 		);
 
 		$order     = wc_get_order( $order_id );
-		$reference = str_replace( '{ORDER_ID}', (string) $order->get_order_number(), Icepay::getDescription() );
+		$reference = str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() );
 
 		[ $isSuccessful, $payment ] = $client->create(
 			[
