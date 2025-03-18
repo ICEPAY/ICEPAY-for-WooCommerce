@@ -59,6 +59,9 @@ class Gateway extends WC_Payment_Gateway {
 				'paymentMethod' => [
 					'type' => $this->paymentMethod->getType(),
 				],
+                'customer' => [
+                    'email' => $order->get_billing_email(),
+                ],
 				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
 				'redirectUrl'   => $this->getRedirectUrl( $order ),
 				'meta'          => [
