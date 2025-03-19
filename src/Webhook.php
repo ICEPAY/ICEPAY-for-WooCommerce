@@ -30,8 +30,12 @@ class Webhook {
 		}
 
 		$log->info( 'got postback and could validate it.' );
-		//$order = Order::FindOrderByKey( $data['key'] );
-		$order = wc_get_order( $data['meta']['order']['id'] );
+
+		if ( isset( $data['meta']['order']['id'] ) ) {
+			$order = wc_get_order( $data['meta']['order']['id'] );
+		} else {
+			$order = Order::FindOrderByKey( $data['key'] );
+		}
 
 		if ( ! $order ) {
 			$log->warning( 'Order not found' );
