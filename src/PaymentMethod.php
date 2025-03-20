@@ -48,7 +48,7 @@ class PaymentMethod {
 	}
 
 	public function getIcon(): string {
-		return esc_url( ICEPAY_URL . '/public/icons/' . $this->icon );
+		return Icepay::showIcons() ?  esc_url( ICEPAY_URL . '/public/icons/' . $this->icon ): '';
 	}
 
 	public function getFormFields(): array {

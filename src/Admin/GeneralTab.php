@@ -43,6 +43,13 @@ class GeneralTab {
 				'setting_type' => 'string',
 			],
 			[
+				'id'      => Icepay::SHOW_ICONS,
+				'title'   => __( 'Show Icons', Integration::ID ),
+				'type'    => 'checkbox',
+				'css'     => 'width: 350px',
+				'default' => 'yes',
+			],
+			[
 				'id'      => Icepay::ENABLE_LOGS,
 				'title'   => __( 'Enable Logs', Integration::ID ),
 				'type'    => 'checkbox',
