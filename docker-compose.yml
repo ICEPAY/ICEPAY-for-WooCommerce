@@ -23,7 +23,7 @@ services:
         define('WP_DEBUG_LOG', true );
         define('WP_DEBUG_DISPLAY', true);
   db:
-    image: mysql:8.0.32
+    image: mysql:8.4.6
     environment:
       MYSQL_ROOT_PASSWORD: somewordpress
       MYSQL_DATABASE: wordpress
@@ -33,13 +33,13 @@ services:
     image: sj26/mailcatcher
     ports:
       - "1080:1080"
-  expose:
-    depends_on:
-      - app
-    build: https://github.com/beyondcode/expose.git
-    entrypoint: [ "/bin/sh", "-c" , "/src/expose token ${EXPOSE_TOKEN} && sed -i -E \"s/'dns'\\s?=>\\s?'.*'/'dns' => true/g\" /root/.expose/config.php  && /src/expose share app --server-host=${EXPOSE_HOST} --subdomain=${APP_SUBDOMAIN}" ]
-    ports:
-      - "4040:4040"
+#  expose:
+#    depends_on:
+#      - app
+#    build: https://github.com/beyondcode/expose.git
+#    entrypoint: [ "/bin/sh", "-c" , "/src/expose token ${EXPOSE_TOKEN} && sed -i -E \"s/'dns'\\s?=>\\s?'.*'/'dns' => true/g\" /root/.expose/config.php  && /src/expose share app --server-host=${EXPOSE_HOST} --subdomain=${APP_SUBDOMAIN}" ]
+#    ports:
+#      - "4040:4040"
   adminer:
     image: adminer
     ports:

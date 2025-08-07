@@ -11,7 +11,7 @@ use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
 class Integration {
 	public const NAME = 'ICEPAY for WooCommerce';
 	public const ID = 'icepay-for-woocommerce';
-	public const VERSION = '1.0.12';
+	public const VERSION = '1.0.13';
 
 	public function __invoke(): void {
 		$this->addSettings();
@@ -64,13 +64,18 @@ class Integration {
 	}
 
 	protected function addGateways(): void {
-        $icepayGateways = [];
+		add_filter( 'woocommerce_payment_gateways', fn($gateways) => array_merge($gateways, $this->getGateways()));
+	}
+
+	protected function getGateways(): array
+	{
+		$gateways = [];
 
 		foreach ( PaymentMethod::getAll() as $paymentMethod ) {
-            $icepayGateways[ $paymentMethod->getId() ] = new Gateway( $paymentMethod );
+			$gateways[ $paymentMethod->getId() ] = new Gateway( $paymentMethod );
 		}
 
-		add_filter( 'woocommerce_payment_gateways', fn($gateways) =>array_merge($gateways, $icepayGateways) );
+		return $gateways;
 	}
 
 	protected function addBlocks(): void {
