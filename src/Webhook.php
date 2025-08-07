@@ -59,7 +59,6 @@ class Webhook {
             );
         }
 
-		$log->info( 'order get_transaction_id', [$order->get_transaction_id()] );
 		status_header( 200 );
 		exit;
 	}
