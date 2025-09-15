@@ -88,7 +88,7 @@ class PaymentMethod {
 		return null;
 	}
 
-	public static function getAll() {
+	public static function getAll(): array {
 		return [
 			new PaymentMethod( 'ideal', 'iDEAL', '', 'ideal.svg' ),
 			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
@@ -98,6 +98,7 @@ class PaymentMethod {
 			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
 			new PaymentMethod( 'cartebancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
 			new PaymentMethod( 'dankort', 'Dankort', '', 'dankort.svg'),
+			new PaymentMethod( 'paybybank', 'Pay by Bank', '', 'paybybank.svg'),
 		];
 	}
 }
