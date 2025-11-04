@@ -17,20 +17,25 @@ class Webhook {
 		}
 
 		$data      = file_get_contents( 'php://input' );
-		$headers   = array_change_key_case($this->getHeader() ?: []);
+		$headers   = array_change_key_case( $this->getHeader() ?: [] );
 		$secret    = Icepay::getSecret();
 		$signature = base64_encode( hash_hmac( 'sha256', $data, $secret, true ) );
 
 		$data = json_decode( $data, true );
 
-		if ( $signature !== $headers['icepay-signature']) {
+		if ( $signature !== $headers['icepay-signature'] ) {
 			$log->warning( 'got postback, but could not validate it.' );
 			status_header( 200 );
 			exit;
 		}
 
 		$log->info( 'got postback and could validate it.' );
-		$order = Order::FindOrderByKey( $data['key'] );
+
+		if ( isset( $data['meta']['order']['id'] ) ) {
+			$order = wc_get_order( $data['meta']['order']['id'] );
+		} else {
+			$order = Order::FindOrderByKey( $data['key'] );
+		}
 
 		if ( ! $order ) {
 			$log->warning( 'Order not found' );
@@ -44,21 +49,21 @@ class Webhook {
 			default => 'pending',
 		};
 
-        $orderStatus = $order->get_status();
+		$orderStatus = $order->get_status();
 
-		if ($orderStatus === 'pending' || $orderStatus === 'on-hold' || $orderStatus === 'cancelled' || $orderStatus === 'checkout-draft' ) {
-			$log->info( 'Updating ' . (str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() )) . ' status to ' . $status . ' for ' . ($data['key'] ?? 'key-not-found')  );
+		if ( $orderStatus === 'pending' || $orderStatus === 'on-hold' || $orderStatus === 'cancelled' || $orderStatus === 'checkout-draft' ) {
+			$log->info( 'Updating ' . ( str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ) ) . ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' ) );
 			$order->update_status( $status );
 			$order->set_transaction_id( $data['key'] );
 			$order->save();
 		} else {
-            $log->info(
-                'Did not update '
-                . (str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ))
-                . ' status to ' . $status . ' for ' . ($data['key'] ?? 'key-not-found')
-                . 'because the current status was ' . $order->get_status()
-            );
-        }
+			$log->info(
+				'Did not update '
+				. ( str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ) )
+				. ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' )
+				. 'because the current status was ' . $order->get_status()
+			);
+		}
 
 		status_header( 200 );
 		exit;

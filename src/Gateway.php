@@ -53,7 +53,7 @@ class Gateway extends WC_Payment_Gateway {
 			[
 				'reference'     => $reference,
 				'amount'        => [
-					'value'    => (int) round($order->get_total() * 100) ,
+					'value'    => (int) round( $order->get_total() * 100 ),
 					'currency' => $order->get_currency(),
 				],
 				'paymentMethod' => [
@@ -65,6 +65,9 @@ class Gateway extends WC_Payment_Gateway {
 				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
 				'redirectUrl'   => $this->getRedirectUrl( $order ),
 				'meta'          => [
+					'order'       => [
+						'id' => $order_id,
+					],
 					'integration' => [
 						'type'      => 'woocommerce',
 						'version'   => Integration::VERSION,
@@ -108,7 +111,7 @@ class Gateway extends WC_Payment_Gateway {
 
 		[ $isSuccessful, $refund ] = $client->refund( $paymentKey, [
 			'amount'      => [
-				'value'    => (int) round($amount * 100),
+				'value'    => (int) round( $amount * 100 ),
 				'currency' => $order->get_currency(),
 			],
 			'reference'   => $reason,
