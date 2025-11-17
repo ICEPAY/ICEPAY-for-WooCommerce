@@ -9,11 +9,11 @@ importers:
   .:
     devDependencies:
       '@woocommerce/dependency-extraction-webpack-plugin':
-        specifier: ^3.1.0
-        version: 3.1.0(webpack@5.101.3)
+        specifier: ^4.0.0
+        version: 4.0.0(webpack@5.101.3)
       '@wordpress/scripts':
-        specifier: ^30.0.6
-        version: 30.23.0(@playwright/test@1.55.0)(@types/eslint@9.6.1)(@types/node@24.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(type-fest@4.41.0)(typescript@5.9.2)
+        specifier: ^31.0.0
+        version: 31.0.0(@playwright/test@1.55.0)(@types/eslint@9.6.1)(@types/node@24.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(type-fest@4.41.0)(typescript@5.9.2)
 
 packages:
 
@@ -205,6 +205,12 @@ packages:
 
   '@babel/plugin-syntax-import-assertions@7.27.1':
     resolution: {integrity: sha512-UT/Jrhw57xg4ILHLFnzFpPDlMbcdEicaAtjPQpbj9wa8T4r5KVWCimHcL/460g8Ht0DMxDyjsLgiWSkVjnwPFg==}
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+
+  '@babel/plugin-syntax-import-attributes@7.26.0':
+    resolution: {integrity: sha512-e2dttdsJ1ZTpi3B9UYGLw41hifAubg19AtCu/2I/F1QNVclOBr1dYpTdmdyZ84Xiz43BS/tCUkMAZNLv12Pi+A==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -674,10 +680,6 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/runtime@7.25.7':
-    resolution: {integrity: sha512-FjoyLe754PMiYsFaN5C94ttGiOmBNYTf6pLr4xXHAT5uctHb092PBszndLDR5XA/jghQvn4n7JMHl7dmTgbm9w==}
-    engines: {node: '>=6.9.0'}
-
   '@babel/template@7.27.2':
     resolution: {integrity: sha512-LPDZ85aEJyYSd18/DkjNh4/y1ntkE5KwUHWTiqgRxruuZL2F1yuHligVHLvcHY2vMHXttKFpJn6LwfI7cw7ODw==}
     engines: {node: '>=6.9.0'}
@@ -729,6 +731,15 @@ packages:
 
   '@dual-bundle/import-meta-resolve@4.2.1':
     resolution: {integrity: sha512-id+7YRUgoUX6CgV0DtuhirQWodeeA7Lf4i2x71JS/vtA5pRb/hIGWlw+G6MeXvsM+MXrz0VAydTGElX1rAfgPg==}
+
+  '@emnapi/core@1.7.1':
+    resolution: {integrity: sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==}
+
+  '@emnapi/runtime@1.7.1':
+    resolution: {integrity: sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA==}
+
+  '@emnapi/wasi-threads@1.1.0':
+    resolution: {integrity: sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==}
 
   '@es-joy/jsdoccomment@0.41.0':
     resolution: {integrity: sha512-aKUhyn1QI5Ksbqcr3fFJj16p99QdjUxXAEuFst1Z47DRyoiMwivIH9MV/ARcJOCXVjPfjITciej8ZD2O/6qUmw==}
@@ -895,6 +906,9 @@ packages:
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
+
+  '@napi-rs/wasm-runtime@0.2.12':
+    resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
 
   '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
     resolution: {integrity: sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==}
@@ -1377,6 +1391,9 @@ packages:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
 
+  '@tybys/wasm-util@0.10.1':
+    resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
+
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
 
@@ -1609,6 +1626,101 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
+  '@unrs/resolver-binding-android-arm-eabi@1.11.1':
+    resolution: {integrity: sha512-ppLRUgHVaGRWUx0R0Ut06Mjo9gBaBkg3v/8AxusGLhsIotbBLuRk51rAzqLC8gq6NyyAojEXglNjzf6R948DNw==}
+    cpu: [arm]
+    os: [android]
+
+  '@unrs/resolver-binding-android-arm64@1.11.1':
+    resolution: {integrity: sha512-lCxkVtb4wp1v+EoN+HjIG9cIIzPkX5OtM03pQYkG+U5O/wL53LC4QbIeazgiKqluGeVEeBlZahHalCaBvU1a2g==}
+    cpu: [arm64]
+    os: [android]
+
+  '@unrs/resolver-binding-darwin-arm64@1.11.1':
+    resolution: {integrity: sha512-gPVA1UjRu1Y/IsB/dQEsp2V1pm44Of6+LWvbLc9SDk1c2KhhDRDBUkQCYVWe6f26uJb3fOK8saWMgtX8IrMk3g==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@unrs/resolver-binding-darwin-x64@1.11.1':
+    resolution: {integrity: sha512-cFzP7rWKd3lZaCsDze07QX1SC24lO8mPty9vdP+YVa3MGdVgPmFc59317b2ioXtgCMKGiCLxJ4HQs62oz6GfRQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@unrs/resolver-binding-freebsd-x64@1.11.1':
+    resolution: {integrity: sha512-fqtGgak3zX4DCB6PFpsH5+Kmt/8CIi4Bry4rb1ho6Av2QHTREM+47y282Uqiu3ZRF5IQioJQ5qWRV6jduA+iGw==}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@unrs/resolver-binding-linux-arm-gnueabihf@1.11.1':
+    resolution: {integrity: sha512-u92mvlcYtp9MRKmP+ZvMmtPN34+/3lMHlyMj7wXJDeXxuM0Vgzz0+PPJNsro1m3IZPYChIkn944wW8TYgGKFHw==}
+    cpu: [arm]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-arm-musleabihf@1.11.1':
+    resolution: {integrity: sha512-cINaoY2z7LVCrfHkIcmvj7osTOtm6VVT16b5oQdS4beibX2SYBwgYLmqhBjA1t51CarSaBuX5YNsWLjsqfW5Cw==}
+    cpu: [arm]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-arm64-gnu@1.11.1':
+    resolution: {integrity: sha512-34gw7PjDGB9JgePJEmhEqBhWvCiiWCuXsL9hYphDF7crW7UgI05gyBAi6MF58uGcMOiOqSJ2ybEeCvHcq0BCmQ==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-arm64-musl@1.11.1':
+    resolution: {integrity: sha512-RyMIx6Uf53hhOtJDIamSbTskA99sPHS96wxVE/bJtePJJtpdKGXO1wY90oRdXuYOGOTuqjT8ACccMc4K6QmT3w==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-ppc64-gnu@1.11.1':
+    resolution: {integrity: sha512-D8Vae74A4/a+mZH0FbOkFJL9DSK2R6TFPC9M+jCWYia/q2einCubX10pecpDiTmkJVUH+y8K3BZClycD8nCShA==}
+    cpu: [ppc64]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-riscv64-gnu@1.11.1':
+    resolution: {integrity: sha512-frxL4OrzOWVVsOc96+V3aqTIQl1O2TjgExV4EKgRY09AJ9leZpEg8Ak9phadbuX0BA4k8U5qtvMSQQGGmaJqcQ==}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-riscv64-musl@1.11.1':
+    resolution: {integrity: sha512-mJ5vuDaIZ+l/acv01sHoXfpnyrNKOk/3aDoEdLO/Xtn9HuZlDD6jKxHlkN8ZhWyLJsRBxfv9GYM2utQ1SChKew==}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-s390x-gnu@1.11.1':
+    resolution: {integrity: sha512-kELo8ebBVtb9sA7rMe1Cph4QHreByhaZ2QEADd9NzIQsYNQpt9UkM9iqr2lhGr5afh885d/cB5QeTXSbZHTYPg==}
+    cpu: [s390x]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-x64-gnu@1.11.1':
+    resolution: {integrity: sha512-C3ZAHugKgovV5YvAMsxhq0gtXuwESUKc5MhEtjBpLoHPLYM+iuwSj3lflFwK3DPm68660rZ7G8BMcwSro7hD5w==}
+    cpu: [x64]
+    os: [linux]
+
+  '@unrs/resolver-binding-linux-x64-musl@1.11.1':
+    resolution: {integrity: sha512-rV0YSoyhK2nZ4vEswT/QwqzqQXw5I6CjoaYMOX0TqBlWhojUf8P94mvI7nuJTeaCkkds3QE4+zS8Ko+GdXuZtA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@unrs/resolver-binding-wasm32-wasi@1.11.1':
+    resolution: {integrity: sha512-5u4RkfxJm+Ng7IWgkzi3qrFOvLvQYnPBmjmZQ8+szTK/b31fQCnleNl1GgEt7nIsZRIf5PLhPwT0WM+q45x/UQ==}
+    engines: {node: '>=14.0.0'}
+    cpu: [wasm32]
+
+  '@unrs/resolver-binding-win32-arm64-msvc@1.11.1':
+    resolution: {integrity: sha512-nRcz5Il4ln0kMhfL8S3hLkxI85BXs3o8EYoattsJNdsX4YUU89iOkVn7g0VHSRxFuVMdM4Q1jEpIId1Ihim/Uw==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@unrs/resolver-binding-win32-ia32-msvc@1.11.1':
+    resolution: {integrity: sha512-DCEI6t5i1NmAZp6pFonpD5m7i6aFrpofcp4LA2i8IIq60Jyo28hamKBxNrZcyOwVOZkgsRp9O2sXWBWP8MnvIQ==}
+    cpu: [ia32]
+    os: [win32]
+
+  '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
+    resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
+    cpu: [x64]
+    os: [win32]
+
   '@webassemblyjs/ast@1.14.1':
     resolution: {integrity: sha512-nuBEDgQfm1ccRp/8bCQrx1frohyufl4JlbMMZ4P1wpeOfDhF6FQkxZJ1b/e+PLwr6X1Nhw6OLme5usuBWYBvuQ==}
 
@@ -1679,42 +1791,42 @@ packages:
       webpack-dev-server:
         optional: true
 
-  '@woocommerce/dependency-extraction-webpack-plugin@3.1.0':
-    resolution: {integrity: sha512-e/hOgJlLpisEqc0CjtNmK5eso1U4NaURIxFIgrH5AAFQbS1XN8BP6/SaTcWEfnNnoGqOSfn5p6hQFL6lz7OSrA==}
-    engines: {node: ^20.11.1, pnpm: 9.1.3}
+  '@woocommerce/dependency-extraction-webpack-plugin@4.0.0':
+    resolution: {integrity: sha512-2vw9c9IsWhGPraEehkbzl8rmx1gArQ2PZQFVXj3LQ8Etgr/mM/hsxF/inG8+2bL7hFXYOtUYgwXuofLD2ozLxA==}
+    engines: {node: ^20.11.1}
 
-  '@wordpress/babel-preset-default@8.30.0':
-    resolution: {integrity: sha512-DUEAseIg3Xqa4MroaFQEob4TYTGJv0zKRLsDrLHAgQCTtC4PcvUqU0gM7JZjG3zo20G9R5YCBNzx1353qd1t7Q==}
+  '@wordpress/babel-preset-default@8.35.0':
+    resolution: {integrity: sha512-mQc07JeNzulxEq0HHFor4hbKSvF2D81NKfsuFeZGGRCSD7hKJwQsknrzgUmrfRKn8Bb8p+yglw2TVQ6mN+gnwg==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
-  '@wordpress/base-styles@6.6.0':
-    resolution: {integrity: sha512-72OqyskL5E8V7trJYt4xlNbOfgAtAFfpwa+8TR+wLwqIYxhFjsWmkZsT3aknE6cyfRAmKZgSUfEZr8zH6Skwyw==}
+  '@wordpress/base-styles@6.11.0':
+    resolution: {integrity: sha512-olV27w/QCztQj7xs/WssxrGJh7jyI+dVsQBw1p+LOo+XxRhFq6MvcUH6vEBXpU78ICtlqEx/uR3eYwEy1hQhUw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
-  '@wordpress/browserslist-config@6.30.0':
-    resolution: {integrity: sha512-CjirkPIkMf72VQcKmhmQZUJGHHFEt80ITZVgnxEtyswWA6QPRXIwFhQOAElmfhWg2wS6pCncyg6k7DfgYX3bOg==}
+  '@wordpress/browserslist-config@6.35.0':
+    resolution: {integrity: sha512-Y9BGxIJblHC8ChezNNLZoF8TWj52zuBVBF58t3tUrqnEE80L7eV4A+v0nOqQr6hNjVIdqI6RdWiCB6qmvm3CzQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
-  '@wordpress/dependency-extraction-webpack-plugin@3.7.0':
-    resolution: {integrity: sha512-SHyp88D1ICSaRVMfs/kKEicjKXWf1y2wecUeZIiMtkfAi8Bnk3JsnUo11LH7drJIXfjmDoer2B2rrBMZmRm8VA==}
-    engines: {node: '>=12'}
-    peerDependencies:
-      webpack: ^4.8.3 || ^5.0.0
-
-  '@wordpress/dependency-extraction-webpack-plugin@6.30.0':
-    resolution: {integrity: sha512-sms4yRJriS8vzlwbYHII/xqI64oSY5ALbfQy6HJBSCfLJCNxVOzC/2fCrhdV9ghd8nK3NMAJKhTCe09oMPCnIw==}
+  '@wordpress/dependency-extraction-webpack-plugin@6.35.0':
+    resolution: {integrity: sha512-HytyG+9vh2u+EM9YRM5xEtP1YDjU73Q+GdQ1j2k/OUd/A6NNmln5dk+1rzvXHYUrn5wogomcJTHDD6vBFSX3aw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       webpack: ^5.0.0
 
-  '@wordpress/e2e-test-utils-playwright@1.30.0':
-    resolution: {integrity: sha512-KN/q6359nlb+zh/eamQD0gBgi1616Px7v+03+Hz8HqKUPKozUab1ogxr6Ew751LCYGuh204eG7ImYVM6Aqta0Q==}
+  '@wordpress/dependency-extraction-webpack-plugin@6.35.1-next.16d95556a.0':
+    resolution: {integrity: sha512-gBMA9MxQ9m2toAzT+ZIKnrr8su68BUwo3z+KLYWIUyDHPcIHENITDceiQa06OAE/qqdW4ovdc6HCX284lj6h7Q==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      webpack: ^5.0.0
+
+  '@wordpress/e2e-test-utils-playwright@1.35.0':
+    resolution: {integrity: sha512-xGuMP7fIGPEA2GuLAbPlJEd0vTnGhDIJ0LfOv+xdrIiJCfdt0e7Rz0qxHyvhbQIx0lfpzi1No/qRUBCzlPwDCg==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       '@playwright/test': '>=1'
 
-  '@wordpress/eslint-plugin@22.16.0':
-    resolution: {integrity: sha512-1z3rXq2uanCY0m2D1BgimeNGxZOZy87VPwzKRjaf2aPLw/ezoQckiaVGAKYKhbHLt6HFP2EkdKfuD3pmbTJ57g==}
+  '@wordpress/eslint-plugin@22.21.0':
+    resolution: {integrity: sha512-CvX26FcnpiSmN2ASVfFXA5OoqV7GWM6Ifxye1W+bfBYVgcaT3fO75WiGcTYHHqQM/6W1VxXAoyInLpluMtmejg==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       '@babel/core': '>=7'
@@ -1727,43 +1839,43 @@ packages:
       typescript:
         optional: true
 
-  '@wordpress/jest-console@8.30.0':
-    resolution: {integrity: sha512-Vw7iBqsueb9jCy6RnnjixjLosm+fMi+3iMQDiBB5Pw/yUpr0PUBCR11oQCE/nO3wDl7OOA5Nq3v2qo/wxLBLMg==}
+  '@wordpress/jest-console@8.35.0':
+    resolution: {integrity: sha512-2iwlAdL1+BogegHZtLJZ1p3EGz8Hts/yPQkj1rgDr6ydQ28VJ04W0MJqDCL0bcJPCnBUeS//WsG5eJZ114AVdA==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       jest: '>=29'
 
-  '@wordpress/jest-preset-default@12.30.0':
-    resolution: {integrity: sha512-nxldSo9luQBfjIFF08hcVT1pEVABe213qBxYWCXMCx3+SPsENRF6pU/yoRb0i7nz6yrd/j5oD92EXXnbQoN8eA==}
+  '@wordpress/jest-preset-default@12.35.0':
+    resolution: {integrity: sha512-Hl49ATqb6KQ+Tld+xIpoZ9ZJ0wmC6ZhXdSR+owqSIzY1rK8bEf9X/HZguJf7mG2O06V4XhVjP7WAYCD5PnkZEA==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       '@babel/core': '>=7'
       jest: '>=29'
 
-  '@wordpress/npm-package-json-lint-config@5.30.0':
-    resolution: {integrity: sha512-pJ5XMmj2Osk05/TFrCpf6l6VuxWDU837ISKW1bXAmBfpnLTlUuVUl6pTWbIE4gNZqb2faSBQSN3OPeQqt4RNJg==}
+  '@wordpress/npm-package-json-lint-config@5.35.0':
+    resolution: {integrity: sha512-6r4zTE69ocIusDBB4VEgh5ZW4F3eywTb7KmnOJfbCtN3YuR1w8Nss332TPU8+utd16wpO5CawbTC99Mpuh0PQA==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       npm-package-json-lint: '>=6.0.0'
 
-  '@wordpress/postcss-plugins-preset@5.30.0':
-    resolution: {integrity: sha512-3mB+tqN9uIQ6h1SXtQUFowNeCv/Cy6vWsUBhPkgU3hj7LQrGbCAmMWefDAQeYHyG0lQfSrAD6jctZ2wZmNXwsQ==}
+  '@wordpress/postcss-plugins-preset@5.35.0':
+    resolution: {integrity: sha512-rt5umnJ98xR559O42nBYDSBV7NsRjkTDk4ZQ+kpQOa5zQ46FikE+7AYrKWpFwpCCZutcADwa4tsHbKBZhy2NRw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       postcss: ^8.0.0
 
-  '@wordpress/prettier-config@4.30.0':
-    resolution: {integrity: sha512-b0tOy/H0A1ilsjAGUKqMJ3idMQbe1XS7K2ViqG62ZMJRUYBEZ1x3t+ne3Z2fVbyNVhrMqq3eZK9BSEuxr67cSg==}
+  '@wordpress/prettier-config@4.35.0':
+    resolution: {integrity: sha512-9mCz8po5Fc324ZPZzT2CHfL/PfXn16ezKKWJPNWAyoN4niwRWCsku4RHHhGO14pM+IYjSH0XS2ylLx3xmuuXjw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       prettier: '>=3'
 
-  '@wordpress/scripts@30.23.0':
-    resolution: {integrity: sha512-IVMv4GvSxZQuj/JybHMHA0BbScv2//tELUQSHMe7IHRxvaqzd8WDJgMfnwaqQWOmtw8d4739w7kAEo26kh6zWA==}
+  '@wordpress/scripts@31.0.0':
+    resolution: {integrity: sha512-ojXSYDyx+vN5D5vFak8xdahAW/s03WX6Egcecxmj9I7Ha9CLLuSBsMUzIuaA1cjxPUNXiu2kQD0s6OEVXxuOVQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     hasBin: true
     peerDependencies:
-      '@playwright/test': ^1.55.0
+      '@playwright/test': ^1.56.1
       '@wordpress/env': ^10.0.0
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -1771,15 +1883,15 @@ packages:
       '@wordpress/env':
         optional: true
 
-  '@wordpress/stylelint-config@23.22.0':
-    resolution: {integrity: sha512-d1aEVn6jbMFFJh3SqpGKoNsnm0DcYD6TwgzLLlIL11kslyFEn6mfiKJVeVNIgWQe7sBDEtUkE7h4qEOSDbxO8A==}
+  '@wordpress/stylelint-config@23.27.0':
+    resolution: {integrity: sha512-xe3UIUjCt4iNAZ0EkWCzsJ4/CCyiUuP1pswDV5Aw+KTGmmxsbyTrjuqPUZo8wBo5GkG30SysKCXy+vM0G3g3kA==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       stylelint: ^16.8.2
       stylelint-scss: ^6.4.0
 
-  '@wordpress/warning@3.30.0':
-    resolution: {integrity: sha512-ZtkpSe3DhtUzIrwf+5slGkJJCxy1xn56fZ6atUaJWRbjsKnIZlTcPgahPUJZ2bugsGS5BlmDEuVI8C4NUdbwvQ==}
+  '@wordpress/warning@3.35.0':
+    resolution: {integrity: sha512-2UGZuHenf84UHdotBxv9ZCtlsFIy5u4QTUPBnx1gH4N9zEuJs+JiCtlOzgcl0JzT3xFK5y3cXLLVqlhf8tDMBQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
   '@xtuc/ieee754@1.2.0':
@@ -2825,8 +2937,30 @@ packages:
     peerDependencies:
       eslint: '>=7.0.0'
 
+  eslint-import-context@0.1.9:
+    resolution: {integrity: sha512-K9Hb+yRaGAGUbwjhFNHvSmmkZs9+zbuoe3kFQ4V1wYjrepUFYM2dZAfNtjbbj3qsPfUfsA68Bx/ICWQMi+C8Eg==}
+    engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
+    peerDependencies:
+      unrs-resolver: ^1.0.0
+    peerDependenciesMeta:
+      unrs-resolver:
+        optional: true
+
   eslint-import-resolver-node@0.3.9:
     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
+
+  eslint-import-resolver-typescript@4.4.4:
+    resolution: {integrity: sha512-1iM2zeBvrYmUNTj2vSC/90JTHDth+dfOfiNKkxApWRsTJYNrc8rOdxxIf5vazX+BiAXTeOT0UvWpGI/7qIWQOw==}
+    engines: {node: ^16.17.0 || >=18.6.0}
+    peerDependencies:
+      eslint: '*'
+      eslint-plugin-import: '*'
+      eslint-plugin-import-x: '*'
+    peerDependenciesMeta:
+      eslint-plugin-import:
+        optional: true
+      eslint-plugin-import-x:
+        optional: true
 
   eslint-module-utils@2.12.1:
     resolution: {integrity: sha512-L8jSWTze7K2mTg0vos/RuLRS5soomksDPoJLXIslC7c8Wmut3bx7CPpJijDcBZtxQ5lrbUdM+s0OlNbz0DCDNw==}
@@ -3048,6 +3182,15 @@ packages:
   fd-slicer@1.1.0:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
 
+  fdir@6.5.0:
+    resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
+
   file-entry-cache@10.1.4:
     resolution: {integrity: sha512-5XRUFc0WTtUbjfGzEwXc42tiGxQHBmtbUG1h9L2apu4SulCGN3Hqm//9D6FAolf8MYNL7f/YlJl9vy08pj5JuA==}
 
@@ -3228,6 +3371,9 @@ packages:
   get-symbol-description@1.1.0:
     resolution: {integrity: sha512-w9UMqWwJxHNOvoNzSJ2oPF5wvYcvP7jUvYzhp67yEhTi17ZDBBC1z9pTdGuzjD+EFIqLSYRweZjqfiPzQ06Ebg==}
     engines: {node: '>= 0.4'}
+
+  get-tsconfig@4.13.0:
+    resolution: {integrity: sha512-1VKTZJCwBrvbd+Wn3AOgQP/2Av+TfTCOlE4AcRJE72W1ksZXbAx8PPBR9RzgTeSPzlPMHrbANMH3LbltH73wxQ==}
 
   get-uri@6.0.5:
     resolution: {integrity: sha512-b1O07XYq8eRuVzBNgJLstU6FYc1tS6wnMtF1I1D9lE8LxZSOGZ7LhxN54yPP6mGw5f2CkXY2BQUL9Fx41qvcIg==}
@@ -3548,6 +3694,9 @@ packages:
   is-builtin-module@3.2.1:
     resolution: {integrity: sha512-BSLE3HnV2syZ0FK0iMA/yUGplUeMmNz4AW5fnTunbCIqZi4vG3WjJT9FHMy5D69xmAYBHXQhJdALdpwVxV501A==}
     engines: {node: '>=6'}
+
+  is-bun-module@2.0.0:
+    resolution: {integrity: sha512-gNCGbnnnnFAUGKeZ9PdbyeGYJqewpmc2aKHUEMO5nQPWU9lOmv7jcmQIv+qHD8fXW6W7qfuCwX4rY9LNRjXrkQ==}
 
   is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
@@ -3936,9 +4085,6 @@ packages:
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
-  json2php@0.0.4:
-    resolution: {integrity: sha512-hFzejhs28f70sGnutcsRS459MnAsjRVI85RgPAL1KQIZEpjiDitc27CZv4IgOtaR86vrqOVlu9vJNew2XyTH4g==}
-
   json2php@0.0.7:
     resolution: {integrity: sha512-dnSoUiLAoVaMXxFsVi4CrPVYMKOuDBXTghXSmMINX44RZ8WM9cXlY7UqrQnlAcODCVO7FV3+8t/5nDKAjimLfg==}
 
@@ -4305,6 +4451,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  napi-postinstall@0.3.4:
+    resolution: {integrity: sha512-PHI5f1O0EP5xJ9gQmFGMS6IZcrVvTjpXjz7Na41gTE7eE2hK11lg04CECCYEEjdc17EV4DO+fkGEtt7TpTaTiQ==}
+    engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
+    hasBin: true
+
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -4571,6 +4722,14 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
+  picomatch@4.0.3:
+    resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
+    engines: {node: '>=12'}
+
+  pify@2.3.0:
+    resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
+    engines: {node: '>=0.10.0'}
+
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
@@ -4642,6 +4801,12 @@ packages:
     engines: {node: ^14 || ^16 || >=18.0}
     peerDependencies:
       postcss: ^8.4.31
+
+  postcss-import@16.1.1:
+    resolution: {integrity: sha512-2xVS1NCZAfjtVdvXiyegxzJ447GyqCeEI5V7ApgQVOWnros1p5lGNovJNapwPpMombyFBfqDwt7AD3n2l0KOfQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      postcss: ^8.0.0
 
   postcss-loader@6.2.1:
     resolution: {integrity: sha512-WbbYpmAaKcux/P66bZ40bpWsBucjx/TTgVVzRZ9yUO8yQfVBlameJ0ZGVaPfH64hNSBh63a+ICP5nqOpBA0w+Q==}
@@ -4945,6 +5110,9 @@ packages:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
 
+  read-cache@1.0.0:
+    resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
+
   read-pkg-up@7.0.1:
     resolution: {integrity: sha512-zK0TB7Xd6JpCLmlLmufqykGE+/TlOePD6qKClNW7hHDKFh/J7/7gCWGR7joEQEW1bKq3a3yUZSObOoWLFQ4ohg==}
     engines: {node: '>=8'}
@@ -4986,9 +5154,6 @@ packages:
 
   regenerate@1.4.2:
     resolution: {integrity: sha512-zrceR/XhGYU/d/opr2EKO7aRHUeiBI8qjtfHqADTwZd6Szfy16la6kqD0MIUs5z5hx6AaKa+PixpPrR289+I0A==}
-
-  regenerator-runtime@0.14.1:
-    resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
   regexp.prototype.flags@1.5.4:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
@@ -5042,6 +5207,9 @@ packages:
   resolve-from@5.0.0:
     resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
     engines: {node: '>=8'}
+
+  resolve-pkg-maps@1.0.0:
+    resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
   resolve.exports@2.0.3:
     resolution: {integrity: sha512-OcXjMsGdhL4XnbShKpAcSqPMzQoYkYyhbEaeSko47MjRP9NfEQMhZkXL1DoFlt9LWQn4YttrdnV6X2OiyzBi+A==}
@@ -5346,6 +5514,10 @@ packages:
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
 
+  stable-hash-x@0.2.0:
+    resolution: {integrity: sha512-o3yWv49B/o4QZk5ZcsALc6t0+eCelPc44zZsLtCQnZPDwFpDYSWcDnrv2TtMmMbQ7uKo3J0HTURCqckw23czNQ==}
+    engines: {node: '>=12.0.0'}
+
   stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
     engines: {node: '>=10'}
@@ -5560,6 +5732,10 @@ packages:
   thunky@1.1.0:
     resolution: {integrity: sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==}
 
+  tinyglobby@0.2.15:
+    resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
+    engines: {node: '>=12.0.0'}
+
   tldts-core@7.0.14:
     resolution: {integrity: sha512-viZGNK6+NdluOJWwTO9olaugx0bkKhscIdriQQ+lNNhwitIKvb+SvhbYgnCz6j9p7dX3cJntt4agQAKMXLjJ5g==}
 
@@ -5722,6 +5898,9 @@ packages:
   unpipe@1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
     engines: {node: '>= 0.8'}
+
+  unrs-resolver@1.11.1:
+    resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
 
   update-browserslist-db@1.1.3:
     resolution: {integrity: sha512-UxhIZQ+QInVdunkDAaiazvvT/+fXL5Osr0JZlJulepYu6Jd7qJtDZjlur0emRlT71EN3ScPoE7gvsuIKKNavKw==}
@@ -6265,6 +6444,11 @@ snapshots:
       '@babel/helper-plugin-utils': 7.27.1
 
   '@babel/plugin-syntax-import-assertions@7.27.1(@babel/core@7.25.7)':
+    dependencies:
+      '@babel/core': 7.25.7
+      '@babel/helper-plugin-utils': 7.27.1
+
+  '@babel/plugin-syntax-import-attributes@7.26.0(@babel/core@7.25.7)':
     dependencies:
       '@babel/core': 7.25.7
       '@babel/helper-plugin-utils': 7.27.1
@@ -6947,10 +7131,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/runtime@7.25.7':
-    dependencies:
-      regenerator-runtime: 0.14.1
-
   '@babel/template@7.27.2':
     dependencies:
       '@babel/code-frame': 7.27.1
@@ -6999,6 +7179,22 @@ snapshots:
   '@discoveryjs/json-ext@0.5.7': {}
 
   '@dual-bundle/import-meta-resolve@4.2.1': {}
+
+  '@emnapi/core@1.7.1':
+    dependencies:
+      '@emnapi/wasi-threads': 1.1.0
+      tslib: 2.8.1
+    optional: true
+
+  '@emnapi/runtime@1.7.1':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
+
+  '@emnapi/wasi-threads@1.1.0':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
 
   '@es-joy/jsdoccomment@0.41.0':
     dependencies:
@@ -7277,6 +7473,13 @@ snapshots:
   '@keyv/serialize@1.1.1': {}
 
   '@leichtgewicht/ip-codec@2.0.5': {}
+
+  '@napi-rs/wasm-runtime@0.2.12':
+    dependencies:
+      '@emnapi/core': 1.7.1
+      '@emnapi/runtime': 1.7.1
+      '@tybys/wasm-util': 0.10.1
+    optional: true
 
   '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
     dependencies:
@@ -7850,6 +8053,11 @@ snapshots:
 
   '@trysound/sax@0.2.0': {}
 
+  '@tybys/wasm-util@0.10.1':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
+
   '@types/babel__core@7.20.5':
     dependencies:
       '@babel/parser': 7.28.4
@@ -8163,6 +8371,65 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
+  '@unrs/resolver-binding-android-arm-eabi@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-android-arm64@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-darwin-arm64@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-darwin-x64@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-freebsd-x64@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-arm-gnueabihf@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-arm-musleabihf@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-arm64-gnu@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-arm64-musl@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-ppc64-gnu@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-riscv64-gnu@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-riscv64-musl@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-s390x-gnu@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-x64-gnu@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-linux-x64-musl@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-wasm32-wasi@1.11.1':
+    dependencies:
+      '@napi-rs/wasm-runtime': 0.2.12
+    optional: true
+
+  '@unrs/resolver-binding-win32-arm64-msvc@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-win32-ia32-msvc@1.11.1':
+    optional: true
+
+  '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
+    optional: true
+
   '@webassemblyjs/ast@1.14.1':
     dependencies:
       '@webassemblyjs/helper-numbers': 1.13.2
@@ -8256,48 +8523,46 @@ snapshots:
     optionalDependencies:
       webpack-dev-server: 4.15.2(webpack-cli@5.1.4)(webpack@5.101.3)
 
-  '@woocommerce/dependency-extraction-webpack-plugin@3.1.0(webpack@5.101.3)':
+  '@woocommerce/dependency-extraction-webpack-plugin@4.0.0(webpack@5.101.3)':
     dependencies:
-      '@wordpress/dependency-extraction-webpack-plugin': 3.7.0(webpack@5.101.3)
+      '@wordpress/dependency-extraction-webpack-plugin': 6.35.1-next.16d95556a.0(webpack@5.101.3)
     transitivePeerDependencies:
       - webpack
 
-  '@wordpress/babel-preset-default@8.30.0':
+  '@wordpress/babel-preset-default@8.35.0':
     dependencies:
       '@babel/core': 7.25.7
+      '@babel/plugin-syntax-import-attributes': 7.26.0(@babel/core@7.25.7)
       '@babel/plugin-transform-react-jsx': 7.25.7(@babel/core@7.25.7)
       '@babel/plugin-transform-runtime': 7.25.7(@babel/core@7.25.7)
       '@babel/preset-env': 7.25.7(@babel/core@7.25.7)
       '@babel/preset-typescript': 7.25.7(@babel/core@7.25.7)
-      '@babel/runtime': 7.25.7
-      '@wordpress/browserslist-config': 6.30.0
-      '@wordpress/warning': 3.30.0
+      '@wordpress/browserslist-config': 6.35.0
+      '@wordpress/warning': 3.35.0
       browserslist: 4.26.0
       core-js: 3.45.1
       react: 18.3.1
     transitivePeerDependencies:
       - supports-color
 
-  '@wordpress/base-styles@6.6.0': {}
+  '@wordpress/base-styles@6.11.0': {}
 
-  '@wordpress/browserslist-config@6.30.0': {}
+  '@wordpress/browserslist-config@6.35.0': {}
 
-  '@wordpress/dependency-extraction-webpack-plugin@3.7.0(webpack@5.101.3)':
-    dependencies:
-      json2php: 0.0.4
-      webpack: 5.101.3(webpack-cli@5.1.4)
-      webpack-sources: 3.3.3
-
-  '@wordpress/dependency-extraction-webpack-plugin@6.30.0(webpack@5.101.3)':
+  '@wordpress/dependency-extraction-webpack-plugin@6.35.0(webpack@5.101.3)':
     dependencies:
       json2php: 0.0.7
       webpack: 5.101.3(webpack-cli@5.1.4)
 
-  '@wordpress/e2e-test-utils-playwright@1.30.0(@playwright/test@1.55.0)':
+  '@wordpress/dependency-extraction-webpack-plugin@6.35.1-next.16d95556a.0(webpack@5.101.3)':
+    dependencies:
+      json2php: 0.0.7
+      webpack: 5.101.3(webpack-cli@5.1.4)
+
+  '@wordpress/e2e-test-utils-playwright@1.35.0(@playwright/test@1.55.0)':
     dependencies:
       '@playwright/test': 1.55.0
       change-case: 4.1.2
-      form-data: 4.0.4
       get-port: 5.1.1
       lighthouse: 12.8.2
       mime: 3.0.0
@@ -8309,18 +8574,19 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@wordpress/eslint-plugin@22.16.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@24.4.0))(typescript@5.9.2)(wp-prettier@3.0.3)':
+  '@wordpress/eslint-plugin@22.21.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@24.4.0))(typescript@5.9.2)(wp-prettier@3.0.3)':
     dependencies:
       '@babel/core': 7.25.7
       '@babel/eslint-parser': 7.25.7(@babel/core@7.25.7)(eslint@8.57.1)
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.1)(typescript@5.9.2)
-      '@wordpress/babel-preset-default': 8.30.0
-      '@wordpress/prettier-config': 4.30.0(wp-prettier@3.0.3)
+      '@wordpress/babel-preset-default': 8.35.0
+      '@wordpress/prettier-config': 4.35.0(wp-prettier@3.0.3)
       cosmiconfig: 7.1.0
       eslint: 8.57.1
       eslint-config-prettier: 8.10.2(eslint@8.57.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)
+      eslint-import-resolver-typescript: 4.4.4(eslint-plugin-import@2.32.0)(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
       eslint-plugin-jest: 27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(jest@29.7.0(@types/node@24.4.0))(typescript@5.9.2)
       eslint-plugin-jsdoc: 46.10.1(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
@@ -8335,56 +8601,56 @@ snapshots:
       typescript: 5.9.2
     transitivePeerDependencies:
       - '@types/eslint'
-      - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
+      - eslint-plugin-import-x
       - jest
       - supports-color
 
-  '@wordpress/jest-console@8.30.0(jest@29.7.0(@types/node@24.4.0))':
+  '@wordpress/jest-console@8.35.0(jest@29.7.0(@types/node@24.4.0))':
     dependencies:
-      '@babel/runtime': 7.25.7
       jest: 29.7.0(@types/node@24.4.0)
       jest-matcher-utils: 29.7.0
 
-  '@wordpress/jest-preset-default@12.30.0(@babel/core@7.25.7)(jest@29.7.0(@types/node@24.4.0))':
+  '@wordpress/jest-preset-default@12.35.0(@babel/core@7.25.7)(jest@29.7.0(@types/node@24.4.0))':
     dependencies:
       '@babel/core': 7.25.7
-      '@wordpress/jest-console': 8.30.0(jest@29.7.0(@types/node@24.4.0))
+      '@wordpress/jest-console': 8.35.0(jest@29.7.0(@types/node@24.4.0))
       babel-jest: 29.7.0(@babel/core@7.25.7)
       jest: 29.7.0(@types/node@24.4.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@wordpress/npm-package-json-lint-config@5.30.0(npm-package-json-lint@6.4.0(typescript@5.9.2))':
+  '@wordpress/npm-package-json-lint-config@5.35.0(npm-package-json-lint@6.4.0(typescript@5.9.2))':
     dependencies:
       npm-package-json-lint: 6.4.0(typescript@5.9.2)
 
-  '@wordpress/postcss-plugins-preset@5.30.0(postcss@8.5.6)':
+  '@wordpress/postcss-plugins-preset@5.35.0(postcss@8.5.6)':
     dependencies:
-      '@wordpress/base-styles': 6.6.0
+      '@wordpress/base-styles': 6.11.0
       autoprefixer: 10.4.21(postcss@8.5.6)
       postcss: 8.5.6
+      postcss-import: 16.1.1(postcss@8.5.6)
 
-  '@wordpress/prettier-config@4.30.0(wp-prettier@3.0.3)':
+  '@wordpress/prettier-config@4.35.0(wp-prettier@3.0.3)':
     dependencies:
       prettier: wp-prettier@3.0.3
 
-  '@wordpress/scripts@30.23.0(@playwright/test@1.55.0)(@types/eslint@9.6.1)(@types/node@24.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(type-fest@4.41.0)(typescript@5.9.2)':
+  '@wordpress/scripts@31.0.0(@playwright/test@1.55.0)(@types/eslint@9.6.1)(@types/node@24.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(type-fest@4.41.0)(typescript@5.9.2)':
     dependencies:
       '@babel/core': 7.25.7
       '@playwright/test': 1.55.0
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.17(react-refresh@0.14.2)(type-fest@4.41.0)(webpack-dev-server@4.15.2)(webpack@5.101.3)
       '@svgr/webpack': 8.1.0(typescript@5.9.2)
-      '@wordpress/babel-preset-default': 8.30.0
-      '@wordpress/browserslist-config': 6.30.0
-      '@wordpress/dependency-extraction-webpack-plugin': 6.30.0(webpack@5.101.3)
-      '@wordpress/e2e-test-utils-playwright': 1.30.0(@playwright/test@1.55.0)
-      '@wordpress/eslint-plugin': 22.16.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@24.4.0))(typescript@5.9.2)(wp-prettier@3.0.3)
-      '@wordpress/jest-preset-default': 12.30.0(@babel/core@7.25.7)(jest@29.7.0(@types/node@24.4.0))
-      '@wordpress/npm-package-json-lint-config': 5.30.0(npm-package-json-lint@6.4.0(typescript@5.9.2))
-      '@wordpress/postcss-plugins-preset': 5.30.0(postcss@8.5.6)
-      '@wordpress/prettier-config': 4.30.0(wp-prettier@3.0.3)
-      '@wordpress/stylelint-config': 23.22.0(postcss@8.5.6)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(stylelint@16.24.0(typescript@5.9.2))
+      '@wordpress/babel-preset-default': 8.35.0
+      '@wordpress/browserslist-config': 6.35.0
+      '@wordpress/dependency-extraction-webpack-plugin': 6.35.0(webpack@5.101.3)
+      '@wordpress/e2e-test-utils-playwright': 1.35.0(@playwright/test@1.55.0)
+      '@wordpress/eslint-plugin': 22.21.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@24.4.0))(typescript@5.9.2)(wp-prettier@3.0.3)
+      '@wordpress/jest-preset-default': 12.35.0(@babel/core@7.25.7)(jest@29.7.0(@types/node@24.4.0))
+      '@wordpress/npm-package-json-lint-config': 5.35.0(npm-package-json-lint@6.4.0(typescript@5.9.2))
+      '@wordpress/postcss-plugins-preset': 5.35.0(postcss@8.5.6)
+      '@wordpress/prettier-config': 4.35.0(wp-prettier@3.0.3)
+      '@wordpress/stylelint-config': 23.27.0(postcss@8.5.6)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(stylelint@16.24.0(typescript@5.9.2))
       adm-zip: 0.5.16
       babel-jest: 29.7.0(@babel/core@7.25.7)
       babel-loader: 9.2.1(@babel/core@7.25.7)(webpack@5.101.3)
@@ -8446,8 +8712,8 @@ snapshots:
       - canvas
       - debug
       - esbuild
-      - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
+      - eslint-plugin-import-x
       - file-loader
       - node-notifier
       - node-sass
@@ -8464,7 +8730,7 @@ snapshots:
       - webpack-hot-middleware
       - webpack-plugin-serve
 
-  '@wordpress/stylelint-config@23.22.0(postcss@8.5.6)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(stylelint@16.24.0(typescript@5.9.2))':
+  '@wordpress/stylelint-config@23.27.0(postcss@8.5.6)(stylelint-scss@6.12.1(stylelint@16.24.0(typescript@5.9.2)))(stylelint@16.24.0(typescript@5.9.2))':
     dependencies:
       '@stylistic/stylelint-plugin': 3.1.3(stylelint@16.24.0(typescript@5.9.2))
       stylelint: 16.24.0(typescript@5.9.2)
@@ -8474,7 +8740,7 @@ snapshots:
     transitivePeerDependencies:
       - postcss
 
-  '@wordpress/warning@3.30.0': {}
+  '@wordpress/warning@3.35.0': {}
 
   '@xtuc/ieee754@1.2.0': {}
 
@@ -9654,6 +9920,13 @@ snapshots:
     dependencies:
       eslint: 8.57.1
 
+  eslint-import-context@0.1.9(unrs-resolver@1.11.1):
+    dependencies:
+      get-tsconfig: 4.13.0
+      stable-hash-x: 0.2.0
+    optionalDependencies:
+      unrs-resolver: 1.11.1
+
   eslint-import-resolver-node@0.3.9:
     dependencies:
       debug: 3.2.7
@@ -9662,17 +9935,33 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint@8.57.1):
+  eslint-import-resolver-typescript@4.4.4(eslint-plugin-import@2.32.0)(eslint@8.57.1):
+    dependencies:
+      debug: 4.4.3
+      eslint: 8.57.1
+      eslint-import-context: 0.1.9(unrs-resolver@1.11.1)
+      get-tsconfig: 4.13.0
+      is-bun-module: 2.0.0
+      stable-hash-x: 0.2.0
+      tinyglobby: 0.2.15
+      unrs-resolver: 1.11.1
+    optionalDependencies:
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
+    transitivePeerDependencies:
+      - supports-color
+
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.1)(typescript@5.9.2)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
+      eslint-import-resolver-typescript: 4.4.4(eslint-plugin-import@2.32.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -9683,7 +9972,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint@8.57.1)
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -9985,6 +10274,10 @@ snapshots:
     dependencies:
       pend: 1.2.0
 
+  fdir@6.5.0(picomatch@4.0.3):
+    optionalDependencies:
+      picomatch: 4.0.3
+
   file-entry-cache@10.1.4:
     dependencies:
       flat-cache: 6.1.13
@@ -10164,6 +10457,10 @@ snapshots:
       call-bound: 1.0.4
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
+
+  get-tsconfig@4.13.0:
+    dependencies:
+      resolve-pkg-maps: 1.0.0
 
   get-uri@6.0.5:
     dependencies:
@@ -10504,6 +10801,10 @@ snapshots:
   is-builtin-module@3.2.1:
     dependencies:
       builtin-modules: 3.3.0
+
+  is-bun-module@2.0.0:
+    dependencies:
+      semver: 7.7.2
 
   is-callable@1.2.7: {}
 
@@ -11094,8 +11395,6 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
-  json2php@0.0.4: {}
-
   json2php@0.0.7: {}
 
   json2php@0.0.9: {}
@@ -11452,6 +11751,8 @@ snapshots:
 
   nanoid@3.3.11: {}
 
+  napi-postinstall@0.3.4: {}
+
   natural-compare@1.4.0: {}
 
   negotiator@0.6.3: {}
@@ -11742,6 +12043,10 @@ snapshots:
 
   picomatch@2.3.1: {}
 
+  picomatch@4.0.3: {}
+
+  pify@2.3.0: {}
+
   pirates@4.0.7: {}
 
   pkg-dir@4.2.0:
@@ -11801,6 +12106,13 @@ snapshots:
   postcss-discard-overridden@6.0.2(postcss@8.5.6):
     dependencies:
       postcss: 8.5.6
+
+  postcss-import@16.1.1(postcss@8.5.6):
+    dependencies:
+      postcss: 8.5.6
+      postcss-value-parser: 4.2.0
+      read-cache: 1.0.0
+      resolve: 1.22.10
 
   postcss-loader@6.2.1(postcss@8.5.6)(webpack@5.101.3):
     dependencies:
@@ -12112,6 +12424,10 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
+  read-cache@1.0.0:
+    dependencies:
+      pify: 2.3.0
+
   read-pkg-up@7.0.1:
     dependencies:
       find-up: 4.1.0
@@ -12173,8 +12489,6 @@ snapshots:
 
   regenerate@1.4.2: {}
 
-  regenerator-runtime@0.14.1: {}
-
   regexp.prototype.flags@1.5.4:
     dependencies:
       call-bind: 1.0.8
@@ -12231,6 +12545,8 @@ snapshots:
   resolve-from@4.0.0: {}
 
   resolve-from@5.0.0: {}
+
+  resolve-pkg-maps@1.0.0: {}
 
   resolve.exports@2.0.3: {}
 
@@ -12600,6 +12916,8 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
+  stable-hash-x@0.2.0: {}
+
   stack-utils@2.0.6:
     dependencies:
       escape-string-regexp: 2.0.0
@@ -12892,6 +13210,11 @@ snapshots:
 
   thunky@1.1.0: {}
 
+  tinyglobby@0.2.15:
+    dependencies:
+      fdir: 6.5.0(picomatch@4.0.3)
+      picomatch: 4.0.3
+
   tldts-core@7.0.14: {}
 
   tldts-icann@7.0.14:
@@ -13039,6 +13362,30 @@ snapshots:
   universalify@0.2.0: {}
 
   unpipe@1.0.0: {}
+
+  unrs-resolver@1.11.1:
+    dependencies:
+      napi-postinstall: 0.3.4
+    optionalDependencies:
+      '@unrs/resolver-binding-android-arm-eabi': 1.11.1
+      '@unrs/resolver-binding-android-arm64': 1.11.1
+      '@unrs/resolver-binding-darwin-arm64': 1.11.1
+      '@unrs/resolver-binding-darwin-x64': 1.11.1
+      '@unrs/resolver-binding-freebsd-x64': 1.11.1
+      '@unrs/resolver-binding-linux-arm-gnueabihf': 1.11.1
+      '@unrs/resolver-binding-linux-arm-musleabihf': 1.11.1
+      '@unrs/resolver-binding-linux-arm64-gnu': 1.11.1
+      '@unrs/resolver-binding-linux-arm64-musl': 1.11.1
+      '@unrs/resolver-binding-linux-ppc64-gnu': 1.11.1
+      '@unrs/resolver-binding-linux-riscv64-gnu': 1.11.1
+      '@unrs/resolver-binding-linux-riscv64-musl': 1.11.1
+      '@unrs/resolver-binding-linux-s390x-gnu': 1.11.1
+      '@unrs/resolver-binding-linux-x64-gnu': 1.11.1
+      '@unrs/resolver-binding-linux-x64-musl': 1.11.1
+      '@unrs/resolver-binding-wasm32-wasi': 1.11.1
+      '@unrs/resolver-binding-win32-arm64-msvc': 1.11.1
+      '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
+      '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
 
   update-browserslist-db@1.1.3(browserslist@4.26.0):
     dependencies:
