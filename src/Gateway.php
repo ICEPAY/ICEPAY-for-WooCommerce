@@ -4,6 +4,9 @@ declare( strict_types=1 );
 
 namespace Icepay\WooCommerce;
 
+use ICEPAY\Checkout\Models\Amount;
+use ICEPAY\Checkout\Models\Request\Refund as RefundRequest;
+use ICEPAY\Checkout\Models\Request\Checkout as CheckoutRequest;
 use WC_Payment_Gateway;
 use WP_Error;
 
@@ -41,46 +44,41 @@ class Gateway extends WC_Payment_Gateway {
 
 	public function process_payment( $order_id ): array {
 		$this->log->info( 'Processing payment for order ' . $order_id );
-		$client = new IcepayClient(
-			Icepay::getMerchantId(),
-			Icepay::getSecret(),
-		);
+
+        $checkoutClient = Icepay::getCheckoutClient();
 
 		$order     = wc_get_order( $order_id );
 		$reference = str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() );
 
-		[ $isSuccessful, $payment ] = $client->create(
-			[
-				'reference'     => $reference,
-				'amount'        => [
-					'value'    => (int) round($order->get_total() * 100) ,
-					'currency' => $order->get_currency(),
-				],
-				'paymentMethod' => [
-					'type' => $this->paymentMethod->getType(),
-				],
-                'customer' => [
-                    'email' => $order->get_billing_email(),
-                ],
-				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
-				'redirectUrl'   => $this->getRedirectUrl( $order ),
-				'meta'          => [
-					'integration' => [
-						'type'      => 'woocommerce',
-						'version'   => Integration::VERSION,
-						'developer' => 'ICEPAY',
-					],
-				]
-			]
-		);
+        $checkoutRequest = (new CheckoutRequest(
+            reference: $reference,
+            amount: new Amount(
+                value: (int) round($order->get_total() * 100),
+                currency: $order->get_currency()
+            ),
+            redirectUrl: $this->getRedirectUrl( $order ),
+            webhookUrl: add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
+            paymentMethod: new \ICEPAY\Checkout\Models\PaymentMethod(
+                type: $this->paymentMethod->getType()
+            ),
+        ))
+            ->withCustomerEmail($order->get_billing_email())
+            ->withIntegrationInformation
+            (
+                type: 'woocommerce',
+                version: Integration::VERSION,
+                developer: 'ICEPAY'
+            );
 
-		if ( ! $isSuccessful ) {
-			$this->log->error( 'Unable to create payment ', $payment );
+        try {
+            $payment = $checkoutClient->createCheckout( $checkoutRequest );
+        }catch ( \Exception $exception ) {
+            $this->log->error('Unable to create payment for order #' . $order_id, $exception->getMessage());
 
-			return [ 'result' => 'failure' ];
-		}
+            return [ 'result' => 'failure' ];
+        }
 
-		$this->addPaymentKey( $order, $payment['key'] );
+		$this->addPaymentKey( $order, $payment->key );
 		$this->log->info( 'Create payment', $payment );
 
 		return [
@@ -101,25 +99,22 @@ class Gateway extends WC_Payment_Gateway {
 			return new WP_Error( '1', 'Unable to refund order, could not find payment key related to order' );
 		}
 
-		$client = new IcepayClient(
-			Icepay::getMerchantId(),
-			Icepay::getSecret(),
-		);
+        $checkoutClient = Icepay::getCheckoutClient();
 
-		[ $isSuccessful, $refund ] = $client->refund( $paymentKey, [
-			'amount'      => [
-				'value'    => (int) round($amount * 100),
-				'currency' => $order->get_currency(),
-			],
-			'reference'   => $reason,
-			'description' => $reason,
-		] );
+        $refundRequest = new RefundRequest(
+            reference: $reason,
+            amount: (int) round($amount * 100),
+            description: $reason
+        );
 
-		if ( ! $isSuccessful ) {
-			$this->log->error( 'Unable to refund payment for #' . $order_id, $refund );
+        try {
+            $refundResponse = $checkoutClient->refund($refundRequest, $paymentKey);
+        }
+        catch ( \Exception $exception ) {
+            $this->log->error( 'Unable to refund payment for #' . $order_id, $exception->getMessage() );
 
-			return new WP_Error( '1', 'Unable to refund order, could not refund payment. ' . $refund['message'] );
-		}
+            return new WP_Error( '1', 'Unable to refund order, could not refund payment. ' . $exception->getMessage() );
+        }
 
 		return true;
 	}

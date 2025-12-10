@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Icepay\WooCommerce;
 
+use ICEPAY\Checkout\Models\Status;
 use Icepay\WooCommerce\Admin\Settings;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
@@ -36,21 +37,19 @@ class Integration {
 		$order      = wc_get_order( wc_get_order_id_by_order_key( $orderKey ) );
 		$paymentKey = $order->get_meta( 'icepay-payment-key' );
 
-		$client = new IcepayClient(
-			Icepay::getMerchantId(),
-			Icepay::getSecret(),
-		);
+        $checkoutClient = Icepay::getCheckoutClient();
 
-		[ $isSuccessful, $payment ] = $client->get( $paymentKey );
+        try {
+            $payment = $checkoutClient->getCheckout( $paymentKey );
+        }
+        catch ( \Exception $e ) {
+            $log = new Log();
+            $log->error( 'Unable to get payment', $paymentKey );
+            wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order ) );
+            die;
+        }
 
-		if ( ! $isSuccessful ) {
-			$log = new Log();
-			$log->error( 'Unable to create payment', $payment );
-			wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order ) );
-			die;
-		}
-
-		$redirectUrl = $payment['status'] === 'started' ? $order->get_checkout_payment_url() : apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order );
+		$redirectUrl = $payment->status === Status::started ? $order->get_checkout_payment_url() : apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order );
 
 		wp_safe_redirect( $redirectUrl );
 		die;
