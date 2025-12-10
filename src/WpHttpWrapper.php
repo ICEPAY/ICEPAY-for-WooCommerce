@@ -1,4 +1,9 @@
 <?php
+/**
+ * WpHttpWrapper class for WooCommerce ICEPAY integration.
+ *
+ * @package Icepay\WooCommerce
+ */
 
 namespace Icepay\WooCommerce;
 
@@ -7,33 +12,41 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class WpHttpWrapper implements ClientInterface
-{
+/**
+ * Class WpHttpWrapper
+ *
+ * Wraps WordPress HTTP API for PSR-18 compatibility.
+ */
+class WpHttpWrapper implements ClientInterface {
 
     /**
-     * @inheritDoc
+     * Send a PSR-7 request using WordPress HTTP API.
+     *
+     * @param RequestInterface $request Request object.
+     * @return ResponseInterface
+     * @throws \RuntimeException When HTTP request fails.
      */
-    public function sendRequest(RequestInterface $request): ResponseInterface
-    {
-        $args = [
-            'method' => $request->getMethod(),
+    public function sendRequest( RequestInterface $request ): ResponseInterface {
+        $args = array(
+            'method'  => $request->getMethod(),
             'headers' => $request->getHeaders(),
-        ];
+        );
 
-        if ($request->getBody()->getSize() > 0) {
-            $args['body'] = (string)$request->getBody();
+        if ( 0 < $request->getBody()->getSize() ) {
+            $args['body'] = (string) $request->getBody();
         }
 
-        $response = wp_remote_request((string)$request->getUri(), $args);
+        $response = wp_remote_request( (string) $request->getUri(), $args );
 
-        if (is_wp_error($response)) {
-            throw new \RuntimeException('HTTP request failed: ' . $response->get_error_message());
+        if ( is_wp_error( $response ) ) {
+            throw new \RuntimeException( 'HTTP request failed: ' . $response->get_error_message() );
         }
-        $statusCode = wp_remote_retrieve_response_code($response);
-        $statusMessage = wp_remote_retrieve_response_message($response);
-        $body = wp_remote_retrieve_body($response);
-        $headers = wp_remote_retrieve_headers($response);
 
-        return new Response($statusCode, $headers->toArray(), $body, '1.1', $statusMessage);
+        $status_code    = wp_remote_retrieve_response_code( $response );
+        $status_message = wp_remote_retrieve_response_message( $response );
+        $body           = wp_remote_retrieve_body( $response );
+        $headers        = wp_remote_retrieve_headers( $response );
+
+        return new Response( $status_code, $headers->getAll(), $body, '1.1', $status_message );
     }
 }
