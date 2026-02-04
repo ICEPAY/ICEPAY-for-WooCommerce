@@ -90,7 +90,7 @@ class PaymentMethod {
 
 	public static function getAll(): array {
 		return [
-			new PaymentMethod( 'ideal', 'iDEAL', '', 'ideal.svg' ),
+			new PaymentMethod( 'ideal', 'iDEAL | Wero', '', 'ideal.svg' ),
 			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
 			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
 			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),

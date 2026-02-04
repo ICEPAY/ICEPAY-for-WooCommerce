@@ -37,7 +37,7 @@ Wil be provided at a later date.
 
 We currently support the following payment methods:
 
-- iDEAL
+- iDEAL | Wero
 - Cards
 - Bancontact
 - PayPal
