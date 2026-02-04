@@ -52,6 +52,7 @@ class Gateway extends WC_Payment_Gateway {
 
         $checkoutRequest = (new CheckoutRequest(
             reference: $reference,
+			description: $reference,
             amount: new Amount(
                 value: (int) round($order->get_total() * 100),
                 currency: $order->get_currency()
@@ -73,17 +74,19 @@ class Gateway extends WC_Payment_Gateway {
         try {
             $payment = $checkoutClient->createCheckout( $checkoutRequest );
         }catch ( \Exception $exception ) {
-            $this->log->error('Unable to create payment for order #' . $order_id, $exception->getMessage());
+            $this->log->error('Unable to create payment for order #' . $order_id, [
+				'message' => $exception->getMessage()
+            ]);
 
             return [ 'result' => 'failure' ];
         }
 
 		$this->addPaymentKey( $order, $payment->key );
-		$this->log->info( 'Create payment', $payment );
+		$this->log->info( 'Create payment', (array)$payment );
 
 		return [
 			'result'   => 'success',
-			'redirect' => esc_url_raw( $payment['links']['direct'] )
+			'redirect' => esc_url_raw( $payment->links->direct )
 		];
 	}
 
@@ -111,7 +114,7 @@ class Gateway extends WC_Payment_Gateway {
             $refundResponse = $checkoutClient->refund($refundRequest, $paymentKey);
         }
         catch ( \Exception $exception ) {
-            $this->log->error( 'Unable to refund payment for #' . $order_id, $exception->getMessage() );
+            $this->log->error( 'Unable to refund payment for #' . $order_id, ['message' => $exception->getMessage()] );
 
             return new WP_Error( '1', 'Unable to refund order, could not refund payment. ' . $exception->getMessage() );
         }
