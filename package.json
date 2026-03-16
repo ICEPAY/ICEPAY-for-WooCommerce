@@ -23,6 +23,6 @@
   "license": "GPLV3",
   "devDependencies": {
     "@woocommerce/dependency-extraction-webpack-plugin": "^4.0.0",
-    "@wordpress/scripts": "^31.1.0"
+    "@wordpress/scripts": "^31.6.0"
   }
 }
