@@ -23,6 +23,7 @@ class Integration {
 		$this->addWebhook();
 
 		$this->addCustomLinks();
+		$this->addTranslations();
 
 		add_action( 'template_redirect', [ $this, 'redirect' ] );
 	}
@@ -167,4 +168,9 @@ class Integration {
 			return array_merge( $action_links, $data );
 		} );
 	}
+
+    private function addTranslations() {
+		load_plugin_textdomain( 'icepay-for-woocommerce', false, basename( __DIR__ ) . '/languages' );
+    }
+
 }

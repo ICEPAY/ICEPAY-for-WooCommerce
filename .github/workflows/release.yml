@@ -12,6 +12,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install WP-CLI
+        run: |
+          curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+          chmod +x wp-cli.phar
+          sudo mv wp-cli.phar /usr/local/bin/wp
+
+      - name: Generate MO files
+        run: |
+          for po_file in languages/*.po; do
+            mo_file="${po_file%.po}.mo"
+            wp i18n make-mo "$po_file" "$mo_file" --allow-root
+          done
+
       - name: Build
         run: npm run build-plugin
 

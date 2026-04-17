@@ -32,7 +32,7 @@ class PaymentMethod {
 	}
 
 	public function getDefaultName(): string {
-		return $this->defaultName;
+		return __( $this->defaultName, Integration::ID );
 	}
 
 	public function getDefaultDescription(): string {
