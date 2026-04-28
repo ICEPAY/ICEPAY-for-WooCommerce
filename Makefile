@@ -27,11 +27,11 @@ install-woocommerce:
 
 .PHONY: initialize-woocommerce
 initialize-woocommerce:
-	docker-compose exec app wp option set woocommerce_store_address "Joan Muyskenweg 37"
+	docker-compose exec app wp option set woocommerce_store_address "Orlyplein 77"
 	docker-compose exec app wp option set woocommerce_store_address_2 ""
 	docker-compose exec app wp option set woocommerce_store_city "Amsterdam"
 	docker-compose exec app wp option set woocommerce_default_country "NL:*"
-	docker-compose exec app wp option set woocommerce_store_postcode "1114AN"
+	docker-compose exec app wp option set woocommerce_store_postcode "1043DS"
 	docker-compose exec app wp option set woocommerce_currency "EUR"
 	docker-compose exec app wp option set woocommerce_product_type "both"
 	docker-compose exec app wp option set woocommerce_allow_tracking "no"
