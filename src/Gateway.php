@@ -61,6 +61,13 @@ class Gateway extends WC_Payment_Gateway {
 				],
                 'customer' => [
                     'email' => $order->get_billing_email(),
+	                'address' => [
+						'country' => $order->get_billing_country(),
+						'city' => $order->get_billing_city(),
+						'postalCode' => $order->get_billing_postcode(),
+						'streetName' => $order->get_billing_address_1(),
+		                'houseNumber' => $order->get_billing_address_2(),
+	                ]
                 ],
 				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
 				'redirectUrl'   => $this->getRedirectUrl( $order ),
