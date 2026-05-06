@@ -29,7 +29,8 @@
     "php": ">=8.1",
     "ext-intl": "*",
     "ext-json": "*",
-    "psr/log": "^1.1.4"
+    "psr/log": "^1.1.4",
+    "ext-mbstring": "*"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "3.*",

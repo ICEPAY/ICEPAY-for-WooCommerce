@@ -60,13 +60,13 @@ class Gateway extends WC_Payment_Gateway {
 					'type' => $this->paymentMethod->getType(),
 				],
                 'customer' => [
-                    'email' => $order->get_billing_email(),
+                    'email' => $this->limit($order->get_billing_email(), 128),
 	                'address' => [
-						'country' => $order->get_billing_country(),
-						'city' => $order->get_billing_city(),
-						'postalCode' => $order->get_billing_postcode(),
-						'streetName' => $order->get_billing_address_1(),
-		                'houseNumber' => $order->get_billing_address_2(),
+						'country' => $this->limit($order->get_billing_country(),2),
+						'city' => $this->limit($order->get_billing_city(), 254),
+						'postalCode' => $this->limit($order->get_billing_postcode(), 31),
+						'streetName' => $this->limit($order->get_billing_address_1(), 128),
+		                'houseNumber' => $this->limit($order->get_billing_address_2(), 31),
 	                ]
                 ],
 				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
@@ -155,5 +155,13 @@ class Gateway extends WC_Payment_Gateway {
 
 		$order->update_meta_data( 'icepay-payment-key', $key );
 		$order->save();
+	}
+
+	protected function limit($value, $limit = 100, $end = '') : string {
+		if (mb_strwidth($value, 'UTF-8') <= $limit) {
+			return $value;
+		}
+
+		return rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8')).$end;
 	}
 }
