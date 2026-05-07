@@ -41,6 +41,8 @@ We currently support the following payment methods:
 - Cards
 - Bancontact
 - PayPal
+- Pay by Bank
+- Online Überweisen
 
 ## Support
 
