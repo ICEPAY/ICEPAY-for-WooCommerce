@@ -6,8 +6,8 @@ The ICEPAY plugin for WooCommerce.
 
 ## Requirements
 
-- WordPress 6.4.4 or higher
-- WooCommerce 8.7.0 or higher
+- WordPress 6.6 or higher
+- WooCommerce 8.7 or higher
 - PHP 8.2 or higher
 
 ## How to install
@@ -51,9 +51,9 @@ If you need any help or have a question, feel free to email [info@icepay.com](ma
 <!--
 WordPress plugin metadata:
 === ICEPAY for WooCommerce ===
-Requires at least: 6.4
-Tested up to: 6.5.2
-Requires PHP: 8.1
+Requires at least: 6.6.0
+Tested up to: 7.0.0
+Requires PHP: 8.2
 Stable tag: 1.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
