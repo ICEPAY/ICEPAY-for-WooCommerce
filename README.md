@@ -2,13 +2,13 @@
 
 ## About
 
-The ICEPAY plugin for Woocommerce.
+The ICEPAY plugin for WooCommerce.
 
 ## Requirements
 
 - WordPress 6.4.4 or higher
 - WooCommerce 8.7.0 or higher
-- PHP 8.1 or higher
+- PHP 8.2 or higher
 
 ## How to install
 
