@@ -6,7 +6,7 @@
  * Description: Accept payments on your WooCommerce store via ICEPAY.
  * Author: ICEPAY
  * Author URI: http://www.icepay.com
- * Version: 1.1.2
+ * Version: 1.2.0
  * Copyright: Copyright © 2026 ICEPAY B.V. (https://icepay.com/)
  * Text Domain: icepay-for-woocommerce
  * License: GPLv3

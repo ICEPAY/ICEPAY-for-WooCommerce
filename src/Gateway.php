@@ -4,6 +4,10 @@ declare( strict_types=1 );
 
 namespace Icepay\WooCommerce;
 
+use ICEPAY\Checkout\Exceptions\ApiException;
+use ICEPAY\Checkout\Models\Amount;
+use ICEPAY\Checkout\Models\Request\Checkout as CheckoutRequest;
+use ICEPAY\Checkout\Models\Request\Refund as RefundRequest;
 use WC_Payment_Gateway;
 use WP_Error;
 
@@ -11,6 +15,7 @@ class Gateway extends WC_Payment_Gateway {
 	public function __construct(
 		protected PaymentMethod $paymentMethod,
 		protected Log $log = new Log(),
+		protected CheckoutClientFactory $clientFactory = new CheckoutClientFactory(),
 	) {
 		$this->id                 = $this->paymentMethod->getId();
 		$this->icon               = $this->paymentMethod->getIcon();
@@ -41,59 +46,58 @@ class Gateway extends WC_Payment_Gateway {
 
 	public function process_payment( $order_id ): array {
 		$this->log->info( 'Processing payment for order ' . $order_id );
-		$client = new IcepayClient(
-			Icepay::getMerchantId(),
-			Icepay::getSecret(),
-		);
 
 		$order     = wc_get_order( $order_id );
 		$reference = str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() );
 
-		[ $isSuccessful, $payment ] = $client->create(
-			[
-				'reference'     => $reference,
-				'amount'        => [
-					'value'    => (int) round( $order->get_total() * 100 ),
-					'currency' => $order->get_currency(),
-				],
-				'paymentMethod' => [
-					'type' => $this->paymentMethod->getType(),
-				],
-				'customer'      => [
-					'email'   => $this->limit( $order->get_billing_email(), 128 ),
-					'address' => [
-						'country'     => $this->limit( $order->get_billing_country(), 2 ),
-						'city'        => $this->limit( $order->get_billing_city(), 254 ),
-						'postalCode'  => $this->limit( $order->get_billing_postcode(), 31 ),
-						'streetName'  => $this->limit( $order->get_billing_address_1(), 128 ),
-						'houseNumber' => $this->limit( $order->get_billing_address_2(), 31 ),
-					]
-				],
-				'expireAfter'   => Icepay::getExpireAfter(),
-				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
-				'redirectUrl'   => $this->getRedirectUrl( $order ),
-				'meta'          => [
-					'integration' => [
-						'type'      => 'woocommerce',
-						'version'   => Integration::VERSION,
-						'developer' => 'ICEPAY',
-					],
-				]
-			]
+		$req = new CheckoutRequest(
+			reference:     $reference,
+			amount:        new Amount( (int) round( $order->get_total() * 100 ), $order->get_currency() ),
+			redirectUrl:   $this->getRedirectUrl( $order ),
+			webhookUrl:    add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
+			paymentMethod: $this->paymentMethod->getType(),
+			expireAfter:   Icepay::getExpireAfter(),
 		);
 
-		if ( ! $isSuccessful ) {
-			$this->log->error( 'Unable to create payment ', $payment );
+		$req->withCustomer( [
+			'email'   => $this->limit( $order->get_billing_email(), 128 ),
+			'address' => [
+				'country'     => $this->limit( $order->get_billing_country(), 2 ),
+				'city'        => $this->limit( $order->get_billing_city(), 254 ),
+				'postalCode'  => $this->limit( $order->get_billing_postcode(), 31 ),
+				'streetName'  => $this->limit( $order->get_billing_address_1(), 128 ),
+				'houseNumber' => $this->limit( $order->get_billing_address_2(), 31 ),
+			],
+		] );
+
+		$req->withIntegrationInformation( 'woocommerce', Integration::VERSION, 'ICEPAY' );
+
+		try {
+			$response = $this->clientFactory->create()->createCheckout( $req );
+		} catch ( ApiException $e ) {
+			$this->log->error( 'Unable to create payment', [
+				'message' => $e->getMessage(),
+				'type'    => $e->type,
+				'code'    => $e->getCode(),
+			] );
 
 			return [ 'result' => 'failure' ];
 		}
 
-		$this->addPaymentKey( $order, $payment['key'] );
-		$this->log->info( 'Create payment', $payment );
+		if ( $response->links->direct === null ) {
+			$this->log->error( 'Unable to create payment, response did not contain a redirect link', [
+				'key' => $response->key,
+			] );
+
+			return [ 'result' => 'failure' ];
+		}
+
+		$this->addPaymentKey( $order, $response->key );
+		$this->log->info( 'Create payment' );
 
 		return [
 			'result'   => 'success',
-			'redirect' => esc_url_raw( $payment['links']['direct'] )
+			'redirect' => esc_url_raw( $response->links->direct ),
 		];
 	}
 
@@ -109,24 +113,26 @@ class Gateway extends WC_Payment_Gateway {
 			return new WP_Error( '1', 'Unable to refund order, could not find payment key related to order' );
 		}
 
-		$client = new IcepayClient(
-			Icepay::getMerchantId(),
-			Icepay::getSecret(),
+		if ( $amount === null || $amount <= 0 ) {
+			return new WP_Error( '1', 'Unable to refund order, refund amount must be greater than zero' );
+		}
+
+		$refundRequest = new RefundRequest(
+			reference:   $reason,
+			amount:      new Amount( (int) round( $amount * 100 ), $order->get_currency() ),
+			description: $reason,
 		);
 
-		[ $isSuccessful, $refund ] = $client->refund( $paymentKey, [
-			'amount'      => [
-				'value'    => (int) round( $amount * 100 ),
-				'currency' => $order->get_currency(),
-			],
-			'reference'   => $reason,
-			'description' => $reason,
-		] );
+		try {
+			$this->clientFactory->create()->refund( $refundRequest, $paymentKey );
+		} catch ( ApiException $e ) {
+			$this->log->error( 'Unable to refund payment for #' . $order_id, [
+				'message' => $e->getMessage(),
+				'type'    => $e->type,
+				'code'    => $e->getCode(),
+			] );
 
-		if ( ! $isSuccessful ) {
-			$this->log->error( 'Unable to refund payment for #' . $order_id, $refund );
-
-			return new WP_Error( '1', 'Unable to refund order, could not refund payment. ' . $refund['message'] );
+			return new WP_Error( '1', 'Unable to refund order, could not refund payment. ' . $e->getMessage() );
 		}
 
 		return true;

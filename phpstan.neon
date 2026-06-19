@@ -1,6 +1,16 @@
 parameters:
+    level: 5
+    paths:
+        - src/
     bootstrapFiles:
+        - phpstan-bootstrap.php
         - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     dynamicConstantNames:
         - ICEPAY_URL
         - ICEPAY_FILE
+    ignoreErrors:
+        # Pre-existing: action callbacks on WooCommerce hooks return bool (WP core returns true)
+        - '#Action callback returns bool but should not return anything#'
+        # Pre-existing: WC()->cart type in empty() — always set when WooCommerce is loaded
+        - '#Property WooCommerce::\$cart \(WC_Cart\) in empty\(\) is not falsy#'
+        - '#Ternary operator condition is always true#'

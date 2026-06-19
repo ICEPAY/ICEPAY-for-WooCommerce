@@ -1,0 +1,196 @@
+name: End-to-End
+
+# Runs the real ICEPAY Playwright suite. The site is exposed through a Cloudflare
+# quick tunnel so ICEPAY's webhook can reach it. Gated on the ICEPAY test secrets
+# being present, so forks / secret-less runs skip cleanly.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, labeled, synchronize]
+
+jobs:
+  secrets-gate:
+    # Run on push, on normal PR events, or when a PR is labeled run_e2e_tests.
+    if: ${{ github.event_name == 'push' || github.event.action != 'labeled' || github.event.label.name == 'run_e2e_tests' }}
+    runs-on: ubuntu-latest
+    outputs:
+      is-secret-set: ${{ steps.check.outputs.set }}
+    steps:
+      - id: check
+        env:
+          ICEPAY_MERCHANT_ID: ${{ secrets.ICEPAY_MERCHANT_ID }}
+        if: ${{ env.ICEPAY_MERCHANT_ID != '' }}
+        run: echo "set=true" >> "$GITHUB_OUTPUT"
+
+  e2e:
+    name: End-to-End
+    needs: secrets-gate
+    if: ${{ needs.secrets-gate.outputs.is-secret-set == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      ICEPAY_MERCHANT_ID: ${{ secrets.ICEPAY_MERCHANT_ID }}
+      ICEPAY_MERCHANT_SECRET: ${{ secrets.ICEPAY_MERCHANT_SECRET }}
+      WP_ADMIN_USER: admin
+      WP_ADMIN_PASSWORD: admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # Mint a one-off token for this run and share it with both the web container and
+      # Playwright. No persistent ICEPAY_E2E_TOKEN secret is needed; add-mask keeps it out
+      # of the logs (generated values are not auto-masked like registered secrets).
+      - name: Generate the e2e helper token
+        run: |
+          TOKEN="$(openssl rand -hex 32)"
+          echo "::add-mask::$TOKEN"
+          echo "ICEPAY_E2E_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      # Inject the helper token into the web container so the PHP test-helper sees it at
+      # request time and enforces it on every HTTP-exposed action (the site is publicly
+      # reachable through the tunnel).
+      - name: Write docker-compose CI override
+        run: |
+          cat > docker-compose.ci.yml <<'YAML'
+          services:
+            app:
+              environment:
+                ICEPAY_E2E_TOKEN: "${ICEPAY_E2E_TOKEN}"
+          YAML
+
+      # vendor/ is gitignored, so the checkout has no autoloader and `wp plugin activate
+      # icepay-for-woocommerce` fatals. Install the plugin's runtime deps into the bind-mounted
+      # plugin dir (the container only reads them at runtime). --ignore-platform-reqs because the
+      # composer image may lack ext-intl; the wordpress container provides it at runtime.
+      - name: Install the plugin's Composer dependencies
+        run: docker run --rm -v "$PWD":/app -w /app composer:2 install --no-dev --no-interaction --no-progress --ignore-platform-reqs
+
+      # The app container runs as uid 1000 (compose `user: "1000:1000"`). The plugin is
+      # bind-mounted at /var/www/html/wp-content/plugins/icepay-for-woocommerce, so Docker
+      # auto-creates the parent wp-content/plugins/ as root; the WordPress entrypoint then
+      # can't extract core (akismet, hello.php, index.php) into it and the container exits on
+      # boot. Pre-create the full nested path owned by 1000 so Docker mounts into an existing
+      # writable dir instead of creating a root-owned one.
+      - name: Prepare the WordPress volume
+        run: |
+          mkdir -p wordpress/wp-content/plugins/icepay-for-woocommerce
+          sudo chown -R 1000:1000 wordpress
+
+      - name: Start the WordPress stack
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
+
+      - name: Start Cloudflare tunnel and capture the public URL
+        run: |
+          curl -fsSL -o cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+          chmod +x cloudflared
+          ./cloudflared tunnel --no-autoupdate --url http://localhost:80 > cloudflared.log 2>&1 &
+          for i in $(seq 1 30); do
+            URL=$(grep -oE "https://[a-z0-9-]+\.trycloudflare\.com" cloudflared.log | head -1 || true)
+            [ -n "$URL" ] && break
+            sleep 2
+          done
+          if [ -z "${URL:-}" ]; then echo "Tunnel URL not found"; cat cloudflared.log; exit 1; fi
+          echo "BASE_URL=$URL" >> "$GITHUB_ENV"
+          echo "Tunnel: $URL"
+
+      - name: Install WordPress, WooCommerce and the plugin at the tunnel URL
+        run: |
+          dc() { docker compose -f docker-compose.yml -f docker-compose.ci.yml "$@"; }
+          dexec() { dc exec -T app "$@"; }
+          # Wait for three things: the app container stays up, WordPress core files are
+          # extracted, and MySQL accepts TCP connections. MySQL 8 first-init takes a while and
+          # only listens on TCP once init finishes, so probe the DB via PHP mysqli from the app
+          # container (the same path wp uses; the image has no mysql CLI). Fail fast with logs.
+          ready=0
+          for i in $(seq 1 40); do
+            cid="$(dc ps -q app)"
+            if [ -z "$cid" ] || [ "$(docker inspect -f '{{.State.Running}}' "$cid" 2>/dev/null)" != "true" ]; then
+              echo "::error::app container is not running"; dc ps; dc logs --no-color app || true; exit 1
+            fi
+            if dexec wp core version >/dev/null 2>&1 \
+               && dexec php -r '$c=@mysqli_connect("db","wordpress","wordpress","wordpress"); exit($c?0:1);' >/dev/null 2>&1; then
+              ready=1; break
+            fi
+            sleep 3
+          done
+          [ "$ready" = "1" ] || { echo "::error::stack did not become ready"; dc ps; dc logs --no-color app db || true; exit 1; }
+          dexec wp core install --url="$BASE_URL" --title="ICEPAY E2E" \
+            --admin_user="$WP_ADMIN_USER" --admin_password="$WP_ADMIN_PASSWORD" \
+            --admin_email="e2e@icepay.test" --skip-email
+          # home_url() drives the webhook URL, so it must equal BASE_URL.
+          dexec wp option update home "$BASE_URL"
+          dexec wp option update siteurl "$BASE_URL"
+          # Pretty permalinks: the suite navigates to /shop, /cart, /checkout etc. which 404 under
+          # the plain (?p=123) structure that wp core install sets by default. --hard writes
+          # .htaccess (apache has mod_rewrite + AllowOverride All).
+          dexec wp rewrite structure '/%postname%/' --hard
+          dexec wp plugin install woocommerce --activate
+          # WooCommerce's "Launch Your Store" defaults a fresh install to coming-soon mode
+          # (woocommerce_coming_soon=yes), which replaces the whole storefront with a
+          # "Great things are on the horizon" placeholder for guests. The suite runs as a guest,
+          # so /shop never renders products and .add_to_cart_button never appears. Turn it off.
+          dexec wp option update woocommerce_coming_soon no
+          dexec wp theme install storefront --activate
+          dexec wp wc --user=1 tool run install_pages || true
+          # Create purchasable products via the WooCommerce CLI so the shop shows add-to-cart
+          # buttons. The WXR sample-data import is unreliable here: the generic WP importer does
+          # not populate WooCommerce's product lookup tables / catalog-visibility terms, so those
+          # products are excluded from the shop query. CLI-created products go through WC's CRUD
+          # and appear immediately.
+          for n in 1 2 3; do
+            dexec wp wc product create --name="E2E Product $n" --type=simple --regular_price=15 --status=publish --user=1
+          done
+          dexec wp plugin activate icepay-for-woocommerce
+          # Seed ICEPAY TEST credentials from GitHub secrets (kept out of .env and the test-helper).
+          # The runner shell expands these from the job env; GitHub masks the secret values in logs.
+          dexec wp option update icepay-for-woocommerce_general_merchant_id "$ICEPAY_MERCHANT_ID"
+          dexec wp option update icepay-for-woocommerce_general_secret_code "$ICEPAY_MERCHANT_SECRET"
+          # Load the e2e test-helper as a must-use plugin (enables iDEAL, exposes test endpoints).
+          dexec sh -c 'mkdir -p /var/www/html/wp-content/mu-plugins && ln -sf /var/www/html/wp-content/plugins/icepay-for-woocommerce/tests/e2e/fixtures/icepay-test-helper.php /var/www/html/wp-content/mu-plugins/icepay-test-helper.php'
+
+      - name: Debug shop state
+        run: |
+          dc() { docker compose -f docker-compose.yml -f docker-compose.ci.yml "$@"; }
+          dexec() { dc exec -T app "$@"; }
+          echo "permalink_structure=[$(dexec wp option get permalink_structure 2>/dev/null)]"
+          echo "product post count=$(dexec wp post list --post_type=product --post_status=publish --format=count 2>/dev/null)"
+          echo "wc product list count=$(dexec wp wc product list --user=1 --format=count 2>/dev/null)"
+          echo "shop_page_id=$(dexec wp option get woocommerce_shop_page_id 2>/dev/null)"
+          echo "coming_soon=[$(dexec wp option get woocommerce_coming_soon 2>/dev/null)]"
+          echo "--- HTTP status for /shop/ ---"
+          curl -sko /dev/null -w "%{http_code} -> %{url_effective}\n" -L "$BASE_URL/shop/"
+          echo "--- markers found on /shop/ ---"
+          curl -skL "$BASE_URL/shop/" | grep -oE "add_to_cart_button|woocommerce-loop-product|no products were found|wp-block-woocommerce|products" | sort | uniq -c
+
+      - name: Install Playwright
+        # npm install (not ci): package-lock.json is not committed (the repo tracks
+        # pnpm-lock.yaml), same approach as the build-release/release workflows.
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      # build/ is gitignored and not committed, so a fresh checkout has no build/index.js.
+      # The Blocks payment-method integration enqueues ICEPAY_URL/build/index.js to register
+      # the icepay-* methods client-side; without it the iDEAL radio never renders in the
+      # Blocks checkout and the suite times out. The plugin dir is bind-mounted into the app
+      # container, so building on the runner makes the asset available at request time.
+      - name: Build the plugin's block assets
+        run: npm run build
+
+      - name: Run the e2e suite
+        run: npm run test:e2e
+
+      - name: Upload report and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report-${{ github.run_number }}-attempt-${{ github.run_attempt }}
+          path: |
+            playwright-report
+            test-results
+            cloudflared.log
+          retention-days: 7

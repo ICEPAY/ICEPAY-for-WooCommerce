@@ -1,6 +1,12 @@
 <?php
 
+declare( strict_types=1 );
+
 namespace Icepay\WooCommerce;
+
+use ICEPAY\Checkout\Exceptions\InvalidSignature;
+use ICEPAY\Checkout\Models\Status;
+use ICEPAY\Checkout\PostbackHandler;
 
 class Webhook {
 	public function handle(): void {
@@ -16,38 +22,45 @@ class Webhook {
 			return;
 		}
 
-		$data      = sanitize_text_field( file_get_contents( 'php://input' ) );
+		$body      = $this->getRequestBody();
 		$headers   = array_change_key_case( $this->getHeader() ?: [] );
-		$secret    = Icepay::getSecret();
-		$signature = base64_encode( hash_hmac( 'sha256', $data, $secret, true ) );
+		$signature = $headers['icepay-signature'] ?? '';
+		$handler   = new PostbackHandler( Icepay::getSecret() );
 
-		$data = json_decode( $data, true );
-
-		if ( $signature !== $headers['icepay-signature'] ) {
+		try {
+			$payment = $handler->handle( $body, $signature );
+		} catch ( InvalidSignature ) {
 			$log->warning( 'got postback, but could not validate it.' );
 			status_header( 200 );
-			exit;
+			$this->terminate();
+			return;
+		} catch ( \JsonException ) {
+			$log->warning( 'got postback, but could not parse body.' );
+			status_header( 200 );
+			$this->terminate();
+			return;
 		}
 
 		$log->info( 'got postback and could validate it.' );
-		$order = Order::FindOrderByKey( $data['key'] );
+		$order = Order::FindOrderByKey( $payment->key );
 
 		if ( ! $order ) {
 			$log->warning( 'Order not found' );
 			status_header( 200 );
-			exit;
+			$this->terminate();
+			return;
 		}
 
-		$status = match ( $data['status'] ) {
-			'completed' => 'processing',
-			'cancelled', 'expired' => 'cancelled',
-			default => 'pending',
+		$status = match ( $payment->status ) {
+			Status::completed                    => 'processing',
+			Status::cancelled, Status::expired   => 'cancelled',
+			default                              => 'pending',
 		};
 
 		$paymentMethod = $order->get_payment_method();
 		$orderStatus   = $order->get_status();
 
-		if ( ! strpos( $paymentMethod, 'icepay' ) && $status !== 'processing' ) {
+		if ( ! str_starts_with( $paymentMethod, 'icepay' ) && $status !== 'processing' ) {
 			$log->info(
 				'Order ' . $order->get_id() . ': ICEPAY webhook received, but payment was also started via ' .
 				$paymentMethod . '. ICEPAY has not order status not updated.', [
@@ -69,26 +82,30 @@ class Webhook {
 			);
 
 			status_header( 200 );
-			exit;
+			$this->terminate();
+			return;
 		}
 
 		if ( $orderStatus === 'pending' || $orderStatus === 'on-hold' || $orderStatus === 'cancelled' || $orderStatus === 'checkout-draft' ) {
-			$log->info( 'Updating ' . ( str_replace( '{ORDER_ID}', $order->get_order_number(),
-					Icepay::getDescription() ) ) . ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' ) );
+			$log->info( 'Updating ' . ( str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ) ) . ' status to ' . $status . ' for ' . $payment->key );
 			$order->update_status( $status );
-			$order->set_transaction_id( $data['key'] );
+			$order->set_transaction_id( $payment->key );
 			$order->save();
 		} else {
 			$log->info(
 				'Did not update '
 				. ( str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ) )
-				. ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' )
+				. ' status to ' . $status . ' for ' . $payment->key
 				. 'because the current status was ' . $order->get_status()
 			);
 		}
 
 		status_header( 200 );
-		exit;
+		$this->terminate();
+	}
+
+	protected function getRequestBody(): string {
+		return (string) file_get_contents( 'php://input' );
 	}
 
 	/** @return false|array */
@@ -107,5 +124,9 @@ class Webhook {
 		}
 
 		return getallheaders();
+	}
+
+	protected function terminate(): void {
+		exit;
 	}
 }

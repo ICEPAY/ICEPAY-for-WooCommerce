@@ -1,7 +1,7 @@
 {
   "name": "icepay/icepay-woocommerce",
   "description": "ICEPAY for WooCommerce",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "type": "library",
   "keywords": [
     "icepay",
@@ -30,7 +30,9 @@
     "ext-intl": "*",
     "ext-json": "*",
     "psr/log": "^1.1.4",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "icepay/checkout-sdk": "^1.4",
+    "nyholm/psr7": "^1.8"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "3.*",
@@ -44,6 +46,11 @@
   "autoload": {
     "psr-4": {
       "Icepay\\WooCommerce\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Icepay\\WooCommerce\\Tests\\": "tests/"
     }
   },
   "scripts": {
