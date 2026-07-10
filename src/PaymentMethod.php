@@ -47,8 +47,16 @@ class PaymentMethod {
 		return $this->getOption( 'description' ) ?? $this->defaultDescription;
 	}
 
+	public function getIconUrl(): string {
+		return ICEPAY_URL . '/public/icons/' . $this->icon;
+	}
+
 	public function getIcon(): string {
-		return Icepay::showIcons() ?  esc_url( ICEPAY_URL . '/public/icons/' . $this->icon ): '';
+		return Icepay::showIcons() ? esc_url( $this->getIconUrl() ) : '';
+	}
+
+	public function getOptionKey(): string {
+		return Integration::ID . '_' . $this->getId() . '_settings';
 	}
 
 	public function getFormFields(): array {
@@ -75,7 +83,7 @@ class PaymentMethod {
 	}
 
 	protected function getOptions(): array {
-		$options = get_option( Integration::ID . '_' . $this->getId() . '_settings', null );
+		$options = get_option( $this->getOptionKey(), null );
 
 		return $options ?? [];
 	}

@@ -2,13 +2,33 @@
 
 declare( strict_types=1 );
 
-namespace Icepay\WooCommerce\Admin;
+namespace Icepay\WooCommerce\Admin\Tabs;
 
+use Icepay\WooCommerce\Admin\Settings;
 use Icepay\WooCommerce\Icepay;
 use Icepay\WooCommerce\Integration;
+use WC_Admin_Settings;
 
-class GeneralTab {
-	public function getOutput(): array {
+class GeneralTab implements TabInterface {
+	public const SECTION = '';
+
+	public function render(): void {
+		WC_Admin_Settings::output_fields( $this->getFilteredFields() );
+	}
+
+	public function save(): void {
+		WC_Admin_Settings::save_fields( $this->getFilteredFields() );
+	}
+
+	private function getFilteredFields(): array {
+		return apply_filters(
+			'woocommerce_get_settings_' . Settings::ID,
+			$this->getFields(),
+			self::SECTION
+		);
+	}
+
+	private function getFields(): array {
 		return [
 			[
 				'title' => __( 'Settings', Integration::ID ),

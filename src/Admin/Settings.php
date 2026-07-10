@@ -4,14 +4,28 @@ declare( strict_types=1 );
 
 namespace Icepay\WooCommerce\Admin;
 
+use Icepay\WooCommerce\Admin\Tabs\GeneralTab;
+use Icepay\WooCommerce\Admin\Tabs\PaymentMethodsTab;
+use Icepay\WooCommerce\Admin\Tabs\SupportTab;
+use Icepay\WooCommerce\Admin\Tabs\TabInterface;
 use Icepay\WooCommerce\Integration;
-use WC_Admin_Settings;
 use WC_Settings_Page;
 
 class Settings extends WC_Settings_Page {
-	public function __construct( protected GeneralTab $generalTab = new GeneralTab() ) {
-		$this->id    = 'icepay_settings';
+	public const ID = 'icepay_settings';
+
+	/** @var array<string, TabInterface> */
+	private array $tabs;
+
+	public function __construct() {
+		$this->id    = self::ID;
 		$this->label = __( Integration::NAME, Integration::ID );
+
+		$this->tabs = [
+			GeneralTab::SECTION        => new GeneralTab(),
+			PaymentMethodsTab::SECTION => new PaymentMethodsTab(),
+			SupportTab::SECTION        => new SupportTab(),
+		];
 
 		add_action(
 			'woocommerce_sections_' . $this->id,
@@ -24,38 +38,24 @@ class Settings extends WC_Settings_Page {
 	public function output(): void {
 		global $current_section;
 
-		WC_Admin_Settings::output_fields( $this->get_settings( $current_section ) );
-	}
-
-	public function get_settings( $currentSection = '' ) {
-		$settings = [];
-
-		if ( ! $currentSection ) {
-			$settings = $this->generalTab->getOutput();
-		} else {
-			$section  = ucfirst( strtolower( $currentSection ) );
-			$settings = ( new ( '\Icepay\WooCommerce\Admin\\' . $section . 'Tab' )() )->getOutput();
-		}
-
-		return apply_filters(
-			'woocommerce_get_settings_' . $this->id,
-			$settings,
-			$currentSection
-		);
+		$this->tabFor( (string) $current_section )->render();
 	}
 
 	public function save(): void {
 		global $current_section;
 
-		$settings = $this->get_settings( $current_section );
-
-		WC_Admin_Settings::save_fields( $settings );
+		$this->tabFor( (string) $current_section )->save();
 	}
 
 	public function get_sections(): array {
 		return [
-			''        => __( 'Settings', Integration::ID ),
-			'support' => __( 'Support', Integration::ID )
+			GeneralTab::SECTION        => __( 'Settings', Integration::ID ),
+			PaymentMethodsTab::SECTION => __( 'Payment methods', Integration::ID ),
+			SupportTab::SECTION        => __( 'Support', Integration::ID ),
 		];
+	}
+
+	private function tabFor( string $section ): TabInterface {
+		return $this->tabs[ $section ] ?? $this->tabs[ GeneralTab::SECTION ];
 	}
 }
