@@ -7,10 +7,11 @@
  * Author: ICEPAY
  * Author URI: http://www.icepay.com
  * Version: 1.1.0
- * Copyright: Copyright © 2024 ICEPAY B.V. (https://icepay.com/)
+ * Copyright: Copyright © 2026 ICEPAY B.V. (https://icepay.com/)
  * Text Domain: icepay-for-woocommerce
- * Domain Path: /languages
- * Requires PHP: 8.1
+ * License: GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
+ * Requires PHP: 8.2
  */
 
 namespace Icepay\WooCommerce;
