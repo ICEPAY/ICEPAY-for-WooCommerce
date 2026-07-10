@@ -5,8 +5,11 @@ import {Label} from './Components/Label.js';
 const stylesheet = new CSSStyleSheet();
 stylesheet.replaceSync(`
 	.wc-block-components-radio-control__label .icepay-label {
+	    display: flex;
+	    justify-content: space-between;
 		width: 100%;
 		padding-right: 3.5rem;
+		align-items: center;
 	}
 
 	.wc-block-components-radio-control__label .icepay-label .icepay-description {
