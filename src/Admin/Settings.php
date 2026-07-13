@@ -19,7 +19,7 @@ class Settings extends WC_Settings_Page {
 
 	public function __construct() {
 		$this->id    = self::ID;
-		$this->label = __( Integration::NAME, Integration::ID );
+		$this->label = __( Integration::NAME, 'icepay-for-woocommerce' );
 
 		$this->tabs = [
 			GeneralTab::SECTION        => new GeneralTab(),
@@ -49,9 +49,9 @@ class Settings extends WC_Settings_Page {
 
 	public function get_sections(): array {
 		return [
-			GeneralTab::SECTION        => __( 'Settings', Integration::ID ),
-			PaymentMethodsTab::SECTION => __( 'Payment methods', Integration::ID ),
-			SupportTab::SECTION        => __( 'Support', Integration::ID ),
+			GeneralTab::SECTION        => __( 'Settings', 'icepay-for-woocommerce' ),
+			PaymentMethodsTab::SECTION => __( 'Payment methods', 'icepay-for-woocommerce' ),
+			SupportTab::SECTION        => __( 'Support', 'icepay-for-woocommerce' ),
 		];
 	}
 

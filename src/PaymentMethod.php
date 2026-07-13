@@ -62,21 +62,21 @@ class PaymentMethod {
 	public function getFormFields(): array {
 		return [
 			'enabled'     => [
-				'title'   => __( 'Enable/Disable', Integration::ID ),
+				'title'   => __( 'Enable/Disable', 'icepay-for-woocommerce' ),
 				'label'   => 'Enable ' . $this->getDefaultName(),
 				'type'    => 'checkbox',
 				'default' => 'no',
 			],
 			'title'       => [
-				'title'    => __( 'Name', Integration::ID ),
+				'title'    => __( 'Name', 'icepay-for-woocommerce' ),
 				'type'     => 'text',
-				'desc_tip' => __( 'The name shown during the checkout', Integration::ID ),
+				'desc_tip' => __( 'The name shown during the checkout', 'icepay-for-woocommerce' ),
 				'default'  => $this->getDefaultName(),
 			],
 			'description' => [
-				'title'    => __( 'Description', Integration::ID ),
+				'title'    => __( 'Description', 'icepay-for-woocommerce' ),
 				'type'     => 'text',
-				'desc_tip' => __( 'The description shown during the checkout', Integration::ID ),
+				'desc_tip' => __( 'The description shown during the checkout', 'icepay-for-woocommerce' ),
 				'default'  => $this->getDefaultDescription(),
 			],
 		];
