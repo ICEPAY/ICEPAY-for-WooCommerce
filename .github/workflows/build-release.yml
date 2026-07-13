@@ -19,6 +19,9 @@ jobs:
       - name: Unzip # GH currently always zips, so if we upload a zip we get a zip inside a zip
         run: unzip icepay-for-woocommerce.zip -d dist
 
+      - name: move composer file
+        run: cp composer.json dist/composer.json
+
       - name: Upload the ZIP file
         uses: actions/upload-artifact@v4
         with:
@@ -28,5 +31,4 @@ jobs:
             !dist/README.md
             !dist/DEVELOPMENT.md
             !dist/SECURITY.md
-            composer.json
           retention-days: 5
