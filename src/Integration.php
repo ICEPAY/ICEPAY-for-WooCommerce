@@ -155,12 +155,12 @@ class Integration {
 		add_filter( 'plugin_action_links_' . ICEPAY_FILE, function ( array $data ): array {
 			$action_links = [
 				'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=icepay_settings' )
-				. '">' . __( 'Settings', Integration::ID )
+				. '">' . __( 'Settings', 'icepay-for-woocommerce' )
 				. '</a>',
 				'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' )
-				. '">' . __( 'Payment Methods', Integration::ID ) . '</a>',
+				. '">' . __( 'Payment Methods', 'icepay-for-woocommerce' ) . '</a>',
 				'<a href="' . admin_url( 'admin.php?page=wc-status&tab=logs' )
-				. '">' . __( 'Logs', Integration::ID ) . '</a>',
+				. '">' . __( 'Logs', 'icepay-for-woocommerce' ) . '</a>',
 
 			];
 

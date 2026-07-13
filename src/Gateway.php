@@ -146,9 +146,10 @@ class Gateway extends WC_Payment_Gateway {
 			return;
 		}
 
+        /* translators: 1: ICEPAY Checkout Key */
 		$order->add_order_note(
 			sprintf(
-				__( 'ICEPAY payment created with key: %1$s', Integration::ID ),
+				__( 'ICEPAY payment created with key: %1$s', 'icepay-for-woocommerce' ),
 				$key
 			)
 		);

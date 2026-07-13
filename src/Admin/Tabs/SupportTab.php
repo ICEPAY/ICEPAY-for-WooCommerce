@@ -31,9 +31,9 @@ class SupportTab implements TabInterface {
 	private function getFields(): array {
 		return [
 			[
-				'title' => __( 'Support', Integration::ID ),
+				'title' => __( 'Support', 'icepay-for-woocommerce' ),
 				'type'  => 'title',
-				'desc'  => __( 'For support please send an email to info@icepay.com', Integration::ID ),
+				'desc'  => __( 'For support please send an email to info@icepay.com', 'icepay-for-woocommerce' ),
 				'id'    => Integration::ID . '_support',
 			],
 		];

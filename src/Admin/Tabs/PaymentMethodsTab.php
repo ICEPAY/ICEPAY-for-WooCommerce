@@ -14,14 +14,14 @@ class PaymentMethodsTab implements TabInterface {
 	public function render(): void {
 		$methods = PaymentMethod::getAll();
 		?>
-		<h2><?php esc_html_e( 'Payment methods', Integration::ID ); ?></h2>
-		<p><?php esc_html_e( 'Enable and configure the payment methods available to your customers.', Integration::ID ); ?></p>
+		<h2><?php esc_html_e( 'Payment methods', 'icepay-for-woocommerce' ); ?></h2>
+		<p><?php esc_html_e( 'Enable and configure the payment methods available to your customers.', 'icepay-for-woocommerce' ); ?></p>
 		<table class="wp-list-table widefat fixed striped" style="margin-top:1em;">
 			<thead>
 				<tr>
-					<th style="width:70px;"><?php esc_html_e( 'Icon', Integration::ID ); ?></th>
-					<th><?php esc_html_e( 'Payment method', Integration::ID ); ?></th>
-					<th style="width:80px;"><?php esc_html_e( 'Enabled', Integration::ID ); ?></th>
+					<th style="width:70px;"><?php esc_html_e( 'Icon', 'icepay-for-woocommerce' ); ?></th>
+					<th><?php esc_html_e( 'Payment method', 'icepay-for-woocommerce' ); ?></th>
+					<th style="width:80px;"><?php esc_html_e( 'Enabled', 'icepay-for-woocommerce' ); ?></th>
 					<th style="width:120px;"></th>
 				</tr>
 			</thead>
@@ -50,7 +50,7 @@ class PaymentMethodsTab implements TabInterface {
 						</td>
 						<td>
 							<a href="<?php echo esc_url( $configUrl ); ?>" class="button button-secondary">
-								<?php esc_html_e( 'Configure', Integration::ID ); ?>
+								<?php esc_html_e( 'Configure', 'icepay-for-woocommerce' ); ?>
 							</a>
 						</td>
 					</tr>
