@@ -19,7 +19,7 @@ class Settings extends WC_Settings_Page {
 
 	public function __construct() {
 		$this->id    = self::ID;
-		$this->label = __( Integration::NAME, 'icepay-for-woocommerce' );
+		$this->label = __( 'ICEPAY for WooCommerce', 'icepay-for-woocommerce' );
 
 		$this->tabs = [
 			GeneralTab::SECTION        => new GeneralTab(),
