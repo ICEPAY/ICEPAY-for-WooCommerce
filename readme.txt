@@ -1,7 +1,7 @@
 === ICEPAY for WooCommerce ===
 Tags: ICEPAY, icepay, payments, betalingen, woocommerce
 Requires at least: 6.6.0
-Tested up to: 7.0.
+Tested up to: 7.0
 Requires PHP: 8.2
 Stable tag: 1.1.0
 License: GPLv3
