@@ -20,15 +20,15 @@ jobs:
         run: unzip icepay-for-woocommerce.zip -d dist
 
       - name: move composer file
-        run: cp composer.json dist/composer.json
+        run: |
+          cp composer.json dist/composer.json
+          rm dist/README.md
+          rm dist/DEVELOPMENT.md
+          rm dist/SECURITY.md
 
       - name: Upload the ZIP file
         uses: actions/upload-artifact@v4
         with:
           name: icepay-for-woocommerce
-          path: |
-            dist/
-            !dist/README.md
-            !dist/DEVELOPMENT.md
-            !dist/SECURITY.md
+          path: dist/
           retention-days: 5
