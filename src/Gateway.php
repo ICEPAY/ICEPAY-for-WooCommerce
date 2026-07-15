@@ -36,7 +36,7 @@ class Gateway extends WC_Payment_Gateway {
 			return null;
 		}
 
-		return map_deep( $_POST[ $key ], 'sanitize_text_field' );
+		return map_deep( wp_unslash( $_POST[ $key ] ), 'sanitize_text_field' );
 	}
 
 	public function process_payment( $order_id ): array {

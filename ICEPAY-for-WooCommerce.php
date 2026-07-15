@@ -12,6 +12,7 @@
  * License: GPLv3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires PHP: 8.2
+ * Requires Plugins: woocommerce
  */
 
 namespace Icepay\WooCommerce;

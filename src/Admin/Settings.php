@@ -8,7 +8,6 @@ use Icepay\WooCommerce\Admin\Tabs\GeneralTab;
 use Icepay\WooCommerce\Admin\Tabs\PaymentMethodsTab;
 use Icepay\WooCommerce\Admin\Tabs\SupportTab;
 use Icepay\WooCommerce\Admin\Tabs\TabInterface;
-use Icepay\WooCommerce\Integration;
 use WC_Settings_Page;
 
 class Settings extends WC_Settings_Page {
@@ -23,7 +22,6 @@ class Settings extends WC_Settings_Page {
 
 		$this->tabs = [
 			GeneralTab::SECTION        => new GeneralTab(),
-			PaymentMethodsTab::SECTION => new PaymentMethodsTab(),
 			SupportTab::SECTION        => new SupportTab(),
 		];
 
@@ -38,7 +36,7 @@ class Settings extends WC_Settings_Page {
 	public function output(): void {
 		global $current_section;
 
-		$this->tabFor( (string) $current_section )->render();
+        $this->tabFor( (string) $current_section )->render();
 	}
 
 	public function save(): void {
@@ -50,7 +48,6 @@ class Settings extends WC_Settings_Page {
 	public function get_sections(): array {
 		return [
 			GeneralTab::SECTION        => __( 'Settings', 'icepay-for-woocommerce' ),
-			PaymentMethodsTab::SECTION => __( 'Payment methods', 'icepay-for-woocommerce' ),
 			SupportTab::SECTION        => __( 'Support', 'icepay-for-woocommerce' ),
 		];
 	}
