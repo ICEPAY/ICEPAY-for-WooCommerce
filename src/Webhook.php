@@ -16,7 +16,7 @@ class Webhook {
 			return;
 		}
 
-		$data      = file_get_contents( 'php://input' );
+		$data      = sanitize_text_field( file_get_contents( 'php://input' ) );
 		$headers   = array_change_key_case($this->getHeader() ?: []);
 		$secret    = Icepay::getSecret();
 		$signature = base64_encode( hash_hmac( 'sha256', $data, $secret, true ) );

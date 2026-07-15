@@ -1,6 +1,6 @@
 === ICEPAY for WooCommerce ===
 Tags: ICEPAY, icepay, payments, betalingen, woocommerce
-Requires at least: 6.6.0
+Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 8.2
 Stable tag: 1.1.0
@@ -25,14 +25,6 @@ The ICEPAY plugin for WooCommerce.
 
 Wil be provided at a later date.
 
-= Manual install =
-
-1. Click the Download button on the release page.
-2. Sign in to your WooCommerce backend.
-3. Go to ***Plugins > Add new***.
-4. Click ***Browse file***.
-5. Upload the icepay-for-woocommerce-vx.x.x.zip file.
-
 == Setup ==
 
 1. Sign in to your WooCommerce backend.
@@ -56,3 +48,8 @@ We currently support the following payment methods:
 == Support ==
 
 If you need any help or have a question, feel free to email [info@icepay.com](mailto:info@icepay.com)
+
+== External services ==
+
+This plugin connects to our API to create payments. It sends the users billing information to our services when a users places an order. Read our [Terms & Conditions](https://icepay.com/terms-and-conditions/)
+& [Privacy Policy](https://www.icepay.nl/privacy-policy/) for more info.

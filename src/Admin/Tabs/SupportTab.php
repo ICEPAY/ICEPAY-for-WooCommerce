@@ -12,7 +12,8 @@ class SupportTab implements TabInterface {
 	public const SECTION = 'support';
 
 	public function render(): void {
-		WC_Admin_Settings::hide_save_button();
+        global $hide_save_button;
+        $hide_save_button = true;
 		WC_Admin_Settings::output_fields( $this->getFilteredFields() );
 	}
 
