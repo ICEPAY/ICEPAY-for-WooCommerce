@@ -17,13 +17,13 @@ class Webhook {
 		}
 
 		$data      = sanitize_text_field( file_get_contents( 'php://input' ) );
-		$headers   = array_change_key_case($this->getHeader() ?: []);
+		$headers   = array_change_key_case( $this->getHeader() ?: [] );
 		$secret    = Icepay::getSecret();
 		$signature = base64_encode( hash_hmac( 'sha256', $data, $secret, true ) );
 
 		$data = json_decode( $data, true );
 
-		if ( $signature !== $headers['icepay-signature']) {
+		if ( $signature !== $headers['icepay-signature'] ) {
 			$log->warning( 'got postback, but could not validate it.' );
 			status_header( 200 );
 			exit;
@@ -44,21 +44,48 @@ class Webhook {
 			default => 'pending',
 		};
 
-        $orderStatus = $order->get_status();
+		$paymentMethod = $order->get_payment_method();
+		$orderStatus   = $order->get_status();
 
-		if ($orderStatus === 'pending' || $orderStatus === 'on-hold' || $orderStatus === 'cancelled' || $orderStatus === 'checkout-draft' ) {
-			$log->info( 'Updating ' . (str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() )) . ' status to ' . $status . ' for ' . ($data['key'] ?? 'key-not-found')  );
+		if ( ! strpos( $paymentMethod, 'icepay' ) && $status !== 'processing' ) {
+			$log->info(
+				'Order ' . $order->get_id() . ': ICEPAY webhook received, but payment was also started via ' .
+				$paymentMethod . '. ICEPAY has not order status not updated.', [
+					'order'         => $order->get_id(),
+					'icepay status' => $status,
+					'order status'  => $orderStatus,
+				]
+			);
+
+			$order->add_order_note(
+				sprintf(
+				/* translators: 1: payment method used by the order */
+					__(
+						'ICEPAY received a webhook but is not currently used for the payment. The payment was also started via %s, so we did not update the order status.',
+						'icepay-for-woocommerce'
+					),
+					$paymentMethod
+				)
+			);
+
+			status_header( 200 );
+			exit;
+		}
+
+		if ( $orderStatus === 'pending' || $orderStatus === 'on-hold' || $orderStatus === 'cancelled' || $orderStatus === 'checkout-draft' ) {
+			$log->info( 'Updating ' . ( str_replace( '{ORDER_ID}', $order->get_order_number(),
+					Icepay::getDescription() ) ) . ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' ) );
 			$order->update_status( $status );
 			$order->set_transaction_id( $data['key'] );
 			$order->save();
 		} else {
-            $log->info(
-                'Did not update '
-                . (str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ))
-                . ' status to ' . $status . ' for ' . ($data['key'] ?? 'key-not-found')
-                . 'because the current status was ' . $order->get_status()
-            );
-        }
+			$log->info(
+				'Did not update '
+				. ( str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ) )
+				. ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' )
+				. 'because the current status was ' . $order->get_status()
+			);
+		}
 
 		status_header( 200 );
 		exit;
@@ -71,7 +98,8 @@ class Webhook {
 
 			foreach ( $_SERVER as $name => $value ) {
 				if ( str_starts_with( $name, 'HTTP_' ) ) {
-					$headers[ str_replace( ' ', '-', ucwords( strtolower( str_replace( '_', ' ', substr( $name, 5 ) ) ) ) ) ] = $value;
+					$headers[ str_replace( ' ', '-',
+						ucwords( strtolower( str_replace( '_', ' ', substr( $name, 5 ) ) ) ) ) ] = $value;
 				}
 			}
 
