@@ -10,6 +10,7 @@ class Icepay {
 	public const ENABLE_LOGS = Integration::ID . '_general_enable_logs';
 	public const SHOW_ICONS = Integration::ID . '_general_show_icons';
 	public const DESCRIPTION = Integration::ID . '_general_description';
+	public const EXPIRE_AFTER = Integration::ID . '_expire_after';
 
 	public static function getMerchantId(): string {
 		return get_option( self::MERCHANT_ID, null );
@@ -25,6 +26,10 @@ class Icepay {
 
 	public static function showIcons(): bool {
 		return get_option( self::SHOW_ICONS, 'yes' ) === 'yes';
+	}
+
+	public static function getExpireAfter(): int {
+		return intval( get_option( self::EXPIRE_AFTER, 60 * 4 ) );
 	}
 
 	public static function getDescription(): string {

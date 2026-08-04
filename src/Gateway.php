@@ -53,22 +53,23 @@ class Gateway extends WC_Payment_Gateway {
 			[
 				'reference'     => $reference,
 				'amount'        => [
-					'value'    => (int) round($order->get_total() * 100) ,
+					'value'    => (int) round( $order->get_total() * 100 ),
 					'currency' => $order->get_currency(),
 				],
 				'paymentMethod' => [
 					'type' => $this->paymentMethod->getType(),
 				],
-                'customer' => [
-                    'email' => $this->limit($order->get_billing_email(), 128),
-	                'address' => [
-						'country' => $this->limit($order->get_billing_country(),2),
-						'city' => $this->limit($order->get_billing_city(), 254),
-						'postalCode' => $this->limit($order->get_billing_postcode(), 31),
-						'streetName' => $this->limit($order->get_billing_address_1(), 128),
-		                'houseNumber' => $this->limit($order->get_billing_address_2(), 31),
-	                ]
-                ],
+				'customer'      => [
+					'email'   => $this->limit( $order->get_billing_email(), 128 ),
+					'address' => [
+						'country'     => $this->limit( $order->get_billing_country(), 2 ),
+						'city'        => $this->limit( $order->get_billing_city(), 254 ),
+						'postalCode'  => $this->limit( $order->get_billing_postcode(), 31 ),
+						'streetName'  => $this->limit( $order->get_billing_address_1(), 128 ),
+						'houseNumber' => $this->limit( $order->get_billing_address_2(), 31 ),
+					]
+				],
+				'expireAfter'   => max( Icepay::getExpireAfter(), 30 ),
 				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
 				'redirectUrl'   => $this->getRedirectUrl( $order ),
 				'meta'          => [
@@ -115,7 +116,7 @@ class Gateway extends WC_Payment_Gateway {
 
 		[ $isSuccessful, $refund ] = $client->refund( $paymentKey, [
 			'amount'      => [
-				'value'    => (int) round($amount * 100),
+				'value'    => (int) round( $amount * 100 ),
 				'currency' => $order->get_currency(),
 			],
 			'reference'   => $reason,
@@ -146,7 +147,7 @@ class Gateway extends WC_Payment_Gateway {
 			return;
 		}
 
-        /* translators: 1: ICEPAY Checkout Key */
+		/* translators: 1: ICEPAY Checkout Key */
 		$order->add_order_note(
 			sprintf(
 				__( 'ICEPAY payment created with key: %1$s', 'icepay-for-woocommerce' ),
@@ -158,11 +159,11 @@ class Gateway extends WC_Payment_Gateway {
 		$order->save();
 	}
 
-	protected function limit($value, $limit = 100, $end = '') : string {
-		if (mb_strwidth($value, 'UTF-8') <= $limit) {
+	protected function limit( $value, $limit = 100, $end = '' ): string {
+		if ( mb_strwidth( $value, 'UTF-8' ) <= $limit ) {
 			return $value;
 		}
 
-		return rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8')).$end;
+		return rtrim( mb_strimwidth( $value, 0, $limit, '', 'UTF-8' ) ) . $end;
 	}
 }
