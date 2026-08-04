@@ -29,7 +29,9 @@ class Icepay {
 	}
 
 	public static function getExpireAfter(): int {
-		return intval( get_option( self::EXPIRE_AFTER, 60 * 4 ) );
+		$expireAfter = get_option( self::EXPIRE_AFTER, 60 * 4 );
+
+		return ! empty( $expireAfter ) ? intval( $expireAfter ) : 60 * 4;
 	}
 
 	public static function getDescription(): string {

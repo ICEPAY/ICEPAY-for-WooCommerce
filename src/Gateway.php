@@ -69,7 +69,7 @@ class Gateway extends WC_Payment_Gateway {
 						'houseNumber' => $this->limit( $order->get_billing_address_2(), 31 ),
 					]
 				],
-				'expireAfter'   => max( Icepay::getExpireAfter(), 30 ),
+				'expireAfter'   => Icepay::getExpireAfter(),
 				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
 				'redirectUrl'   => $this->getRedirectUrl( $order ),
 				'meta'          => [
