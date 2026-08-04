@@ -14,7 +14,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build
-        run: npm run build-plugin
+        uses: pnpm/setup@v1
+
+      - run: pnpm run build-plugin
 
       - name: Unzip # GH currently always zips, so if we upload a zip we get a zip inside a zip
         run: unzip icepay-for-woocommerce.zip -d dist
