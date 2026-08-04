@@ -13,7 +13,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build
-        run: npm run build-plugin
+        uses: pnpm/setup@v1
+
+      - run: pnpm run build-plugin
 
       - name: Rename output file
         run: mv icepay-for-woocommerce.zip icepay-for-woocommerce-${{ github.ref_name }}.zip
