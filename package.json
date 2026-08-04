@@ -16,7 +16,7 @@
     "start": "wp-scripts start",
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js",
-    "build-plugin": "composer install --no-dev && npm install && npm run build && npm run archive",
+    "build-plugin": "composer install --no-dev && pnpm install && pnpm run build && pnpm run archive",
     "archive": "zip -r $npm_package_name.zip . -x@exclude.lst"
   },
   "author": "",
