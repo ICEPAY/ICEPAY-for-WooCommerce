@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ICEPAY for WooCommerce\n"
+"POT-Creation-Date: 2026-04-22 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "iDEAL | Wero"
+msgstr "iDEAL | Wero"
+
+msgid "Card"
+msgstr "Creditcard"
+
+msgid "Bancontact"
+msgstr "Bancontact"
+
+msgid "PayPal"
+msgstr "PayPal"
+
+msgid "Online Überweisen"
+msgstr "Online Überweisen"
+
+msgid "EPS"
+msgstr "EPS"
+
+msgid "Carte Bancaire"
+msgstr "Carte Bancaire"
+
+msgid "Dankort"
+msgstr "Dankort"
+
+msgid "Pay by Bank"
+msgstr "Betalen via bank"
+
+msgid "Enable/Disable"
+msgstr "Inschakelen/Uitschakelen"
+
+msgid "Enable %s"
+msgstr "%s inschakelen"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "The name shown during the checkout"
+msgstr "De naam die wordt weergegeven tijdens het afrekenen"
+
+msgid "Description"
+msgstr "Beschrijving"
+
+msgid "The description shown during the checkout"
+msgstr "De beschrijving die wordt weergegeven tijdens het afrekenen"
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Payment Methods"
+msgstr "Betaalmethoden"
+
+msgid "Logs"
+msgstr "Logboeken"
+
+msgid "ICEPAY payment created with key: %1$s"
+msgstr "ICEPAY-betaling aangemaakt met sleutel: %1$s"
