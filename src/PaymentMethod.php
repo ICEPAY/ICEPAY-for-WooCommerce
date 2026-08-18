@@ -21,7 +21,7 @@ class PaymentMethod {
 	}
 
 	public function getType(): string {
-		return match($this->type) {
+		return match ( $this->type ) {
 			'cartebancaire', 'dankort' => 'card',
 			default => $this->type,
 		};
@@ -60,7 +60,7 @@ class PaymentMethod {
 	}
 
 	public function getFormFields(): array {
-		return [
+		$formFields = [
 			'enabled'     => [
 				'title'   => __( 'Enable/Disable', 'icepay-for-woocommerce' ),
 				'label'   => 'Enable ' . $this->getDefaultName(),
@@ -80,6 +80,16 @@ class PaymentMethod {
 				'default'  => $this->getDefaultDescription(),
 			],
 		];
+		if ( $this->type === 'card' ) {
+			$formFields['separated'] = [
+				'title'   => __( 'Separate icons in legacy checkout', 'icepay-for-woocommerce' ),
+				'label'   => 'Separated ' . $this->getDefaultName() . ' icons',
+				'type'    => 'checkbox',
+				'default' => 'no',
+			];
+		}
+
+		return $formFields;
 	}
 
 	protected function getOptions(): array {
@@ -89,7 +99,7 @@ class PaymentMethod {
 	}
 
 	protected function getOption( string $key ): ?string {
-		if ( isset( $this->options[ $key ] ) && !empty( $this->options[ $key ] ) ) {
+		if ( isset( $this->options[ $key ] ) && ! empty( $this->options[ $key ] ) ) {
 			return $this->options[ $key ];
 		}
 
@@ -104,9 +114,9 @@ class PaymentMethod {
 			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
 			new PaymentMethod( 'onlineueberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
 			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
-			new PaymentMethod( 'cartebancaire', 'Carte Bancaire', '', 'carteBancaire.svg'),
-			new PaymentMethod( 'dankort', 'Dankort', '', 'dankort.svg'),
-			new PaymentMethod( 'paybybank', 'Pay by Bank', '', 'paybybank.svg'),
+			new PaymentMethod( 'cartebancaire', 'Carte Bancaire', '', 'carteBancaire.svg' ),
+			new PaymentMethod( 'dankort', 'Dankort', '', 'dankort.svg' ),
+			new PaymentMethod( 'paybybank', 'Pay by Bank', '', 'paybybank.svg' ),
 		];
 	}
 }
