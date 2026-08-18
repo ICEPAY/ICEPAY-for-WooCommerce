@@ -4,9 +4,9 @@ declare( strict_types=1 );
 
 namespace Icepay\WooCommerce;
 
-use Icepay\WooCommerce\Admin\Settings;
-use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Icepay\WooCommerce\Admin\Settings;
 
 class Integration {
 	public const NAME = 'ICEPAY for WooCommerce';
@@ -23,6 +23,8 @@ class Integration {
 		$this->addWebhook();
 
 		$this->addCustomLinks();
+
+		$this->addMultipleCardIcons();
 
 		add_action( 'template_redirect', [ $this, 'redirect' ] );
 	}
@@ -46,11 +48,13 @@ class Integration {
 		if ( ! $isSuccessful ) {
 			$log = new Log();
 			$log->error( 'Unable to create payment', $payment );
-			wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order ) );
+			wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(),
+				$order ) );
 			die;
 		}
 
-		$redirectUrl = $payment['status'] === 'started' ? $order->get_checkout_payment_url() : apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order );
+		$redirectUrl = $payment['status'] === 'started' ? $order->get_checkout_payment_url() : apply_filters( 'woocommerce_get_return_url',
+			$order->get_checkout_order_received_url(), $order );
 
 		wp_safe_redirect( $redirectUrl );
 		die;
@@ -64,11 +68,10 @@ class Integration {
 	}
 
 	protected function addGateways(): void {
-		add_filter( 'woocommerce_payment_gateways', fn($gateways) => array_merge($gateways, $this->getGateways()));
+		add_filter( 'woocommerce_payment_gateways', fn( $gateways ) => array_merge( $gateways, $this->getGateways() ) );
 	}
 
-	protected function getGateways(): array
-	{
+	protected function getGateways(): array {
 		$gateways = [];
 
 		foreach ( PaymentMethod::getAll() as $paymentMethod ) {
@@ -166,5 +169,23 @@ class Integration {
 
 			return array_merge( $action_links, $data );
 		} );
+	}
+
+	public function addMultipleCardIcons(): void {
+		$cardOptions = get_option( Integration::ID . '_icepay-card_settings', null ) ?? [];
+
+		if ( empty( $cardOptions['separated'] ) || $cardOptions['separated'] === 'no' ) {
+			return;
+		}
+
+		add_filter( 'woocommerce_gateway_icon', function ( $icon, $gateway_id ) {
+			// Change 'cod' to your specific gateway ID
+			if ( $gateway_id === 'icepay-card' ) {
+				$icon = str_replace( 'card.svg', 'mastercard.svg', $icon ) .
+				        str_replace( 'card.svg', 'visa.svg', $icon );
+			}
+
+			return $icon;
+		}, 10, 2 );
 	}
 }
