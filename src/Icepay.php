@@ -13,11 +13,11 @@ class Icepay {
 	public const EXPIRE_AFTER = Integration::ID . '_expire_after';
 
 	public static function getMerchantId(): string {
-		return get_option( self::MERCHANT_ID, null );
+		return get_option( self::MERCHANT_ID, '' );
 	}
 
 	public static function getSecret(): string {
-		return get_option( self::SECRET, null );
+		return get_option( self::SECRET, '' );
 	}
 
 	public static function areLogsEnabled(): bool {
