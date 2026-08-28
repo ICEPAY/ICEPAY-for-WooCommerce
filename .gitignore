@@ -5,3 +5,10 @@
 /node_modules
 /build
 /wordpress
+
+# Playwright e2e
+/tests/e2e/.auth/*.json
+/test-results
+/playwright-report
+/playwright/.cache
+.phpunit.result.cache

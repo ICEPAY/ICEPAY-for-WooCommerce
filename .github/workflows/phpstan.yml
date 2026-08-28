@@ -1,0 +1,27 @@
+name: PHPStan
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  phpstan:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 8.1 is the floor declared in composer.json (require.php >=8.1); analysing on the
+      # lowest supported version catches use of newer-only language features.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: intl, mbstring
+          coverage: none
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Run PHPStan
+        run: composer phpstan

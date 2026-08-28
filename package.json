@@ -14,7 +14,8 @@
     "packages-update": "wp-scripts packages-update",
     "plugin-zip": "wp-scripts plugin-zip",
     "start": "wp-scripts start",
-    "test:e2e": "wp-scripts test-e2e",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "test:unit": "wp-scripts test-unit-js",
     "build-plugin": "composer install --no-dev && pnpm install && pnpm run build && pnpm run archive",
     "archive": "zip -r $npm_package_name.zip . -x@exclude.lst"
@@ -22,6 +23,7 @@
   "author": "",
   "license": "GPLV3",
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "@woocommerce/dependency-extraction-webpack-plugin": "^5.1.0",
     "@wordpress/scripts": "^32.6.0"
   },

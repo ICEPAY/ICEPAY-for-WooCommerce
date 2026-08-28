@@ -6,12 +6,20 @@ namespace Icepay\WooCommerce;
 
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use ICEPAY\Checkout\Exceptions\ApiException;
+use ICEPAY\Checkout\Models\Status;
 use Icepay\WooCommerce\Admin\Settings;
 
 class Integration {
 	public const NAME = 'ICEPAY for WooCommerce';
 	public const ID = 'icepay-for-woocommerce';
-	public const VERSION = '1.1.2';
+	public const VERSION = '1.2.0';
+
+	public function __construct(
+		protected CheckoutClientFactory $clientFactory = new CheckoutClientFactory(),
+		protected Log $log = new Log()
+	) {
+	}
 
 	public function __invoke(): void {
 		$this->addSettings();
@@ -34,30 +42,34 @@ class Integration {
 			return;
 		}
 
-		$orderKey   = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS ) ?? null;
-		$order      = wc_get_order( wc_get_order_id_by_order_key( $orderKey ) );
-		$paymentKey = $order->get_meta( 'icepay-payment-key' );
+		$orderKey = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS ) ?? null;
+		$order    = wc_get_order( wc_get_order_id_by_order_key( $orderKey ) );
 
-		$client = new IcepayClient(
-			Icepay::getMerchantId(),
-			Icepay::getSecret(),
-		);
-
-		[ $isSuccessful, $payment ] = $client->get( $paymentKey );
-
-		if ( ! $isSuccessful ) {
-			$log = new Log();
-			$log->error( 'Unable to create payment', $payment );
-			wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(),
-				$order ) );
-			die;
+		if ( ! $order ) {
+			$this->log->warning( 'Could not resolve order for key: ' . $orderKey );
+			wp_safe_redirect( home_url( '/' ) );
+			$this->terminate();
+			return;
 		}
 
-		$redirectUrl = $payment['status'] === 'started' ? $order->get_checkout_payment_url() : apply_filters( 'woocommerce_get_return_url',
-			$order->get_checkout_order_received_url(), $order );
+		$paymentKey = $order->get_meta( 'icepay-payment-key' );
+
+		try {
+			$payment     = $this->clientFactory->create()->getCheckout( $paymentKey );
+			$redirectUrl = $payment->status === Status::started
+				? $order->get_checkout_payment_url()
+				: apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order );
+		} catch ( ApiException $e ) {
+			$this->log->error( $e->getMessage(), [ 'type' => $e->type, 'code' => $e->getCode() ] );
+			$redirectUrl = apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order );
+		}
 
 		wp_safe_redirect( $redirectUrl );
-		die;
+		$this->terminate();
+	}
+
+	protected function terminate(): void {
+		exit;
 	}
 
 	protected function addSettings(): void {
