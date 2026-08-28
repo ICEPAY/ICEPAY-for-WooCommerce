@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Icepay\WooCommerce\Admin\Tabs;
 
+use Icepay\WooCommerce\Admin\SecretField;
 use Icepay\WooCommerce\Admin\Settings;
 use Icepay\WooCommerce\Icepay;
 use Icepay\WooCommerce\Integration;
@@ -47,10 +48,9 @@ class GeneralTab implements TabInterface {
 			[
 				'id'           => Icepay::SECRET,
 				'title'        => __( 'Secret', 'icepay-for-woocommerce' ),
-				'type'         => 'password',
+				'type'         => SecretField::TYPE,
 				'desc'         => __( 'Get the Secret from your ICEPAY account.', 'icepay-for-woocommerce' ),
 				'css'          => 'width: 350px',
-				'placeholder'  => __( 'a2Cd5...', 'icepay-for-woocommerce' ),
 				'setting_type' => 'string',
 			],
 			[

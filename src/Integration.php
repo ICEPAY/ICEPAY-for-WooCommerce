@@ -6,6 +6,7 @@ namespace Icepay\WooCommerce;
 
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Icepay\WooCommerce\Admin\SecretField;
 use Icepay\WooCommerce\Admin\Settings;
 
 class Integration {
@@ -14,6 +15,7 @@ class Integration {
 	public const VERSION = '1.1.2';
 
 	public function __invoke(): void {
+		$this->addSecretEncryption();
 		$this->addSettings();
 		$this->addGateways();
 
@@ -60,7 +62,12 @@ class Integration {
 		die;
 	}
 
+	protected function addSecretEncryption(): void {
+		( new SecretEncryption( SecretStorage::fromWordPressSalt() ) )->register();
+	}
+
 	protected function addSettings(): void {
+		( new SecretField() )->register();
 		add_filter(
 			'woocommerce_get_settings_pages',
 			fn( array $data ): array => array_merge( $data, [ new Settings() ] )
