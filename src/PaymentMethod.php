@@ -5,8 +5,8 @@ declare( strict_types=1 );
 namespace Icepay\WooCommerce;
 
 class PaymentMethod {
-	/** Types for which the wait-for-clearing hold is offered: ICEPAY Pay by Bank and ICEPAY Online Ueberweisen only. */
-	protected const CLEARING_ELIGIBLE_TYPES = [ 'paybybank', 'onlineueberweisen' ];
+	/** Types for which the wait-for-clearing hold is offered: ICEPAY Pay by Bank, ICEPAY Online Ueberweisen, and ICEPAY EPS. */
+	protected const CLEARING_ELIGIBLE_TYPES = [ 'paybybank', 'onlineueberweisen', 'eps' ];
 
 	protected array $options;
 

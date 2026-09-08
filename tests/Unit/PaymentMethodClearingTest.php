@@ -36,7 +36,7 @@ final class PaymentMethodClearingTest extends TestCase
             'card is not eligible' => ['card', false],
             'bancontact is not eligible' => ['bancontact', false],
             'paypal is not eligible' => ['paypal', false],
-            'eps is not eligible' => ['eps', false],
+            'eps is eligible' => ['eps', true],
             'cartebancaire is not eligible' => ['cartebancaire', false],
             'dankort is not eligible' => ['dankort', false],
         ];
