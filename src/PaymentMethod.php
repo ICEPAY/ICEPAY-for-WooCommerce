@@ -101,11 +101,12 @@ class PaymentMethod {
 				'desc_tip' => __( 'Requires "Send Financial Status Update postback" to be enabled for this merchant in the ICEPAY Portal, otherwise the order will stay on-hold indefinitely.', 'icepay-for-woocommerce' ),
 			];
 			$formFields['clearing_threshold_amount'] = [
-				'title'             => __( 'From amount', 'icepay-for-woocommerce' ),
+				/* translators: %s: shop currency symbol, e.g. "€" */
+				'title'             => sprintf( __( 'From amount (%s)', 'icepay-for-woocommerce' ), get_woocommerce_currency_symbol() ),
 				'type'              => 'number',
 				'desc_tip'          => __( 'Only hold orders with a total at or above this amount. Leave empty or 0 to always hold while "Hold order until funds are cleared" is enabled.', 'icepay-for-woocommerce' ),
 				'css'               => 'width: 100px',
-				'default'           => '',
+				'default'           => '0.0',
 				'custom_attributes' => [
 					'step' => '0.01',
 					'min'  => '0',
