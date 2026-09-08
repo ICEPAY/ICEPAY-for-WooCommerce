@@ -38,14 +38,16 @@ class Webhook {
 			exit;
 		}
 
-		$status = match ( $data['status'] ) {
-			'completed' => 'processing',
-			'cancelled', 'expired' => 'cancelled',
-			default => 'pending',
-		};
+		$financialStatus = $data['financialStatus'] ?? null;
+		$paymentMethod   = $order->get_payment_method();
+		$orderStatus     = $order->get_status();
 
-		$paymentMethod = $order->get_payment_method();
-		$orderStatus   = $order->get_status();
+		$status = self::determineStatus(
+			$data['status'],
+			$financialStatus,
+			PaymentMethod::findByGatewayId( $paymentMethod ),
+			(float) $order->get_total()
+		);
 
 		if ( ! strpos( $paymentMethod, 'icepay' ) && $status !== 'processing' ) {
 			$log->info(
@@ -77,7 +79,22 @@ class Webhook {
 					Icepay::getDescription() ) ) . ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' ) );
 			$order->update_status( $status );
 			$order->set_transaction_id( $data['key'] );
-			$order->save();
+
+			if ( $status === 'on-hold' ) {
+				$order->add_order_note(
+					__(
+						'ICEPAY payment received but funds are not yet cleared (financial status: uncleared). Order held pending clearance.',
+						'icepay-for-woocommerce'
+					)
+				);
+			} elseif ( $status === 'processing' && $orderStatus === 'on-hold' ) {
+				$order->add_order_note(
+					__(
+						'ICEPAY financial status changed to cleared. Releasing order for shipment.',
+						'icepay-for-woocommerce'
+					)
+				);
+			}
 		} else {
 			$log->info(
 				'Did not update '
@@ -87,8 +104,43 @@ class Webhook {
 			);
 		}
 
+		if ( $financialStatus !== null ) {
+			Order::setFinancialStatus( $order, $financialStatus );
+		}
+
+		$order->save();
+
 		status_header( 200 );
 		exit;
+	}
+
+	/**
+	 * Pure decision function (no WP/WC I/O) mapping an ICEPAY webhook status + financialStatus to the
+	 * WooCommerce order status that should be applied, applying the per-payment-method clearing hold
+	 * (see TODO-008-implement-financial-status-shipment-hold.md) on top of the existing status mapping.
+	 */
+	public static function determineStatus(
+		string $icepayStatus,
+		?string $financialStatus,
+		?PaymentMethod $paymentMethod,
+		float $orderTotal
+	): string {
+		$status = match ( $icepayStatus ) {
+			'completed' => 'processing',
+			'cancelled', 'expired' => 'cancelled',
+			default => 'pending',
+		};
+
+		if (
+			$status === 'processing'
+			&& $financialStatus === 'uncleared'
+			&& $paymentMethod !== null
+			&& $paymentMethod->shouldHoldForAmount( $orderTotal )
+		) {
+			return 'on-hold';
+		}
+
+		return $status;
 	}
 
 	/** @return false|array */

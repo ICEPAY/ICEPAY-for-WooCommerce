@@ -6,6 +6,21 @@ namespace Icepay\WooCommerce;
 
 class Order
 {
+    /** Order meta key storing the last ICEPAY financialStatus ('uncleared'|'cleared') received via webhook. */
+    public const FINANCIAL_STATUS_META_KEY = '_icepay_financial_status';
+
+    public static function getFinancialStatus(\WC_Order $order): ?string
+    {
+        $status = $order->get_meta(self::FINANCIAL_STATUS_META_KEY);
+
+        return $status !== '' ? $status : null;
+    }
+
+    public static function setFinancialStatus(\WC_Order $order, string $financialStatus): void
+    {
+        $order->update_meta_data(self::FINANCIAL_STATUS_META_KEY, $financialStatus);
+    }
+
     public static function FindOrderByKey(string $key): \WC_Order|null
     {
         $orders = wc_get_orders([

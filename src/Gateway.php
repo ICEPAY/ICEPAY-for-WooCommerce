@@ -103,6 +103,19 @@ class Gateway extends WC_Payment_Gateway {
 			return new WP_Error( '1', 'Unable to refund order, could not to find order' );
 		}
 
+		if (
+			$this->paymentMethod->shouldHoldForAmount( (float) $order->get_total() )
+			&& Order::getFinancialStatus( $order ) !== 'cleared'
+		) {
+			return new WP_Error(
+				'icepay_uncleared_funds',
+				__(
+					'Unable to refund order: ICEPAY has not confirmed the funds are cleared yet for this payment method. Wait for the financial status to become "cleared" before refunding.',
+					'icepay-for-woocommerce'
+				)
+			);
+		}
+
 		$paymentKey = $order->get_meta( 'icepay-payment-key' );
 
 		if ( ! $paymentKey ) {
@@ -165,5 +178,47 @@ class Gateway extends WC_Payment_Gateway {
 		}
 
 		return rtrim( mb_strimwidth( $value, 0, $limit, '', 'UTF-8' ) ) . $end;
+	}
+
+	public function admin_options(): void {
+		parent::admin_options();
+
+		if ( $this->paymentMethod->supportsClearingHold() ) {
+			$this->renderClearingThresholdToggleScript();
+		}
+	}
+
+	/**
+	 * Shows/hides the "from amount" field depending on whether "wait for clearing" is checked, so the
+	 * threshold field only reads as relevant when the hold feature itself is enabled (progressive disclosure).
+	 */
+	protected function renderClearingThresholdToggleScript(): void {
+		$checkboxId = 'woocommerce_' . $this->id . '_wait_for_clearing';
+		$thresholdId = 'woocommerce_' . $this->id . '_clearing_threshold_amount';
+		?>
+		<script>
+			( function () {
+				var checkbox = document.getElementById( '<?php echo esc_js( $checkboxId ); ?>' );
+				var threshold = document.getElementById( '<?php echo esc_js( $thresholdId ); ?>' );
+
+				if ( ! checkbox || ! threshold ) {
+					return;
+				}
+
+				var row = threshold.closest( 'tr' );
+
+				if ( ! row ) {
+					return;
+				}
+
+				function toggle() {
+					row.style.display = checkbox.checked ? '' : 'none';
+				}
+
+				checkbox.addEventListener( 'change', toggle );
+				toggle();
+			} )();
+		</script>
+		<?php
 	}
 }

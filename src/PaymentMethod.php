@@ -5,6 +5,9 @@ declare( strict_types=1 );
 namespace Icepay\WooCommerce;
 
 class PaymentMethod {
+	/** Types for which ICEPAY's financialStatus realistically reaches "cleared" (see docs.icepay.com "Financial status"). */
+	protected const CLEARING_ELIGIBLE_TYPES = [ 'ideal', 'paybybank', 'onlineueberweisen' ];
+
 	protected array $options;
 
 	public function __construct(
@@ -89,7 +92,54 @@ class PaymentMethod {
 			];
 		}
 
+		if ( $this->supportsClearingHold() ) {
+			$formFields['wait_for_clearing'] = [
+				'title'    => __( 'Hold order until funds are cleared', 'icepay-for-woocommerce' ),
+				'label'    => __( 'Wait for the ICEPAY financial status to become "cleared" before releasing the order for shipment', 'icepay-for-woocommerce' ),
+				'type'     => 'checkbox',
+				'default'  => 'no',
+				'desc_tip' => __( 'Requires "Send Financial Status Update postback" to be enabled for this merchant in the ICEPAY Portal, otherwise the order will stay on-hold indefinitely.', 'icepay-for-woocommerce' ),
+			];
+			$formFields['clearing_threshold_amount'] = [
+				'title'             => __( 'From amount', 'icepay-for-woocommerce' ),
+				'type'              => 'number',
+				'desc_tip'          => __( 'Only hold orders with a total at or above this amount. Leave empty or 0 to always hold while "Hold order until funds are cleared" is enabled.', 'icepay-for-woocommerce' ),
+				'css'               => 'width: 100px',
+				'default'           => '',
+				'custom_attributes' => [
+					'step' => '0.01',
+					'min'  => '0',
+				],
+			];
+		}
+
 		return $formFields;
+	}
+
+	/** Whether this payment method's financialStatus realistically progresses from "uncleared" to "cleared". */
+	public function supportsClearingHold(): bool {
+		return in_array( $this->type, self::CLEARING_ELIGIBLE_TYPES, true );
+	}
+
+	public function waitsForClearing(): bool {
+		return $this->supportsClearingHold() && $this->getOption( 'wait_for_clearing' ) === 'yes';
+	}
+
+	public function getClearingThresholdAmount(): float {
+		$raw = $this->getOption( 'clearing_threshold_amount' );
+
+		return $raw !== null && $raw !== '' ? (float) $raw : 0.0;
+	}
+
+	/** Whether an order of the given total should be held/blocked pending financial status "cleared". */
+	public function shouldHoldForAmount( float $orderTotal ): bool {
+		if ( ! $this->waitsForClearing() ) {
+			return false;
+		}
+
+		$threshold = $this->getClearingThresholdAmount();
+
+		return $threshold <= 0.0 || $orderTotal >= $threshold;
 	}
 
 	protected function getOptions(): array {
@@ -118,5 +168,15 @@ class PaymentMethod {
 			new PaymentMethod( 'dankort', 'Dankort', '', 'dankort.svg' ),
 			new PaymentMethod( 'paybybank', 'Pay by Bank', '', 'paybybank.svg' ),
 		];
+	}
+
+	public static function findByGatewayId( string $gatewayId ): ?self {
+		foreach ( self::getAll() as $paymentMethod ) {
+			if ( $paymentMethod->getId() === $gatewayId ) {
+				return $paymentMethod;
+			}
+		}
+
+		return null;
 	}
 }
