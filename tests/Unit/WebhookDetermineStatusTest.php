@@ -106,18 +106,18 @@ final class WebhookDetermineStatusTest extends TestCase
 
     protected function holdingMethod(float $thresholdAmount): PaymentMethod
     {
-        \icepay_test_set_option('icepay-for-woocommerce_icepay-ideal_settings', [
+        \icepay_test_set_option('icepay-for-woocommerce_icepay-paybybank_settings', [
             'wait_for_clearing' => 'yes',
             'clearing_threshold_amount' => (string) $thresholdAmount,
         ]);
 
-        return new PaymentMethod('ideal', 'iDEAL', '', 'ideal.svg');
+        return new PaymentMethod('paybybank', 'Pay by Bank', '', 'paybybank.svg');
     }
 
     protected function nonHoldingMethod(): PaymentMethod
     {
-        \icepay_test_set_option('icepay-for-woocommerce_icepay-ideal_settings', []);
+        \icepay_test_set_option('icepay-for-woocommerce_icepay-paybybank_settings', []);
 
-        return new PaymentMethod('ideal', 'iDEAL', '', 'ideal.svg');
+        return new PaymentMethod('paybybank', 'Pay by Bank', '', 'paybybank.svg');
     }
 }

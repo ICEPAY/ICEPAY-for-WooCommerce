@@ -30,7 +30,7 @@ final class PaymentMethodClearingTest extends TestCase
     public static function eligibleTypesProvider(): array
     {
         return [
-            'ideal is eligible' => ['ideal', true],
+            'ideal is not eligible' => ['ideal', false],
             'paybybank is eligible' => ['paybybank', true],
             'onlineueberweisen is eligible' => ['onlineueberweisen', true],
             'card is not eligible' => ['card', false],
@@ -44,14 +44,14 @@ final class PaymentMethodClearingTest extends TestCase
 
     public function testWaitsForClearingIsFalseByDefault(): void
     {
-        $method = $this->makePaymentMethod('ideal');
+        $method = $this->makePaymentMethod('paybybank');
 
         $this->assertFalse($method->waitsForClearing());
     }
 
     public function testWaitsForClearingReflectsSetting(): void
     {
-        $method = $this->makePaymentMethod('ideal', ['wait_for_clearing' => 'yes']);
+        $method = $this->makePaymentMethod('paybybank', ['wait_for_clearing' => 'yes']);
 
         $this->assertTrue($method->waitsForClearing());
     }
@@ -67,14 +67,14 @@ final class PaymentMethodClearingTest extends TestCase
 
     public function testClearingThresholdAmountDefaultsToZero(): void
     {
-        $method = $this->makePaymentMethod('ideal', ['wait_for_clearing' => 'yes']);
+        $method = $this->makePaymentMethod('paybybank', ['wait_for_clearing' => 'yes']);
 
         $this->assertSame(0.0, $method->getClearingThresholdAmount());
     }
 
     public function testClearingThresholdAmountIsCastFromStoredString(): void
     {
-        $method = $this->makePaymentMethod('ideal', [
+        $method = $this->makePaymentMethod('paybybank', [
             'wait_for_clearing' => 'yes',
             'clearing_threshold_amount' => '49.95',
         ]);
@@ -84,14 +84,14 @@ final class PaymentMethodClearingTest extends TestCase
 
     public function testShouldHoldForAmountIsFalseWhenHoldDisabled(): void
     {
-        $method = $this->makePaymentMethod('ideal', ['clearing_threshold_amount' => '10']);
+        $method = $this->makePaymentMethod('paybybank', ['clearing_threshold_amount' => '10']);
 
         $this->assertFalse($method->shouldHoldForAmount(100.0));
     }
 
     public function testShouldHoldForAmountAlwaysHoldsWhenThresholdIsZeroOrEmpty(): void
     {
-        $method = $this->makePaymentMethod('ideal', ['wait_for_clearing' => 'yes']);
+        $method = $this->makePaymentMethod('paybybank', ['wait_for_clearing' => 'yes']);
 
         $this->assertTrue($method->shouldHoldForAmount(0.01));
         $this->assertTrue($method->shouldHoldForAmount(0.0));
@@ -99,7 +99,7 @@ final class PaymentMethodClearingTest extends TestCase
 
     public function testShouldHoldForAmountBoundaryJustBelowThresholdDoesNotHold(): void
     {
-        $method = $this->makePaymentMethod('ideal', [
+        $method = $this->makePaymentMethod('paybybank', [
             'wait_for_clearing' => 'yes',
             'clearing_threshold_amount' => '50',
         ]);
@@ -109,7 +109,7 @@ final class PaymentMethodClearingTest extends TestCase
 
     public function testShouldHoldForAmountBoundaryExactlyAtThresholdHolds(): void
     {
-        $method = $this->makePaymentMethod('ideal', [
+        $method = $this->makePaymentMethod('paybybank', [
             'wait_for_clearing' => 'yes',
             'clearing_threshold_amount' => '50',
         ]);
@@ -119,7 +119,7 @@ final class PaymentMethodClearingTest extends TestCase
 
     public function testShouldHoldForAmountBoundaryJustAboveThresholdHolds(): void
     {
-        $method = $this->makePaymentMethod('ideal', [
+        $method = $this->makePaymentMethod('paybybank', [
             'wait_for_clearing' => 'yes',
             'clearing_threshold_amount' => '50',
         ]);
@@ -129,10 +129,10 @@ final class PaymentMethodClearingTest extends TestCase
 
     public function testFindByGatewayIdReturnsMatchingMethod(): void
     {
-        $method = PaymentMethod::findByGatewayId('icepay-ideal');
+        $method = PaymentMethod::findByGatewayId('icepay-paybybank');
 
         $this->assertNotNull($method);
-        $this->assertSame('icepay-ideal', $method->getId());
+        $this->assertSame('icepay-paybybank', $method->getId());
     }
 
     public function testFindByGatewayIdReturnsNullForUnknownGateway(): void
