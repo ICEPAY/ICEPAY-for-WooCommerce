@@ -5,3 +5,4 @@
 /node_modules
 /build
 /wordpress
+/.phpunit.result.cache
