@@ -8,9 +8,7 @@ use Icepay\WooCommerce\PaymentMethod;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Covers the "hold shipment until financial status cleared" logic added for
- * TODO-008-implement-financial-status-shipment-hold.md: eligibility, the per-method
- * settings, and the amount-threshold rule shared by Webhook and Gateway::process_refund().
+ * Covers the "hold shipment until financial status cleared" logic.
  */
 final class PaymentMethodClearingTest extends TestCase
 {

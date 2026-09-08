@@ -114,11 +114,6 @@ class Webhook {
 		exit;
 	}
 
-	/**
-	 * Pure decision function (no WP/WC I/O) mapping an ICEPAY webhook status + financialStatus to the
-	 * WooCommerce order status that should be applied, applying the per-payment-method clearing hold
-	 * (see TODO-008-implement-financial-status-shipment-hold.md) on top of the existing status mapping.
-	 */
 	public static function determineStatus(
 		string $icepayStatus,
 		?string $financialStatus,

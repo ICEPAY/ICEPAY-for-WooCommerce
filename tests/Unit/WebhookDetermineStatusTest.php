@@ -10,9 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Covers Webhook::determineStatus(), the pure decision function extracted from Webhook::handle() so
- * the ICEPAY status + financialStatus -> WooCommerce order status mapping (including the clearing
- * hold from TODO-008-implement-financial-status-shipment-hold.md) can be tested without booting
- * WordPress/WooCommerce.
+ * the ICEPAY status + financialStatus -> WooCommerce order status mapping.
  */
 final class WebhookDetermineStatusTest extends TestCase
 {

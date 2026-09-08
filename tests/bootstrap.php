@@ -3,11 +3,10 @@
 /**
  * Minimal PHPUnit bootstrap for pure-logic unit tests.
  *
- * This intentionally does NOT boot WordPress/WooCommerce (no test suite for that exists yet, see
- * TODO-004). It only stubs the handful of global functions needed by the classes under test so that
+ * This intentionally does not boot WordPress/WooCommerce (no test suite for that exists yet).
+ * It only stubs the handful of global functions needed by the classes under test so that
  * decision logic (PaymentMethod clearing-hold rules, Webhook::determineStatus()) can be unit tested
- * in isolation. Do not grow this file into a WP/WC emulation layer — that belongs to TODO-004's
- * proper WP-Mock/Brain\Monkey (or wp-phpunit) based test harness.
+ * in isolation. Do not grow this file into a WP/WC emulation layer.
  */
 
 declare(strict_types=1);
