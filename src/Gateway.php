@@ -193,8 +193,8 @@ class Gateway extends WC_Payment_Gateway {
 	 * threshold field only reads as relevant when the hold feature itself is enabled (progressive disclosure).
 	 */
 	protected function renderClearingThresholdToggleScript(): void {
-		$checkboxId = 'woocommerce_' . $this->id . '_wait_for_clearing';
-		$thresholdId = 'woocommerce_' . $this->id . '_clearing_threshold_amount';
+		$checkboxId = $this->get_field_key( 'wait_for_clearing' );
+		$thresholdId = $this->get_field_key( 'clearing_threshold_amount' );
 		?>
 		<script>
 			( function () {
