@@ -49,38 +49,51 @@ class Gateway extends WC_Payment_Gateway {
 		$order     = wc_get_order( $order_id );
 		$reference = str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() );
 
-		[ $isSuccessful, $payment ] = $client->create(
-			[
-				'reference'     => $reference,
-				'amount'        => [
-					'value'    => (int) round( $order->get_total() * 100 ),
-					'currency' => $order->get_currency(),
-				],
-				'paymentMethod' => [
-					'type' => $this->paymentMethod->getType(),
-				],
-				'customer'      => [
-					'email'   => $this->limit( $order->get_billing_email(), 128 ),
-					'address' => [
-						'country'     => $this->limit( $order->get_billing_country(), 2 ),
-						'city'        => $this->limit( $order->get_billing_city(), 254 ),
-						'postalCode'  => $this->limit( $order->get_billing_postcode(), 31 ),
-						'streetName'  => $this->limit( $order->get_billing_address_1(), 128 ),
-						'houseNumber' => $this->limit( $order->get_billing_address_2(), 31 ),
-					]
-				],
-				'expireAfter'   => Icepay::getExpireAfter(),
-				'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
-				'redirectUrl'   => $this->getRedirectUrl( $order ),
-				'meta'          => [
-					'integration' => [
-						'type'      => 'woocommerce',
-						'version'   => Integration::VERSION,
-						'developer' => 'ICEPAY',
-					],
+		$body = [
+			'reference'     => $reference,
+			'amount'        => [
+				'value'    => (int) round( $order->get_total() * 100 ),
+				'currency' => $order->get_currency(),
+			],
+			'paymentMethod' => [
+				'type' => $this->paymentMethod->getType(),
+			],
+			'customer'      => [
+				'email'     => $this->limit( $order->get_billing_email(), 128 ),
+				'firstname' => $this->limit( $order->get_billing_first_name(), 128 ),
+				'lastname'  => $this->limit( $order->get_billing_last_name(), 128 ),
+				'ip'        => $order->get_customer_ip_address(),
+				'address'   => [
+					'country'     => $this->limit( $order->get_billing_country(), 2 ),
+					'city'        => $this->limit( $order->get_billing_city(), 254 ),
+					'postalCode'  => $this->limit( $order->get_billing_postcode(), 31 ),
+					'streetName'  => $this->limit( $order->get_billing_address_1(), 128 ),
+					'houseNumber' => $this->limit( $order->get_billing_address_2(), 31 ),
 				]
+			],
+			'cart'          => [],
+			'expireAfter'   => Icepay::getExpireAfter(),
+			'webhookUrl'    => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
+			'redirectUrl'   => $this->getRedirectUrl( $order ),
+			'meta'          => [
+				'integration' => [
+					'type'      => 'woocommerce',
+					'version'   => Integration::VERSION,
+					'developer' => 'ICEPAY',
+				],
 			]
-		);
+		];
+
+		$items = $order->get_items();
+		foreach ( $items as $id => $item ) {
+			$body['cart'][] = [
+				'id'          => $item->get_id(),
+				'description' => $item->get_name(),
+				'amount'      => (int) round( $item->get_total() * 100 ),
+			];
+		}
+
+		[ $isSuccessful, $payment ] = $client->create( $body );
 
 		if ( ! $isSuccessful ) {
 			$this->log->error( 'Unable to create payment ', $payment );
