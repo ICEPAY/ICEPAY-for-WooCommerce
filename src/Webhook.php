@@ -30,7 +30,7 @@ class Webhook {
 		}
 
 		$log->info( 'got postback and could validate it.' );
-		$order = Order::FindOrderByKey( $data['key'] );
+		$order = wc_get_order( $data['meta']['woocommerce']['order_id'] );
 
 		if ( ! $order ) {
 			$log->warning( 'Order not found' );
@@ -41,6 +41,7 @@ class Webhook {
 		$status = match ( $data['status'] ) {
 			'completed' => 'processing',
 			'cancelled', 'expired' => 'cancelled',
+			'pending' => 'on-hold',
 			default => 'pending',
 		};
 
@@ -76,8 +77,13 @@ class Webhook {
 			$log->info( 'Updating ' . ( str_replace( '{ORDER_ID}', $order->get_order_number(),
 					Icepay::getDescription() ) ) . ' status to ' . $status . ' for ' . ( $data['key'] ?? 'key-not-found' ) );
 			$order->update_status( $status );
-			$order->set_transaction_id( $data['key'] );
 			$order->save();
+
+			if ( $status === 'processing' ) {
+				$order->set_transaction_id( $data['key'] );
+				$order->save();
+			}
+
 		} else {
 			$log->info(
 				'Did not update '

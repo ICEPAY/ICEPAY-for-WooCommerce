@@ -78,6 +78,9 @@ class Gateway extends WC_Payment_Gateway {
 						'version'   => Integration::VERSION,
 						'developer' => 'ICEPAY',
 					],
+					'woocommerce' => [
+						'order_id' => $order->get_id(),
+					]
 				]
 			]
 		);
@@ -88,7 +91,7 @@ class Gateway extends WC_Payment_Gateway {
 			return [ 'result' => 'failure' ];
 		}
 
-		$this->addPaymentKey( $order, $payment['key'] );
+		Order::AddPaymentKey( $order, $payment['key'] );
 		$this->log->info( 'Create payment', $payment );
 
 		return [
@@ -103,7 +106,7 @@ class Gateway extends WC_Payment_Gateway {
 			return new WP_Error( '1', 'Unable to refund order, could not to find order' );
 		}
 
-		$paymentKey = $order->get_meta( 'icepay-payment-key' );
+		$paymentKey = $order->get_transaction_id();
 
 		if ( ! $paymentKey ) {
 			return new WP_Error( '1', 'Unable to refund order, could not find payment key related to order' );
@@ -136,27 +139,8 @@ class Gateway extends WC_Payment_Gateway {
 		$url = untrailingslashit( $this->get_return_url( $order ) );
 
 		return add_query_arg( [
-			'key'        => $order->get_order_key(),
 			'via-icepay' => true,
 		], $url );
-	}
-
-	protected function addPaymentKey( $order, string $key ): void {
-		$currentKey = $order->get_meta( 'icepay-payment-key' );
-		if ( $currentKey === $key ) {
-			return;
-		}
-
-		/* translators: 1: ICEPAY Checkout Key */
-		$order->add_order_note(
-			sprintf(
-				__( 'ICEPAY payment created with key: %1$s', 'icepay-for-woocommerce' ),
-				$key
-			)
-		);
-
-		$order->update_meta_data( 'icepay-payment-key', $key );
-		$order->save();
 	}
 
 	protected function limit( $value, $limit = 100, $end = '' ): string {

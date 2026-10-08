@@ -34,29 +34,49 @@ class Integration {
 			return;
 		}
 
-		$orderKey   = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS ) ?? null;
-		$order      = wc_get_order( wc_get_order_id_by_order_key( $orderKey ) );
-		$paymentKey = $order->get_meta( 'icepay-payment-key' );
+		$orderKey = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS ) ?: null;
+		$order    = wc_get_order( wc_get_order_id_by_order_key( $orderKey ) );
+		$log      = new Log();
+
+		// todo: check if order is already paid
+		if ( ! $order->needs_payment() ) {
+			$log->debug( 'Order does not require payment' );
+			wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(),
+				$order ) );
+		}
 
 		$client = new IcepayClient(
 			Icepay::getMerchantId(),
 			Icepay::getSecret(),
 		);
 
-		[ $isSuccessful, $payment ] = $client->get( $paymentKey );
+		$paymentKeys = $order->get_meta( 'icepay-payment-key' );
+		$keys        = str_contains( $paymentKeys, ',' ) ? explode( ',', $paymentKeys ) : [ $paymentKeys ];
 
-		if ( ! $isSuccessful ) {
-			$log = new Log();
-			$log->error( 'Unable to create payment', $payment );
-			wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(),
-				$order ) );
-			die;
+		$log->debug( 'Payment keys are: ' . implode( ', ', $keys ), [
+			'orderKey' => $orderKey,
+			'order'    => $order,
+		] );
+
+		foreach ( $keys as $key ) {
+			[ $isSuccessful, $payment ] = $client->get( $key );
+
+			if ( ! $isSuccessful ) {
+				continue;
+			}
+
+			if ( $order->get_id() !== ( $payment['meta']['woocommerce']['order_id'] ?? '' ) ) {
+				continue;
+			}
+
+			if ( $payment['status'] === 'completed' || $payment['status'] === 'pending' ) {
+				wp_safe_redirect( apply_filters( 'woocommerce_get_return_url',
+					$order->get_checkout_order_received_url(), $order ) );
+				die;
+			}
 		}
 
-		$redirectUrl = $payment['status'] === 'started' ? $order->get_checkout_payment_url() : apply_filters( 'woocommerce_get_return_url',
-			$order->get_checkout_order_received_url(), $order );
-
-		wp_safe_redirect( $redirectUrl );
+		wp_safe_redirect( $order->get_checkout_payment_url() );
 		die;
 	}
 
