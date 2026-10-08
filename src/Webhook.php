@@ -47,7 +47,7 @@ class Webhook {
 		$paymentMethod = $order->get_payment_method();
 		$orderStatus   = $order->get_status();
 
-		if ( ! strpos( $paymentMethod, 'icepay' ) && $status !== 'processing' ) {
+		if ( ! str_starts_with( $paymentMethod, 'icepay' ) && $status !== 'processing' ) {
 			$log->info(
 				'Order ' . $order->get_id() . ': ICEPAY webhook received, but payment was also started via ' .
 				$paymentMethod . '. ICEPAY has not order status not updated.', [
