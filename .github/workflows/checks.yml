@@ -1,0 +1,49 @@
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: intl, mbstring, zip
+          tools: composer
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.20.2'
+      - uses: pnpm/action-setup@v4
+      - run: composer install --prefer-dist --no-interaction
+      - run: composer check
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - name: Start disposable WordPress
+        run: |
+          mkdir -p wordpress
+          chmod 777 wordpress
+          docker compose up -d --build app db
+          for i in $(seq 1 60); do
+            if docker compose exec -T app wp core version; then break; fi
+            sleep 5
+          done
+          docker compose exec -T app wp core install --url=http://localhost --title=ICEPAY-CI --admin_user=admin --admin_password=ci-only-password --admin_email=ci@example.invalid --skip-email
+          docker compose exec -T app wp plugin install woocommerce --activate
+          docker compose exec -T app wp plugin activate icepay-for-woocommerce
+          docker compose exec -T app wp option update woocommerce_custom_orders_table_enabled yes
+      - run: composer test
+      - name: Browser attribution checks
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+          WORDPRESS_URL: http://localhost
+        run: pnpm run test:attribution
+      - name: Build and validate release artifact
+        run: |
+          composer install --no-dev --prefer-dist --no-interaction
+          pnpm run archive
+          pnpm run check:archive
+      - if: always()
+        run: docker compose down -v

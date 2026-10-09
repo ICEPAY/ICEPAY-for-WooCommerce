@@ -16,8 +16,10 @@
     "start": "wp-scripts start",
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js",
-    "build-plugin": "composer install --no-dev && pnpm install && pnpm run build && pnpm run archive",
-    "archive": "zip -r $npm_package_name.zip . -x@exclude.lst"
+    "test:attribution": "node tests/Browser/order-attribution.cjs",
+    "build-plugin": "composer install --no-dev --prefer-dist --no-interaction && pnpm install --frozen-lockfile && pnpm run build && pnpm run archive",
+    "archive": "zip -qr $npm_package_name.zip . -x@exclude.lst",
+    "check:archive": "php scripts/check-archive.php icepay-for-woocommerce.zip"
   },
   "author": "",
   "license": "GPLV3",

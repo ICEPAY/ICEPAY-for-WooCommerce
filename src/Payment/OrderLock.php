@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Icepay\WooCommerce;
+namespace Icepay\WooCommerce\Payment;
 
 /** Connection-scoped locks also release automatically if a request crashes. */
 class OrderLock {

@@ -33,14 +33,61 @@
 Run against the disposable Docker development store:
 
 ```console
-docker compose exec -T app wp eval-file wp-content/plugins/icepay-for-woocommerce/tests/payment-reliability.php
+composer test
 ```
 
 The script intercepts ICEPAY HTTP requests and outgoing email, creates temporary
 orders/products, and removes them afterward. It verifies payment completion,
 stock and hook idempotency, late notifications, status-only completion, safe retries, creation
-timeouts, explicit payment refreshes, queued-job cleanup, and database-lock contention. Merchant credentials are
+timeouts, explicit payment refreshes, and database-lock contention. Merchant credentials are
 temporarily replaced and restored; do not run it against a production store.
+
+Run a single independent suite:
+
+```console
+docker compose exec -T app wp eval-file wp-content/plugins/icepay-for-woocommerce/tests/run.php PaymentCreation
+```
+
+Available suites: `PaymentStatus`, `ProviderConflict`, `PaymentCreation`,
+`OrderLock`, and `PaymentReturn`. Each suite resets its mocks, credentials, counters,
+and fixtures. Shared setup lives in `tests/bootstrap.php` and `tests/Support/`.
+
+Local verification commands:
+
+```console
+composer install
+composer check
+composer test
+pnpm install --frozen-lockfile
+pnpm run build
+pnpm run test:attribution
+```
+
+The browser test requires the Docker store and Chrome. Set `CHROME_BIN` if needed,
+and `WORDPRESS_URL` if the local HTTP entry point is not `http://localhost`. It
+creates/removes a paid test order, checks the real plugin return header, then
+exercises the installed Sourcebuster script across simulated payment navigation.
+It covers expired sessions, Direct, campaigns, referrals, and absent tracking cookies.
+
+PHP checks use a small correctness ruleset (`phpcs.xml`) and PHPStan level 1.
+No PHPUnit dependency is needed for the WP-CLI integration runner. CI executes
+the checks, independent suites, browser test, build, and archive validation on a
+disposable HPOS-enabled store. `pnpm run check:archive` validates release contents.
+
+## Code structure
+
+- `Integration.php`: hook registration and plugin integration.
+- `Gateway.php`: WooCommerce gateway settings, checkout notices, and refunds.
+- `Payment/PaymentService.php`: locked payment creation and previous-attempt checks.
+- `Payment/PaymentRequestBuilder.php`: ICEPAY request payload and return URL.
+- `Payment/PaymentStatusHandler.php`: validated, idempotent status transitions.
+- `Payment/PaymentAttempts.php`: attempt metadata and legacy payment-key lookup.
+- `Payment/OrderLock.php`: database connection-scoped concurrency protection.
+- `Checkout/`: return, retry, and receipt controllers.
+- `Api/IcepayClient.php`: ICEPAY HTTP transport, injectable into payment handlers.
+
+The refactor keeps existing order metadata keys and payment policies compatible.
+Frontend dependencies and cache versions come from `build/index.asset.php`.
 
 For release verification, also exercise classic and Blocks checkout in a browser:
 successful payment, pending confirmation, cancellation followed by retry, and
@@ -67,8 +114,7 @@ reconcile it rather than clearing the marker and creating a second payment.
 
 Webhooks are primary. Customer returns and checkout retries can explicitly retrieve
 payment state from ICEPAY. No background reconciliation checks or fallback retries
-are scheduled. A one-time migration cancels previously queued
-`icepay_reconcile_payment` actions in the `icepay` Action Scheduler group.
+are scheduled.
 
 Payment completion uses only ICEPAY's `status`: `completed` confirms payment for
 every payment method. `financialStatus` is ignored. Pending payments stay on hold.
@@ -91,9 +137,9 @@ Historical ICEPAY returns still redirect to a clean receipt URL to suppress the
 payment provider's referrer. Webhooks continue to reconcile
 historical ICEPAY attempts.
 
-The regression script covers representative Mollie, MultiSafepay, and Pay.nl
-gateway IDs, simulating external completion through WooCommerce. It does not run
-those providers' actual callbacks. For release verification, install the relevant
+The regression script covers generic external payment gateway IDs, simulating
+external completion through WooCommerce. It does not run external providers'
+actual callbacks. For release verification, install the relevant
 provider and test switching in both directions, notification ordering, refunds,
 and classic/Blocks checkout styling. ICEPAY's order lock only serialises ICEPAY
 requests; another plugin's simultaneous writes do not participate in that lock.

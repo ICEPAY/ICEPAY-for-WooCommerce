@@ -2,14 +2,16 @@
 
 declare( strict_types=1 );
 
-namespace Icepay\WooCommerce;
+namespace Icepay\WooCommerce\Payment;
 
-class Order {
+use Icepay\WooCommerce\Icepay;
+
+class PaymentAttempts {
 	public static function isIcepay( \WC_Order $order ): bool {
 		return str_starts_with( $order->get_payment_method(), 'icepay-' );
 	}
 
-	public static function FindOrderByKey( string $key ): \WC_Order|null {
+	public static function findOrderByKey( string $key ): \WC_Order|null {
 		$orders = wc_get_orders( [
 			'limit'        => -1,
 			'meta_key'     => 'icepay-payment-key',
@@ -26,7 +28,7 @@ class Order {
 		return null;
 	}
 
-	public static function AddPaymentKey( $order, string $key ): void {
+	public static function addPaymentKey( $order, string $key ): void {
 		$currentKeys = $order->get_meta( 'icepay-payment-key' );
 
 		if ( in_array( $key, explode( ',', (string) $currentKeys ), true ) ) {
@@ -77,7 +79,7 @@ class Order {
 		], ...$attempts ];
 		$order->update_meta_data( '_icepay_attempts', $attempts );
 		$order->delete_meta_data( '_icepay_creation_uncertain' );
-		self::AddPaymentKey( $order, $key );
+		self::addPaymentKey( $order, $key );
 	}
 
 	public static function activeKey( \WC_Order $order ): string {

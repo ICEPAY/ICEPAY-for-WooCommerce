@@ -2,9 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Icepay\WooCommerce;
+namespace Icepay\WooCommerce\Api;
 
 class IcepayClient {
+	public static function fromSettings(): self {
+		return new self( \Icepay\WooCommerce\Icepay::getMerchantId(), \Icepay\WooCommerce\Icepay::getSecret() );
+	}
+
 	protected const Endpoint = 'https://checkout.icepay.com/api';
 
 	public function __construct(

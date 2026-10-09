@@ -2,12 +2,22 @@
 
 declare( strict_types=1 );
 
-namespace Icepay\WooCommerce;
+namespace Icepay\WooCommerce\Payment;
 
+use Icepay\WooCommerce\Api\IcepayClient;
+use Icepay\WooCommerce\Icepay;
+use Icepay\WooCommerce\PaymentMethod;
+use Icepay\WooCommerce\Payment\PaymentAttempts as Order;
 use WC_Order;
 use WP_Error;
 
-class PaymentStatus {
+class PaymentStatusHandler {
+	protected IcepayClient $client;
+
+	public function __construct( ?IcepayClient $client = null ) {
+		$this->client = $client ?? IcepayClient::fromSettings();
+	}
+
 	public function refresh( WC_Order $order, string $key ): array|WP_Error {
 		$id = $order->get_id();
 		if ( ! OrderLock::acquire( $id ) ) {
@@ -15,7 +25,7 @@ class PaymentStatus {
 		}
 		try {
 			$order = wc_get_order( $id );
-			[ $success, $payment ] = ( new IcepayClient( Icepay::getMerchantId(), Icepay::getSecret() ) )->get( $key );
+			[ $success, $payment ] = $this->client->get( $key );
 			if ( ! $success || ( $payment['key'] ?? '' ) !== $key ) {
 				return new WP_Error( 'unavailable', 'Unable to retrieve payment state.' );
 			}

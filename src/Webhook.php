@@ -2,7 +2,16 @@
 
 namespace Icepay\WooCommerce;
 
+use Icepay\WooCommerce\Payment\PaymentAttempts as Order;
+use Icepay\WooCommerce\Payment\PaymentStatusHandler;
+
 class Webhook {
+	protected PaymentStatusHandler $statusHandler;
+
+	public function __construct( ?PaymentStatusHandler $statusHandler = null ) {
+		$this->statusHandler = $statusHandler ?? new PaymentStatusHandler();
+	}
+
 	public function handle(): void {
 		$log = new Log();
 		$log->info( 'got postback via webhook' );
@@ -58,7 +67,7 @@ class Webhook {
 
 		try {
 			// Notifications have no reliable sequence number; retrieve current state once.
-			$result = ( new PaymentStatus() )->refresh( $order, $data['key'] );
+			$result = $this->statusHandler->refresh( $order, $data['key'] );
 			if ( is_wp_error( $result ) ) {
 				$log->warning( $result->get_error_message(), [ 'order' => $order->get_id(), 'key' => $data['key'] ] );
 				status_header( in_array( $result->get_error_code(), [ 'busy', 'unavailable' ], true ) ? 503 : 422 );
@@ -76,8 +85,7 @@ class Webhook {
 		return $secret !== '' && is_string( $received )
 		       && hash_equals( base64_encode( hash_hmac( 'sha256', $body, $secret, true ) ), $received );
 	}
-
-	/** @return false|array */
+	
 	protected function getHeader(): false|array {
 		if ( ! function_exists( 'getallheaders' ) ) {
 			$headers = [];
