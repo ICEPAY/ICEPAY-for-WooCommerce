@@ -27,3 +27,92 @@
     ```console
     make install
     ```
+
+## Payment reliability regression checks
+
+Run against the disposable Docker development store:
+
+```console
+docker compose exec -T app wp eval-file wp-content/plugins/icepay-for-woocommerce/tests/payment-reliability.php
+```
+
+The script intercepts ICEPAY HTTP requests and outgoing email, creates temporary
+orders/products, and removes them afterward. It verifies payment completion,
+stock and hook idempotency, late notifications, status-only completion, safe retries, creation
+timeouts, explicit payment refreshes, queued-job cleanup, and database-lock contention. Merchant credentials are
+temporarily replaced and restored; do not run it against a production store.
+
+For release verification, also exercise classic and Blocks checkout in a browser:
+successful payment, pending confirmation, cancellation followed by retry, and
+switching payment methods. Confirm the return page, emails, and order state.
+
+### Recovering an unknown payment-creation outcome
+
+Each eligible checkout submission creates a fresh payment for the selected method.
+Previously started payments are neither reused nor cancelled, and their keys remain
+in the order's attempt history for late notifications. A previous pending payment
+still blocks another creation while its result is being confirmed. Late success
+from an older attempt can complete the order; additional successes are flagged as
+possible duplicate charges.
+
+ICEPAY's public API documentation does not specify an idempotency header or a
+payment lookup by merchant reference. A timeout or interrupted creation therefore
+blocks another creation for that order. A subsequent verified webhook can recover
+the payment using the persisted creation token and the authenticated API response.
+
+If no webhook arrives, review the order in the ICEPAY Portal before retrying. If
+the Portal confirms no payment was created, clear `_icepay_creation_uncertain`
+using WooCommerce order metadata APIs (including for HPOS). If a payment exists,
+reconcile it rather than clearing the marker and creating a second payment.
+
+Webhooks are primary. Customer returns and checkout retries can explicitly retrieve
+payment state from ICEPAY. No background reconciliation checks or fallback retries
+are scheduled. A one-time migration cancels previously queued
+`icepay_reconcile_payment` actions in the `icepay` Action Scheduler group.
+
+Payment completion uses only ICEPAY's `status`: `completed` confirms payment for
+every payment method. `financialStatus` is ignored. Pending payments stay on hold.
+
+### Multiple payment providers
+
+ICEPAY uses a **complete and flag** policy for a verified successful payment on
+an unpaid order that has switched to another provider. It completes the order
+through WooCommerce, changes the gateway to the actual ICEPAY method, and adds a
+merchant-review note. The previous gateway, title, and transaction ID are retained
+in that attempt's `provider_conflict` metadata for reconciliation/refund review.
+Repeated notifications do not repeat the conflict note or payment completion.
+
+If the order is already paid, ICEPAY preserves its gateway, transaction ID, and
+order status, and flags the additional payment once as a possible duplicate.
+Pending, cancellation, and expiry updates only update ICEPAY attempt history
+when another provider owns the order. ICEPAY receipt messages and old return/retry
+links leave payment state and messages on orders assigned to other gateways alone.
+Historical ICEPAY returns still redirect to a clean receipt URL to suppress the
+payment provider's referrer. Webhooks continue to reconcile
+historical ICEPAY attempts.
+
+The regression script covers representative Mollie, MultiSafepay, and Pay.nl
+gateway IDs, simulating external completion through WooCommerce. It does not run
+those providers' actual callbacks. For release verification, install the relevant
+provider and test switching in both directions, notification ordering, refunds,
+and classic/Blocks checkout styling. ICEPAY's order lock only serialises ICEPAY
+requests; another plugin's simultaneous writes do not participate in that lock.
+Check both provider dashboards for duplicate charges after a conflict note.
+
+### Order attribution on payment returns
+
+Validated ICEPAY returns send `Referrer-Policy: no-referrer` on the redirect to the
+clean order-received URL. This prevents WooCommerce's browser attribution tracker
+from treating ICEPAY checkout as a new referral when its tracking session expires.
+The policy also applies to historical ICEPAY returns after switching providers,
+without refreshing that order's payment state.
+
+Existing attribution cookies and saved order metadata are preserved. Direct
+visitors remain direct; existing campaign and genuine referral sources are retained.
+If attribution cookies are gone, the return is a direct visit rather than an ICEPAY
+referral. This does not repair cookies or orders already attributed to ICEPAY.
+
+Browser verification: enter the store directly or with campaign/referral data,
+pay through ICEPAY, expire only the `sbjs_session` cookie, then return. Confirm
+`document.referrer` is empty on the clean receipt page and Sourcebuster retains the
+original source. Repeat for classic and Blocks checkout and a subsequent order.

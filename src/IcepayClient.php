@@ -18,15 +18,15 @@ class IcepayClient {
 	}
 
 	public function cancel( string $id ): array {
-		return $this->do( '/payments/' . $id . '/cancel', method: 'POST' );
+		return $this->do( '/payments/' . rawurlencode( $id ) . '/cancel', method: 'POST' );
 	}
 
 	public function get( string $id ): array {
-		return $this->do( '/payments/' . $id );
+		return $this->do( '/payments/' . rawurlencode( $id ) );
 	}
 
 	public function refund( string $id, array $data ): array {
-		return $this->do( '/payments/' . $id . '/refund', $data, 'POST' );
+		return $this->do( '/payments/' . rawurlencode( $id ) . '/refund', $data, 'POST' );
 	}
 
 	protected function do( string $uri, ?array $body = null, string $method = 'GET' ): array {
@@ -46,7 +46,10 @@ class IcepayClient {
 		];
 
 		if ( $body ) {
-			$request_args['body'] = json_encode( $body );
+			$request_args['body'] = wp_json_encode( $body );
+			if ( $request_args['body'] === false ) {
+				return [ false, [ 'message' => 'Unable to encode payment request.', 'uncertain' => false ] ];
+			}
 		}
 
 		$response = wp_remote_request(
@@ -55,7 +58,7 @@ class IcepayClient {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return [ false, [ 'message' => $response->get_error_message() ] ];
+			return [ false, [ 'message' => $response->get_error_message(), 'uncertain' => $method === 'POST' ] ];
 		}
 
 		$responseBody          = json_decode( wp_remote_retrieve_body( $response ), true );
@@ -66,11 +69,15 @@ class IcepayClient {
 			return [
 				false,
 				[
-					'message' => $responseStatusCode . ': ' . $responseStatusMessage . '<br>'
-					             . 'message: ' . $responseBody['message'] . '<br>'
-					             . 'documentation: ' . $responseBody['documentation']['link']
+					'message'   => $responseStatusCode . ': ' . $responseStatusMessage,
+					'uncertain' => $method === 'POST' && ( $responseStatusCode >= 500 || in_array( $responseStatusCode,
+								[ 408, 409, 429 ], true ) ),
 				]
 			];
+		}
+
+		if ( ! is_array( $responseBody ) || array_is_list( $responseBody ) ) {
+			return [ false, [ 'message' => 'Invalid JSON response from ICEPAY.', 'uncertain' => $method === 'POST' ] ];
 		}
 
 		return [ true, $responseBody ];

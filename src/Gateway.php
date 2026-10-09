@@ -40,14 +40,81 @@ class Gateway extends WC_Payment_Gateway {
 	}
 
 	public function process_payment( $order_id ): array {
+		$orderId = (int) $order_id;
+		if ( ! OrderLock::acquire( $orderId ) ) {
+			return $this->paymentFailure( __( 'Your payment is already being processed. Please wait before trying again.',
+				'icepay-for-woocommerce' ) );
+		}
+		try {
+			return $this->processPaymentLocked( $orderId );
+		} catch ( \Throwable $exception ) {
+			$this->log->error( 'Payment processing failed.',
+				[ 'order' => $orderId, 'message' => $exception->getMessage() ] );
+
+			return $this->paymentFailure( __( 'We could not confirm your payment. Please check your order before trying again.',
+				'icepay-for-woocommerce' ) );
+		} finally {
+			OrderLock::release( $orderId );
+		}
+	}
+
+	protected function processPaymentLocked( int $order_id ): array {
 		$this->log->info( 'Processing payment for order ' . $order_id );
 		$client = new IcepayClient(
 			Icepay::getMerchantId(),
 			Icepay::getSecret(),
 		);
 
-		$order     = wc_get_order( $order_id );
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return $this->paymentFailure( __( 'This order could not be found.', 'icepay-for-woocommerce' ) );
+		}
+		if ( $order->is_paid() || $order->get_date_paid() ) {
+			return [ 'result' => 'success', 'redirect' => $this->get_return_url( $order ) ];
+		}
+		if ( $order->has_status( 'refunded' ) ) {
+			return $this->paymentFailure( __( 'This order has been refunded and cannot be paid again.',
+				'icepay-for-woocommerce' ) );
+		}
+		if ( $order->get_meta( '_icepay_creation_uncertain' ) ) {
+			return $this->paymentFailure( __( 'We could not confirm whether your payment was started. Please contact the store so we can check before you pay again.',
+				'icepay-for-woocommerce' ) );
+		}
+		foreach ( Order::getAttempts( $order ) as $key => $attempt ) {
+			[ $success, $existing ] = $client->get( $key );
+			if ( ! $success || ( $existing['key'] ?? '' ) !== $key ) {
+				return $this->paymentFailure( __( 'We are still confirming your previous payment. Please wait before trying again.',
+					'icepay-for-woocommerce' ) );
+			}
+			$result = ( new PaymentStatus() )->applyLocked( $order, $existing );
+			if ( is_wp_error( $result ) ) {
+				$this->log->warning( $result->get_error_message(), [ 'order' => $order_id, 'key' => $key ] );
+
+				return $this->paymentFailure( __( 'Your previous payment needs to be checked. Please contact the store.',
+					'icepay-for-woocommerce' ) );
+			}
+			if ( $existing['status'] === 'completed' || $existing['status'] === 'pending' ) {
+				return [ 'result' => 'success', 'redirect' => $this->getRedirectUrl( $order ) ];
+			}
+			// Started attempts remain open. Each eligible checkout creates a fresh
+			// payment for the selected method instead of reusing an earlier URL.
+		}
+		if ( Icepay::getMerchantId() === '' || Icepay::getSecret() === '' ) {
+			return $this->paymentFailure( __( 'This payment method is temporarily unavailable. Please choose another payment method.',
+				'icepay-for-woocommerce' ) );
+		}
 		$reference = str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() );
+		// Persist before sending: a crash or timeout must not permit a blind second POST.
+		$creationToken = wp_generate_uuid4();
+		$order->update_meta_data( '_icepay_creation_uncertain', [
+			'token'    => $creationToken,
+			'merchant' => Icepay::getMerchantId(),
+			'amount'   => (int) round( (float) $order->get_total() * 100 ),
+			'currency' => $order->get_currency(),
+			'method'   => $this->paymentMethod->getType(),
+			'created'  => time(),
+		] );
+		$order->save();
 
 		[ $isSuccessful, $payment ] = $client->create(
 			[
@@ -79,7 +146,8 @@ class Gateway extends WC_Payment_Gateway {
 						'developer' => 'ICEPAY',
 					],
 					'woocommerce' => [
-						'order_id' => $order->get_id(),
+						'order_id'       => $order->get_id(),
+						'creation_token' => $creationToken,
 					]
 				]
 			]
@@ -88,16 +156,43 @@ class Gateway extends WC_Payment_Gateway {
 		if ( ! $isSuccessful ) {
 			$this->log->error( 'Unable to create payment ', $payment );
 
-			return [ 'result' => 'failure' ];
+			if ( empty( $payment['uncertain'] ) ) {
+				$order->delete_meta_data( '_icepay_creation_uncertain' );
+				$order->save();
+
+				return $this->paymentFailure( __( 'We could not start your payment. Please try again or choose another payment method.',
+					'icepay-for-woocommerce' ) );
+			}
+			$order->add_order_note( __( 'ICEPAY payment creation has an unknown outcome. Check the ICEPAY Portal before retrying; clear _icepay_creation_uncertain only after reconciliation.',
+				'icepay-for-woocommerce' ) );
+
+			return $this->paymentFailure( __( 'We could not confirm whether your payment was started. Please contact the store before paying again.',
+				'icepay-for-woocommerce' ) );
 		}
 
-		Order::AddPaymentKey( $order, $payment['key'] );
-		$this->log->info( 'Create payment', $payment );
+		if ( ! is_string( $payment['key'] ?? null ) || $payment['key'] === '' ) {
+			return $this->paymentFailure( __( 'We could not confirm whether your payment was started. Please contact the store before paying again.',
+				'icepay-for-woocommerce' ) );
+		}
+		Order::addAttempt( $order, $payment, $this->paymentMethod->getType() );
+		$result = ( new PaymentStatus() )->applyLocked( $order, $payment );
+		$url    = PaymentStatus::redirectUrl( $payment );
+		if ( is_wp_error( $result ) || $url === '' ) {
+			return $this->paymentFailure( __( 'We could not open your payment page. Please check your order before trying again.',
+				'icepay-for-woocommerce' ) );
+		}
+		$this->log->info( 'Created payment', [ 'order' => $order_id, 'key' => $payment['key'] ] );
 
 		return [
 			'result'   => 'success',
-			'redirect' => esc_url_raw( $payment['links']['direct'] )
+			'redirect' => $url
 		];
+	}
+
+	protected function paymentFailure( string $message ): array {
+		wc_add_notice( $message, 'error' );
+
+		return [ 'result' => 'failure' ];
 	}
 
 	public function process_refund( $order_id, $amount = null, $reason = '' ): bool|WP_Error {
