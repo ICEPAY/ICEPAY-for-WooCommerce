@@ -53,6 +53,7 @@ class Integration {
 		add_filter( 'woocommerce_payment_gateways', fn( $gateways ) => array_merge( $gateways, $this->getGateways() ) );
 	}
 
+	/** @return array<string, Gateway> */
 	protected function getGateways(): array {
 		$gateways = [];
 		foreach ( PaymentMethod::getAll() as $paymentMethod ) {

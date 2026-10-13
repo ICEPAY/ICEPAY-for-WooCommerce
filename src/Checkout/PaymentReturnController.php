@@ -12,6 +12,7 @@ class PaymentReturnController {
 	public function __construct( protected PaymentStatusHandler $statusHandler = new PaymentStatusHandler() ) {}
 
 	public function handle(): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Provider returns authenticate with the order key; state is retrieved using merchant credentials.
 		if ( ! isset( $_GET['via-icepay'] ) ) {
 			return;
 		}
@@ -30,6 +31,7 @@ class PaymentReturnController {
 		}
 		$key = Order::activeKey( $order );
 		if ( array_key_exists( 'icepay-attempt', $_GET ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Validate the exact token with the UUID allowlist below; do not transform invalid tokens into valid ones.
 			$token = is_string( $_GET['icepay-attempt'] ) ? wp_unslash( $_GET['icepay-attempt'] ) : '';
 			$key = preg_match( '/^[a-f0-9-]{36}$/i', $token ) ? Order::findKeyByToken( $order, $token ) : '';
 			if ( $key === '' ) {
@@ -49,7 +51,9 @@ class PaymentReturnController {
 				wc_add_notice( __( 'Your payment is being confirmed. Please do not pay again while we check it.', 'icepay-for-woocommerce' ), 'notice' );
 			}
 		}
-		$this->redirectPaymentReturn( wc_get_order( $order->get_id() ) );
+		$refreshed = wc_get_order( $order->get_id() );
+		if ( $refreshed ) { $this->redirectPaymentReturn( $refreshed ); }
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	protected function redirectPaymentReturn( \WC_Order $order ): void {

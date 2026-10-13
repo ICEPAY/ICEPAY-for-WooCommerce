@@ -13,6 +13,7 @@ class Webhook {
 	}
 
 	public function handle(): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Server-to-server notifications authenticate the raw body with HMAC, not a browser nonce.
 		$log = new Log();
 		$log->info( 'got postback via webhook' );
 
@@ -79,6 +80,7 @@ class Webhook {
 			status_header( 503 );
 		}
 		exit;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	public static function verifySignature( string $body, mixed $received, string $secret ): bool {
@@ -86,6 +88,7 @@ class Webhook {
 		       && hash_equals( base64_encode( hash_hmac( 'sha256', $body, $secret, true ) ), $received );
 	}
 	
+	/** @return array<string, string>|false */
 	protected function getHeader(): false|array {
 		if ( ! function_exists( 'getallheaders' ) ) {
 			$headers = [];

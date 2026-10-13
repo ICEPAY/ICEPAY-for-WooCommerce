@@ -7,7 +7,7 @@ namespace Icepay\WooCommerce\Checkout;
 use Icepay\WooCommerce\Payment\PaymentAttempts as Order;
 
 class PaymentReceipt {
-	public function text( string $text, $order ): string {
+	public function text( string $text, mixed $order ): string {
 		if ( ! $order instanceof \WC_Order || ! Order::isIcepay( $order ) || $order->is_paid()
 			|| $order->get_date_paid() || $order->has_status( 'refunded' ) ) {
 			return $text;

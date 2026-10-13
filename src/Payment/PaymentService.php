@@ -22,6 +22,7 @@ class PaymentService {
 		$this->log = $log ?? new Log();
 	}
 
+	/** @return array{result: 'success', redirect: string}|WP_Error */
 	public function process( int $id, PaymentMethod $method, string $returnUrl ): array|WP_Error {
 		if ( ! OrderLock::acquire( $id ) ) {
 			return new WP_Error( 'busy', __( 'Your payment is already being processed. Please wait before trying again.', 'icepay-for-woocommerce' ) );
@@ -36,6 +37,7 @@ class PaymentService {
 		}
 	}
 
+	/** @return array{result: 'success', redirect: string}|WP_Error */
 	private function processLocked( int $id, PaymentMethod $method, string $returnUrl ): array|WP_Error {
 		$this->log->info( 'Processing payment for order ' . $id );
 		$order = wc_get_order( $id );
@@ -60,6 +62,9 @@ class PaymentService {
 				continue;
 			}
 			$result = $this->statusHandler->applyLocked( $order, $existing );
+			// The handler can complete or refund the order; re-read its persisted state.
+			$order = wc_get_order( $id );
+			if ( ! $order ) { return new WP_Error( 'missing_order', 'Order no longer exists.' ); }
 			if ( is_wp_error( $result ) ) {
 				$this->log->warning( $result->get_error_message(), [ 'order' => $id, 'key' => $key ] );
 				$verificationError = new WP_Error( 'invalid_payment', __( 'Your previous payment needs to be checked. Please contact the store.', 'icepay-for-woocommerce' ) );
@@ -99,9 +104,6 @@ class PaymentService {
 				return new WP_Error( 'creation_failed', __( 'We could not start your payment. Please try again or choose another payment method.', 'icepay-for-woocommerce' ) );
 			}
 			$order->add_order_note( __( 'ICEPAY payment creation has an unknown outcome. Check the ICEPAY Portal before retrying; clear _icepay_creation_uncertain only after reconciliation.', 'icepay-for-woocommerce' ) );
-			return new WP_Error( 'uncertain', __( 'We could not confirm whether your payment was started. Please contact the store before paying again.', 'icepay-for-woocommerce' ) );
-		}
-		if ( ! is_string( $payment['key'] ?? null ) || $payment['key'] === '' ) {
 			return new WP_Error( 'uncertain', __( 'We could not confirm whether your payment was started. Please contact the store before paying again.', 'icepay-for-woocommerce' ) );
 		}
 		PaymentAttempts::addAttempt( $order, $payment, $method->getType(), $token );

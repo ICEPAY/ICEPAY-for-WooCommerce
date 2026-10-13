@@ -44,6 +44,7 @@ class Settings extends WC_Settings_Page {
 		$this->tabFor( (string) $current_section )->save();
 	}
 
+	/** @return array<string, string> */
 	public function get_sections(): array {
 		return [
 			GeneralTab::SECTION        => __( 'Settings', 'icepay-for-woocommerce' ),

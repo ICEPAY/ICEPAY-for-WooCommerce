@@ -20,6 +20,7 @@ jobs:
       - run: composer install --prefer-dist --no-interaction
       - run: composer check
       - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint:js
       - run: pnpm run build
       - name: Start disposable WordPress
         run: |

@@ -22,10 +22,10 @@ const chrome = process.env.CHROME_BIN || (process.platform === 'darwin' ? '/Appl
     const sourcebuster = await scriptResponse.text();
     server = http.createServer((req, res) => {
       const url = new URL(req.url, `http://${req.headers.host}`);
-      const mode = url.searchParams.get('mode');
-      const port = server.address().port;
       res.setHeader('Content-Type', 'text/html');
       if (url.pathname === '/sourcebuster.js') { res.setHeader('Content-Type', 'text/javascript'); res.end(sourcebuster); return; }
+      const mode = url.searchParams.get('mode');
+      const port = server.address().port;
       if (url.pathname === '/redirect') {
         res.writeHead(302, { 'Referrer-Policy': policy, Location: `http://127.0.0.1:${port}/receipt?mode=${mode}` });
         res.end(); return;
@@ -39,9 +39,9 @@ const chrome = process.env.CHROME_BIN || (process.platform === 'darwin' ? '/Appl
     });
     await new Promise(resolve => server.listen(0, '0.0.0.0', resolve));
     for (const [mode, suffix, source, type] of [ ['direct', '', '(direct)', 'typein'], ['campaign', '&utm_source=google&utm_medium=cpc&utm_campaign=sale', 'google', 'utm'], ['referral', '', 'localhost', 'referral'], ['fresh', '', '(direct)', 'typein'] ]) {
-      const url = mode === 'referral' ? `http://localhost:${server.address().port}/referral`
-        : mode === 'fresh' ? `http://localhost:${server.address().port}/provider?mode=fresh`
-        : `http://127.0.0.1:${server.address().port}/start?mode=${mode}${suffix}`;
+      let url = `http://127.0.0.1:${server.address().port}/start?mode=${mode}${suffix}`;
+      if (mode === 'referral') { url = `http://localhost:${server.address().port}/referral`; }
+      if (mode === 'fresh') { url = `http://localhost:${server.address().port}/provider?mode=fresh`; }
         const output = await new Promise((resolve, reject) => {
           const child = spawn(chrome, ['--headless', '--no-sandbox', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--dump-dom', '--timeout=15000', '--virtual-time-budget=5000', url]);
           let out = ''; let err = '';
@@ -49,13 +49,13 @@ const chrome = process.env.CHROME_BIN || (process.platform === 'darwin' ? '/Appl
           child.stdout.on('data', data => { out += data; });
           child.stderr.on('data', data => { err += data; });
           child.on('error', error => { clearTimeout(timer); reject(error); });
-          child.on('close', code => { clearTimeout(timer); code === 0 ? resolve(out) : reject(new Error(err)); });
+          child.on('close', code => { clearTimeout(timer); if (code === 0) { resolve(out); } else { reject(new Error(err)); } });
         });
         assert.ok(output.includes(`"referrer":"","source":"${source}","type":"${type}"`), output);
         console.log(`PASS: ${mode} attribution preserved; payment-return referrer empty`);
     }
   } finally {
-    if (server) server.close();
+    if (server) { server.close(); }
     wp('delete', String(fixture.id));
   }
 })().catch(error => { console.error(error); process.exitCode = 1; });

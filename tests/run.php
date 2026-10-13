@@ -5,7 +5,7 @@
 use Icepay\WooCommerce\Icepay;
 use Icepay\WooCommerce\Payment\PaymentStatusHandler;
 
-$suiteNames = [ 'PaymentStatus', 'ProviderConflict', 'PaymentCreation', 'OrderLock', 'PaymentReturn', 'Refund', 'Restrictions' ];
+$suiteNames = [ 'PaymentStatus', 'ProviderConflict', 'PaymentCreation', 'OrderLock', 'PaymentReturn', 'Refund', 'Restrictions', 'ApiValidation' ];
 $selected = $args[0] ?? 'all';
 if ( $selected !== 'all' && ! in_array( $selected, $suiteNames, true ) ) {
 	WP_CLI::error( 'Unknown suite. Choose: ' . implode( ', ', $suiteNames ) );

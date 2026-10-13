@@ -48,7 +48,7 @@ try {
       child.stdout.on('data', data => { out += data; });
       child.stderr.on('data', data => { err += data; });
       child.on('error', error => { clearTimeout(timer); reject(error); });
-      child.on('close', code => { clearTimeout(timer); code === 0 ? resolve(out) : reject(new Error(err)); });
+      child.on('close', code => { clearTimeout(timer); if (code === 0) { resolve(out); } else { reject(new Error(err)); } });
     });
     assert.ok(output.includes('<body>PASS: built Blocks eligibility'), output);
     console.log('PASS: built Blocks eligibility handles countries, limits, and currency units');

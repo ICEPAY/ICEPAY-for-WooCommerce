@@ -32,6 +32,7 @@ class Gateway extends WC_Payment_Gateway {
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'display_errors' ] );
 	}
 
+	/** @return array{result: 'success', redirect: string}|array{result: 'failure'} */
 	public function process_payment( $order_id ): array {
 		$order = wc_get_order( $order_id );
 		$result = $this->payments->process( (int) $order_id, $this->paymentMethod, $this->get_return_url( $order ?: null ) );
@@ -50,34 +51,38 @@ class Gateway extends WC_Payment_Gateway {
 			$order = wc_get_order( absint( get_query_var( 'order-pay' ) ) );
 			return $order && $this->paymentMethod->isEligible( $order->get_billing_country(), (float) $order->get_total() );
 		}
-		return ! WC()->cart || $this->paymentMethod->isEligible(
-			WC()->customer ? WC()->customer->get_billing_country() : '', (float) WC()->cart->get_total( '' ) );
+		return ! isset( WC()->cart ) || $this->paymentMethod->isEligible(
+			isset( WC()->customer ) ? WC()->customer->get_billing_country() : '', (float) WC()->cart->get_total( '' ) );
 	}
 
-	public function validate_countries_field( $key, $value ): array {
+	/** @return list<string> */
+	public function validate_countries_field( string $key, mixed $value ): array {
 		$countries = (array) $value;
+		foreach ( $countries as $country ) {
+			if ( ! is_string( $country ) ) { throw new \Exception( esc_html__( 'Select valid billing countries.', 'icepay-for-woocommerce' ) ); }
+		}
 		if ( array_diff( $countries, array_keys( WC()->countries->get_countries() ) ) ) {
-			throw new \Exception( __( 'Select valid billing countries.', 'icepay-for-woocommerce' ) );
+			throw new \Exception( esc_html__( 'Select valid billing countries.', 'icepay-for-woocommerce' ) );
 		}
 		return array_values( array_unique( $countries ) );
 	}
 
-	public function validate_minimum_field( $key, $value ): string {
+	public function validate_minimum_field( string $key, mixed $value ): string {
 		$minimum = $this->validateAmountLimit( $value );
 		$data = $this->get_post_data();
 		$maximum = $this->validateAmountLimit( $data[ $this->get_field_key( 'maximum' ) ] ?? '' );
 		if ( $minimum !== '' && $maximum !== '' && (float) $minimum > (float) $maximum ) {
-			throw new \Exception( __( 'The minimum order amount cannot exceed the maximum.', 'icepay-for-woocommerce' ) );
+			throw new \Exception( esc_html__( 'The minimum order amount cannot exceed the maximum.', 'icepay-for-woocommerce' ) );
 		}
 		return $minimum;
 	}
 
-	public function validate_maximum_field( $key, $value ): string {
+	public function validate_maximum_field( string $key, mixed $value ): string {
 		$maximum = $this->validateAmountLimit( $value );
 		$data = $this->get_post_data();
 		$minimum = $this->validateAmountLimit( $data[ $this->get_field_key( 'minimum' ) ] ?? '' );
 		if ( $minimum !== '' && $maximum !== '' && (float) $minimum > (float) $maximum ) {
-			throw new \Exception( __( 'The minimum order amount cannot exceed the maximum.', 'icepay-for-woocommerce' ) );
+			throw new \Exception( esc_html__( 'The minimum order amount cannot exceed the maximum.', 'icepay-for-woocommerce' ) );
 		}
 		return $maximum;
 	}
@@ -88,11 +93,11 @@ class Gateway extends WC_Payment_Gateway {
 		}
 		$raw = is_scalar( $value ) ? trim( (string) $value ) : '';
 		if ( ! preg_match( '/^\d+(?:[.,]\d{1,2})?$/D', $raw ) ) {
-			throw new \Exception( __( 'Order amount limits must be non-negative numbers with at most two decimal places, or empty.', 'icepay-for-woocommerce' ) );
+			throw new \Exception( esc_html__( 'Order amount limits must be non-negative numbers with at most two decimal places, or empty.', 'icepay-for-woocommerce' ) );
 		}
 		$decimal = str_replace( ',', '.', $raw );
 		if ( ! is_numeric( $decimal ) || ! is_finite( (float) $decimal ) || (float) $decimal < 0 ) {
-			throw new \Exception( __( 'Order amount limits must be non-negative numbers or empty.', 'icepay-for-woocommerce' ) );
+			throw new \Exception( esc_html__( 'Order amount limits must be non-negative numbers or empty.', 'icepay-for-woocommerce' ) );
 		}
 		return wc_format_decimal( $decimal, 2 );
 	}

@@ -20,6 +20,7 @@ class GeneralTab implements TabInterface {
 		WC_Admin_Settings::save_fields( $this->getFilteredFields() );
 	}
 
+	/** @return list<array<string, mixed>> */
 	private function getFilteredFields(): array {
 		return apply_filters(
 			'woocommerce_get_settings_' . Settings::ID,
@@ -28,6 +29,7 @@ class GeneralTab implements TabInterface {
 		);
 	}
 
+	/** @return list<array<string, mixed>> */
 	private function getFields(): array {
 		return [
 			[

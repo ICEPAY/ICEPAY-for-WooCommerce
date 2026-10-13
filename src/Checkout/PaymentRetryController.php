@@ -47,6 +47,8 @@ class PaymentRetryController {
 					[ $success, $payment ] = $this->client->get( $paymentKey );
 					if ( $success && ( $payment['key'] ?? '' ) === $paymentKey ) {
 						$result = $this->statusHandler->applyLocked( $order, $payment );
+						$order = wc_get_order( $id );
+						if ( ! $order ) { return; }
 						if ( ! is_wp_error( $result ) && in_array( $payment['status'], [ 'started', 'cancelled', 'expired' ], true ) && Order::isIcepay( $order ) ) {
 							if ( $order->has_status( 'cancelled' ) ) {
 								$order->update_status( 'pending', __( 'Customer requested another payment attempt.', 'icepay-for-woocommerce' ) );

@@ -49,7 +49,7 @@ docker compose exec -T app wp eval-file wp-content/plugins/icepay-for-woocommerc
 ```
 
 Available suites: `PaymentStatus`, `ProviderConflict`, `PaymentCreation`,
-`OrderLock`, `PaymentReturn`, `Refund`, and `Restrictions`. Each suite resets its mocks, credentials, counters,
+`OrderLock`, `PaymentReturn`, `Refund`, `Restrictions`, and `ApiValidation`. Each suite resets its mocks, credentials, counters,
 and fixtures. Shared setup lives in `tests/bootstrap.php` and `tests/Support/`.
 
 Local verification commands:
@@ -59,6 +59,7 @@ composer install
 composer check
 composer test
 pnpm install --frozen-lockfile
+pnpm run lint:js
 pnpm run build
 pnpm run test:attribution
 pnpm run test:restrictions
@@ -70,7 +71,24 @@ creates/removes a paid test order, checks the real plugin return header, then
 exercises the installed Sourcebuster script across simulated payment navigation.
 It covers expired sessions, Direct, campaigns, referrals, and absent tracking cookies.
 
-PHP checks use a small correctness ruleset (`phpcs.xml`) and PHPStan level 1.
+PHP checks use PHPStan level 6 targeting PHP 8.2, with no baseline or blanket ignores.
+API success/error tuples, payment responses, attempts, and refund records have explicit
+array contracts. `Api/ResponseValidator.php` validates external JSON before it can be
+used as a typed payment/refund; malformed POST successes retain an uncertain outcome.
+Documented null paymentMethod/meta fields are omitted, null refunds become an empty
+list, and null links.direct falls back to checkout. Completed payments still require
+a payment method. Validation errors report field names without response values.
+`ApiValidation` covers malformed transport responses. A small analysis-only stub in
+`tests/Support/woocommerce.stub` corrects upstream cart/customer nullability and query
+result types; it is not loaded at runtime.
+
+PHPCS enables output escaping, input validation/sanitisation, nonce verification,
+prepared SQL, and translation checks for production code. Provider callbacks have
+scoped explanations for their HMAC/order-key authentication. CLI fixtures retain
+syntax checks but are excluded from browser input/output security rules.
+JavaScript lint covers Blocks, build configuration, and browser runners; CI fails
+on warnings. Formatting is kept separate from this correctness gate. WooCommerce's
+externally supplied Blocks registry import is the only resolver exception.
 No PHPUnit dependency is needed for the WP-CLI integration runner. CI executes
 the checks, independent suites, browser test, build, and archive validation on a
 disposable HPOS-enabled store. `pnpm run check:archive` validates release contents.

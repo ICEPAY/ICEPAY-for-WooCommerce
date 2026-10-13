@@ -4,6 +4,11 @@ declare( strict_types=1 );
 
 namespace Icepay\WooCommerce\Api;
 
+/**
+ * @phpstan-import-type Payment from ResponseValidator
+ * @phpstan-import-type Refund from ResponseValidator
+ * @phpstan-type ApiError array{message: string, uncertain?: bool}
+ */
 class IcepayClient {
 	public static function fromSettings(): self {
 		return new self( \Icepay\WooCommerce\Icepay::getMerchantId(), \Icepay\WooCommerce\Icepay::getSecret() );
@@ -17,22 +22,47 @@ class IcepayClient {
 	) {
 	}
 
+	/** @param array<string, mixed> $data
+	 * @return array{true, Payment}|array{false, ApiError}
+	 */
 	public function create( array $data ): array {
-		return $this->do( '/payments', $data, 'POST' );
+		return $this->paymentResult( $this->do( '/payments', $data, 'POST' ), true );
 	}
 
+	/** @return array{true, Payment}|array{false, ApiError} */
 	public function cancel( string $id ): array {
-		return $this->do( '/payments/' . rawurlencode( $id ) . '/cancel', method: 'POST' );
+		return $this->paymentResult( $this->do( '/payments/' . rawurlencode( $id ) . '/cancel', method: 'POST' ), true );
 	}
 
+	/** @return array{true, Payment}|array{false, ApiError} */
 	public function get( string $id ): array {
-		return $this->do( '/payments/' . rawurlencode( $id ) );
+		return $this->paymentResult( $this->do( '/payments/' . rawurlencode( $id ) ) );
 	}
 
+	/** @param array{amount: array{value: int}, reference: string, description: string} $data
+	 * @return array{true, Refund}|array{false, ApiError}
+	 */
 	public function refund( string $id, array $data ): array {
-		return $this->do( '/payments/' . rawurlencode( $id ) . '/refund', $data, 'POST' );
+		$result = $this->do( '/payments/' . rawurlencode( $id ) . '/refund', $data, 'POST' );
+		if ( ! $result[0] ) { return $result; }
+		return ResponseValidator::refund( $result[1] ) ? [ true, $result[1] ]
+			: [ false, [ 'message' => 'Invalid refund response from ICEPAY.', 'uncertain' => true ] ];
 	}
 
+	/** @param array{true, array<string, mixed>}|array{false, ApiError} $result
+	 * @return array{true, Payment}|array{false, ApiError}
+	 */
+	private function paymentResult( array $result, bool $uncertain = false ): array {
+		if ( ! $result[0] ) { return $result; }
+		$payment = ResponseValidator::normalizePayment( $result[1] );
+		if ( ResponseValidator::payment( $payment ) ) { return [ true, $payment ]; }
+		return [ false, [ 'message' => 'Invalid payment response from ICEPAY. Invalid fields: '
+			. implode( ', ', ResponseValidator::invalidPaymentFields( $payment ) ), 'uncertain' => $uncertain ] ];
+	}
+
+	/** @param array<string, mixed>|null $body
+	 * @return array{true, array<string, mixed>}|array{false, ApiError}
+	 */
 	protected function do( string $uri, ?array $body = null, string $method = 'GET' ): array {
 		if ( ! $this->merchantId || ! $this->secretCode ) {
 			return [ false, [ 'message' => 'Merchant ID or Secret Code not set' ] ];
@@ -80,7 +110,7 @@ class IcepayClient {
 			];
 		}
 
-		if ( ! is_array( $responseBody ) || array_is_list( $responseBody ) ) {
+		if ( ! is_array( $responseBody ) || array_is_list( $responseBody ) || count( array_filter( array_keys( $responseBody ), 'is_string' ) ) !== count( $responseBody ) ) {
 			return [ false, [ 'message' => 'Invalid JSON response from ICEPAY.', 'uncertain' => $method === 'POST' ] ];
 		}
 

@@ -10,6 +10,7 @@ use Icepay\WooCommerce\PaymentMethod;
 use WC_Order;
 
 class PaymentRequestBuilder {
+	/** @return array<string, mixed> */
 	public function build( WC_Order $order, PaymentMethod $method, string $returnUrl, string $token ): array {
 		return [
 			'reference' => str_replace( '{ORDER_ID}', $order->get_order_number(), Icepay::getDescription() ),

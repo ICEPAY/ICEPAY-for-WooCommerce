@@ -8,7 +8,7 @@
     "check-licenses": "wp-scripts check-licenses",
     "format": "wp-scripts format",
     "lint:css": "wp-scripts lint-style",
-    "lint:js": "wp-scripts lint-js",
+    "lint:js": "wp-scripts lint-js blocks webpack.config.js eslint.config.cjs tests/Browser/*.cjs --max-warnings=0",
     "lint:md:docs": "wp-scripts lint-md-docs",
     "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update",

@@ -1,5 +1,8 @@
 parameters:
-    level: 1
+    level: 6
+    phpVersion: 80200
+    stubFiles:
+        - tests/Support/woocommerce.stub
     paths:
         - src
         - ICEPAY-for-WooCommerce.php

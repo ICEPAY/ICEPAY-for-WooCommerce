@@ -2,7 +2,7 @@ import {registerPaymentMethod} from '@woocommerce/blocks-registry';
 import {PaymentMethod} from './PaymentMethods/PaymentMethod.js';
 import {Label} from './Components/Label.js';
 
-const stylesheet = new CSSStyleSheet();
+const stylesheet = new window.CSSStyleSheet();
 stylesheet.replaceSync(`
 	.wc-block-components-radio-control__label .icepay-label {
 	    display: flex;

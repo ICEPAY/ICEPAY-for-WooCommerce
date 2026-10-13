@@ -6,6 +6,9 @@ namespace Icepay\WooCommerce\Payment;
 
 use Icepay\WooCommerce\Icepay;
 
+/**
+ * @phpstan-type Attempt array{key: string, status: string, creation_token?: string|null, method?: string, amount?: int, currency?: string, merchant?: string, isTest?: bool|null, created?: int, expires?: int, updated?: int, redirect?: string, duplicate_noted?: bool, duplicate_gateway?: string, duplicate_transaction?: string, provider_conflict?: array{gateway: string, title: string, transaction: string, recorded: int}}
+ */
 class PaymentAttempts {
 	public static function isIcepay( \WC_Order $order ): bool {
 		return str_starts_with( $order->get_payment_method(), 'icepay-' );
@@ -18,9 +21,10 @@ class PaymentAttempts {
 			'meta_value'   => $key,
 			'meta_compare' => 'LIKE',
 		] );
+		if ( ! is_array( $orders ) ) { return null; }
 
 		foreach ( $orders as $order ) {
-			if ( $order->get_status() !== 'trash' && isset( self::getAttempts( $order )[ $key ] ) ) {
+			if ( $order instanceof \WC_Order && $order->get_status() !== 'trash' && isset( self::getAttempts( $order )[ $key ] ) ) {
 				return $order;
 			}
 		}
@@ -28,16 +32,16 @@ class PaymentAttempts {
 		return null;
 	}
 
-	public static function addPaymentKey( $order, string $key ): void {
+	public static function addPaymentKey( \WC_Order $order, string $key ): void {
 		$currentKeys = $order->get_meta( 'icepay-payment-key' );
 
 		if ( in_array( $key, explode( ',', (string) $currentKeys ), true ) ) {
 			return;
 		}
 
-		/* translators: 1: ICEPAY Checkout Key */
 		$order->add_order_note(
 			sprintf(
+				/* translators: 1: ICEPAY Checkout Key. */
 				__( 'ICEPAY payment created with key: %1$s', 'icepay-for-woocommerce' ),
 				$key
 			)
@@ -51,9 +55,15 @@ class PaymentAttempts {
 		$order->save();
 	}
 
+	/** @return array<string, Attempt> */
 	public static function getAttempts( \WC_Order $order ): array {
 		$attempts = $order->get_meta( '_icepay_attempts' );
 		$attempts = is_array( $attempts ) ? $attempts : [];
+		foreach ( $attempts as $key => $attempt ) {
+			if ( ! is_string( $key ) || ! is_array( $attempt ) || ! self::validAttempt( $attempt ) ) {
+				unset( $attempts[ $key ] );
+			}
+		}
 		foreach ( array_filter( explode( ',', (string) $order->get_meta( 'icepay-payment-key' ) ) ) as $key ) {
 			if ( ! isset( $attempts[ $key ] ) ) {
 				$attempts[ $key ] = [ 'key' => $key, 'status' => 'unknown' ];
@@ -63,7 +73,12 @@ class PaymentAttempts {
 		return $attempts;
 	}
 
+	/** @param array<string, mixed> $payment */
 	public static function addAttempt( \WC_Order $order, array $payment, string $method, ?string $token = null ): void {
+		$payment = \Icepay\WooCommerce\Api\ResponseValidator::normalizePayment( $payment );
+		if ( ! \Icepay\WooCommerce\Api\ResponseValidator::payment( $payment ) ) {
+			throw new \InvalidArgumentException( 'Invalid payment attempt.' );
+		}
 		$attempts = self::getAttempts( $order );
 		$key = $payment['key'];
 		$attempts = [ $key => [
@@ -85,6 +100,28 @@ class PaymentAttempts {
 
 	public static function activeKey( \WC_Order $order ): string {
 		return (string) ( array_key_first( self::getAttempts( $order ) ) ?? '' );
+	}
+
+	/** @param array<array-key, mixed> $attempt
+	 * @phpstan-assert-if-true Attempt $attempt
+	 */
+	private static function validAttempt( array $attempt ): bool {
+		if ( ! is_string( $attempt['key'] ?? null ) || ! is_string( $attempt['status'] ?? null ) ) { return false; }
+		foreach ( [ 'method', 'currency', 'merchant', 'redirect', 'duplicate_gateway', 'duplicate_transaction' ] as $field ) {
+			if ( array_key_exists( $field, $attempt ) && ! is_string( $attempt[ $field ] ) ) { return false; }
+		}
+		foreach ( [ 'amount', 'created', 'expires', 'updated' ] as $field ) {
+			if ( array_key_exists( $field, $attempt ) && ! is_int( $attempt[ $field ] ) ) { return false; }
+		}
+		if ( array_key_exists( 'creation_token', $attempt ) && $attempt['creation_token'] !== null && ! is_string( $attempt['creation_token'] ) ) { return false; }
+		if ( array_key_exists( 'isTest', $attempt ) && $attempt['isTest'] !== null && ! is_bool( $attempt['isTest'] ) ) { return false; }
+		if ( array_key_exists( 'duplicate_noted', $attempt ) && ! is_bool( $attempt['duplicate_noted'] ) ) { return false; }
+		if ( array_key_exists( 'provider_conflict', $attempt ) ) {
+			$conflict = $attempt['provider_conflict'];
+			if ( ! is_array( $conflict ) || ! is_string( $conflict['gateway'] ?? null ) || ! is_string( $conflict['title'] ?? null )
+				|| ! is_string( $conflict['transaction'] ?? null ) || ! is_int( $conflict['recorded'] ?? null ) ) { return false; }
+		}
+		return true;
 	}
 
 	public static function findKeyByToken( \WC_Order $order, string $token ): string {

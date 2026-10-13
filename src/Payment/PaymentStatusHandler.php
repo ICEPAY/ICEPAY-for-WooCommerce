@@ -11,6 +11,7 @@ use Icepay\WooCommerce\Payment\PaymentAttempts as Order;
 use WC_Order;
 use WP_Error;
 
+/** @phpstan-import-type Payment from \Icepay\WooCommerce\Api\ResponseValidator */
 class PaymentStatusHandler {
 	protected IcepayClient $client;
 
@@ -18,6 +19,7 @@ class PaymentStatusHandler {
 		$this->client = $client ?? IcepayClient::fromSettings();
 	}
 
+	/** @return Payment|WP_Error */
 	public function refresh( WC_Order $order, string $key ): array|WP_Error {
 		$id = $order->get_id();
 		if ( ! OrderLock::acquire( $id ) ) {
@@ -25,6 +27,7 @@ class PaymentStatusHandler {
 		}
 		try {
 			$order = wc_get_order( $id );
+			if ( ! $order ) { return new WP_Error( 'missing_order', 'Order no longer exists.' ); }
 			[ $success, $payment ] = $this->client->get( $key );
 			if ( ! $success || ( $payment['key'] ?? '' ) !== $key ) {
 				return new WP_Error( 'unavailable', 'Unable to retrieve payment state.' );
@@ -37,8 +40,8 @@ class PaymentStatusHandler {
 					|| ! hash_equals( $creation['token'], $payment['meta']['woocommerce']['creation_token'] )
 					|| $creation['merchant'] !== Icepay::getMerchantId()
 					|| (string) ( $payment['meta']['woocommerce']['order_id'] ?? '' ) !== (string) $id
-					|| ( $payment['amount']['value'] ?? null ) !== $creation['amount']
-					|| strtoupper( (string) ( $payment['amount']['currency'] ?? '' ) ) !== strtoupper( $creation['currency'] )
+					|| $payment['amount']['value'] !== $creation['amount']
+					|| strtoupper( $payment['amount']['currency'] ) !== strtoupper( $creation['currency'] )
 					|| (int) round( (float) $order->get_total() * 100 ) !== $creation['amount']
 					|| strtoupper( $order->get_currency() ) !== strtoupper( $creation['currency'] ) ) {
 					return new WP_Error( 'unknown_payment', 'Payment does not match the interrupted creation attempt.' );
@@ -52,6 +55,7 @@ class PaymentStatusHandler {
 		}
 	}
 
+	/** @param array<string, mixed> $payment */
 	public function apply( WC_Order $order, array $payment ): bool|WP_Error {
 		$id = $order->get_id();
 		if ( ! OrderLock::acquire( $id ) ) {
@@ -59,6 +63,7 @@ class PaymentStatusHandler {
 		}
 		try {
 			$order = wc_get_order( $id );
+			if ( ! $order ) { return new WP_Error( 'missing_order', 'Order no longer exists.' ); }
 			return $this->applyLocked( $order, $payment );
 		} finally {
 			OrderLock::release( $id );
@@ -66,28 +71,26 @@ class PaymentStatusHandler {
 	}
 
 
+	/** @param array<string, mixed> $payment */
 	public function applyLocked( WC_Order $order, array $payment ): bool|WP_Error {
+		$payment = \Icepay\WooCommerce\Api\ResponseValidator::normalizePayment( $payment );
+		if ( ! \Icepay\WooCommerce\Api\ResponseValidator::payment( $payment ) ) {
+			return new WP_Error( 'invalid_payment', 'Invalid payment response.' );
+		}
 		$attempts = Order::getAttempts( $order );
-		$key = $payment['key'] ?? null;
-		$status = $payment['status'] ?? null;
-		if ( ! is_string( $key ) || ! isset( $attempts[ $key ] ) ) {
+		$key = $payment['key'];
+		$status = $payment['status'];
+		if ( ! isset( $attempts[ $key ] ) ) {
 			return new WP_Error( 'unknown_payment', 'Payment key is not attached to this order.' );
 		}
 		$attempt = $attempts[ $key ];
-		if ( ! in_array( $status, [ 'started', 'pending', 'completed', 'expired', 'cancelled' ], true )
-			|| ! is_array( $payment['amount'] ?? null )
-			|| ! isset( $payment['amount']['value'], $payment['amount']['currency'] )
-			|| ! is_numeric( $payment['amount']['value'] ) || ! is_string( $payment['amount']['currency'] )
-			|| (float) $payment['amount']['value'] !== (float) ( $attempt['amount'] ?? round( (float) $order->get_total() * 100 ) )
+		if ( (float) $payment['amount']['value'] !== (float) ( $attempt['amount'] ?? round( (float) $order->get_total() * 100 ) )
 			|| strtoupper( $payment['amount']['currency'] ) !== strtoupper( $attempt['currency'] ?? $order->get_currency() )
 			|| ( isset( $payment['meta']['woocommerce']['order_id'] ) && (string) $payment['meta']['woocommerce']['order_id'] !== (string) $order->get_id() )
 			|| ( isset( $attempt['merchant'] ) && $attempt['merchant'] !== Icepay::getMerchantId() )
 			|| ( isset( $payment['merchantId'] ) && (string) $payment['merchantId'] !== Icepay::getMerchantId() )
 			|| ( isset( $attempt['isTest'] ) && ( $payment['isTest'] ?? null ) !== $attempt['isTest'] ) ) {
 			return new WP_Error( 'invalid_payment', 'Payment details do not match the stored attempt.' );
-		}
-		if ( $status === 'completed' && ( ! isset( $payment['paymentMethod']['type'] ) || ! is_string( $payment['paymentMethod']['type'] ) ) ) {
-			return new WP_Error( 'invalid_payment', 'Completed payment has no payment method.' );
 		}
 
 		RefundService::reconcileLocked( $order, $payment );
@@ -96,7 +99,7 @@ class PaymentStatusHandler {
 			$order->get_data_store()->read( $order );
 		}
 		// A completed payment must never regress on a delayed notification.
-		if ( ( $attempt['status'] ?? '' ) === 'completed' && $status !== 'completed' ) {
+		if ( $attempt['status'] === 'completed' && $status !== 'completed' ) {
 			return true;
 		}
 		$attempt['status'] = $status;
@@ -172,6 +175,7 @@ class PaymentStatusHandler {
 		return true;
 	}
 
+	/** @param array<string, mixed> $payment */
 	public static function redirectUrl( array $payment ): string {
 		$url = $payment['links']['direct'] ?? $payment['links']['checkout'] ?? '';
 		if ( ! is_string( $url ) || strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) ) !== 'https'
