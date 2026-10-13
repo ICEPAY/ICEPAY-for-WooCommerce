@@ -96,6 +96,15 @@ switching payment methods. Confirm the return page, emails, and order state.
 ### Recovering an unknown payment-creation outcome
 
 Each eligible checkout submission creates a fresh payment for the selected method.
+New payments include an `icepay-attempt` creation token in the return URL, stored
+with that payment attempt. After validating the order key, the return controller
+matches the token against the order and refreshes that specific attempt. Unknown,
+malformed, and cross-order tokens cannot trigger a payment lookup. Legacy return
+URLs without a token continue to use the newest attempt.
+
+Checkout checks continue past pending or unverifiable attempts to find an older
+verified success. Confirmed payment takes priority; otherwise pending payments
+block creation, and verification errors block creation if no pending result exists.
 Previously started payments are neither reused nor cancelled, and their keys remain
 in the order's attempt history for late notifications. A previous pending payment
 still blocks another creation while its result is being confirmed. Late success

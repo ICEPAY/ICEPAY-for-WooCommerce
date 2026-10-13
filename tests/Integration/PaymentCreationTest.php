@@ -8,6 +8,9 @@ $order = $makeOrder(); $gateway = new Gateway( new PaymentMethod( 'card', 'Card'
 $result = $gateway->process_payment( $order->get_id() );
 $assert( $result['result'] === 'success' && str_contains( $result['redirect'], '/checkout/' ), 'Create falls back to checkout URL when direct URL missing' );
 $firstKey = Order::activeKey( wc_get_order( $order->get_id() ) );
+$returnQuery = []; parse_str( (string) wp_parse_url( $payments[ $firstKey ]['redirectUrl'], PHP_URL_QUERY ), $returnQuery );
+$assert( ( $returnQuery['icepay-attempt'] ?? '' ) === Order::getAttempts( wc_get_order( $order->get_id() ) )[ $firstKey ]['creation_token']
+	&& $returnQuery['icepay-attempt'] === $payments[ $firstKey ]['meta']['woocommerce']['creation_token'], 'Created payment return URL identifies its persisted attempt token' );
 $count = $posts; $result = $gateway->process_payment( $order->get_id() );
 $secondKey = Order::activeKey( wc_get_order( $order->get_id() ) );
 $assert( $posts === $count + 1 && $result['result'] === 'success' && $secondKey !== $firstKey && str_contains( $result['redirect'], $secondKey ), 'Repeated submission creates a fresh payment and redirect URL' );
@@ -61,3 +64,17 @@ $assert( $result['result'] === 'failure' && $posts === $count, 'API outage canno
 $assert( is_wp_error( $handler->refresh( $order, $key ) ) && ! as_has_scheduled_action( 'icepay_reconcile_payment', null, 'icepay' ), 'API failure does not schedule fallback retries' );
 $payments[ $key ] = $known;
 $assert( $cancellations === 0, 'Checkout and retry flows never call the payment cancellation API' );
+foreach ( [ 'pending', 'unavailable', 'invalid' ] as $newestState ) {
+	$order = $makeOrder();
+	$old = $payment( $order, 'pi-success-' . $newestState );
+	Order::addAttempt( $order, $old, 'card' ); $payments[ $old['key'] ] = $old;
+	$new = $payment( $order, 'pi-newest-' . $newestState, 'pending' );
+	Order::addAttempt( $order, $new, 'card' );
+	if ( $newestState !== 'unavailable' ) { $payments[ $new['key'] ] = $new; }
+	if ( $newestState === 'invalid' ) { $payments[ $new['key'] ]['amount']['value']++; }
+	$count = $posts;
+	$result = $gateway->process_payment( $order->get_id() );
+	$fresh = wc_get_order( $order->get_id() );
+	$assert( $result['result'] === 'success' && $fresh->is_paid() && $fresh->get_transaction_id() === $old['key'] && $posts === $count,
+		'Older verified success takes priority over newest ' . $newestState . ' attempt without creating payment' );
+}

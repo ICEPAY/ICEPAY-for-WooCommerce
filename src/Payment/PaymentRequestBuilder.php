@@ -27,7 +27,7 @@ class PaymentRequestBuilder {
 			],
 			'expireAfter' => Icepay::getExpireAfter(),
 			'webhookUrl' => add_query_arg( 'wc-api', 'icepay-webhook', home_url( '/' ) ),
-			'redirectUrl' => self::returnUrl( $returnUrl ),
+			'redirectUrl' => self::returnUrl( $returnUrl, $token ),
 			'meta' => [
 				'integration' => [ 'type' => 'woocommerce', 'version' => Integration::VERSION, 'developer' => 'ICEPAY' ],
 				'woocommerce' => [ 'order_id' => $order->get_id(), 'creation_token' => $token ],
@@ -35,8 +35,12 @@ class PaymentRequestBuilder {
 		];
 	}
 
-	public static function returnUrl( string $url ): string {
-		return add_query_arg( 'via-icepay', true, untrailingslashit( $url ) );
+	public static function returnUrl( string $url, ?string $token = null ): string {
+		$args = [ 'via-icepay' => true ];
+		if ( $token !== null ) {
+			$args['icepay-attempt'] = $token;
+		}
+		return add_query_arg( $args, untrailingslashit( $url ) );
 	}
 
 	private function limit( string $value, int $limit ): string {

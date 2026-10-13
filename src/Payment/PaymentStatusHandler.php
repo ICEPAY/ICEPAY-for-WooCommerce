@@ -43,7 +43,7 @@ class PaymentStatusHandler {
 					|| strtoupper( $order->get_currency() ) !== strtoupper( $creation['currency'] ) ) {
 					return new WP_Error( 'unknown_payment', 'Payment does not match the interrupted creation attempt.' );
 				}
-				Order::addAttempt( $order, $payment, $creation['method'] );
+				Order::addAttempt( $order, $payment, $creation['method'], $creation['token'] );
 			}
 			$result = $this->applyLocked( $order, $payment );
 			return is_wp_error( $result ) ? $result : $payment;

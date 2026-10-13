@@ -51,20 +51,31 @@ class PaymentService {
 		if ( $order->get_meta( '_icepay_creation_uncertain' ) ) {
 			return new WP_Error( 'uncertain', __( 'We could not confirm whether your payment was started. Please contact the store so we can check before you pay again.', 'icepay-for-woocommerce' ) );
 		}
+		$pending = false;
+		$verificationError = null;
 		foreach ( PaymentAttempts::getAttempts( $order ) as $key => $attempt ) {
 			[ $success, $existing ] = $this->client->get( $key );
 			if ( ! $success || ( $existing['key'] ?? '' ) !== $key ) {
-				return new WP_Error( 'unavailable', __( 'We are still confirming your previous payment. Please wait before trying again.', 'icepay-for-woocommerce' ) );
+				$verificationError = new WP_Error( 'unavailable', __( 'We are still confirming your previous payment. Please wait before trying again.', 'icepay-for-woocommerce' ) );
+				continue;
 			}
 			$result = $this->statusHandler->applyLocked( $order, $existing );
 			if ( is_wp_error( $result ) ) {
 				$this->log->warning( $result->get_error_message(), [ 'order' => $id, 'key' => $key ] );
-				return new WP_Error( 'invalid_payment', __( 'Your previous payment needs to be checked. Please contact the store.', 'icepay-for-woocommerce' ) );
+				$verificationError = new WP_Error( 'invalid_payment', __( 'Your previous payment needs to be checked. Please contact the store.', 'icepay-for-woocommerce' ) );
+				continue;
 			}
-			if ( in_array( $existing['status'], [ 'completed', 'pending' ], true ) ) {
+			if ( $order->is_paid() || $order->get_date_paid() ) {
 				return [ 'result' => 'success', 'redirect' => PaymentRequestBuilder::returnUrl( $returnUrl ) ];
 			}
+			$pending = $pending || in_array( $existing['status'], [ 'completed', 'pending' ], true );
 			// Leave started payments open; every eligible submission creates a fresh payment.
+		}
+		if ( $pending ) {
+			return [ 'result' => 'success', 'redirect' => PaymentRequestBuilder::returnUrl( $returnUrl ) ];
+		}
+		if ( $verificationError !== null ) {
+			return $verificationError;
 		}
 		if ( Icepay::getMerchantId() === '' || Icepay::getSecret() === '' ) {
 			return new WP_Error( 'configuration', __( 'This payment method is temporarily unavailable. Please choose another payment method.', 'icepay-for-woocommerce' ) );
@@ -90,7 +101,7 @@ class PaymentService {
 		if ( ! is_string( $payment['key'] ?? null ) || $payment['key'] === '' ) {
 			return new WP_Error( 'uncertain', __( 'We could not confirm whether your payment was started. Please contact the store before paying again.', 'icepay-for-woocommerce' ) );
 		}
-		PaymentAttempts::addAttempt( $order, $payment, $method->getType() );
+		PaymentAttempts::addAttempt( $order, $payment, $method->getType(), $token );
 		$result = $this->statusHandler->applyLocked( $order, $payment );
 		$url = PaymentStatusHandler::redirectUrl( $payment );
 		if ( is_wp_error( $result ) || $url === '' ) {

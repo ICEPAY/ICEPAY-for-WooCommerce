@@ -63,11 +63,12 @@ class PaymentAttempts {
 		return $attempts;
 	}
 
-	public static function addAttempt( \WC_Order $order, array $payment, string $method ): void {
+	public static function addAttempt( \WC_Order $order, array $payment, string $method, ?string $token = null ): void {
 		$attempts = self::getAttempts( $order );
 		$key = $payment['key'];
 		$attempts = [ $key => [
 			'key' => $key,
+			'creation_token' => $token,
 			'method' => $method,
 			'amount' => (int) round( (float) $order->get_total() * 100 ),
 			'currency' => $order->get_currency(),
@@ -84,5 +85,14 @@ class PaymentAttempts {
 
 	public static function activeKey( \WC_Order $order ): string {
 		return (string) ( array_key_first( self::getAttempts( $order ) ) ?? '' );
+	}
+
+	public static function findKeyByToken( \WC_Order $order, string $token ): string {
+		foreach ( self::getAttempts( $order ) as $key => $attempt ) {
+			if ( is_string( $attempt['creation_token'] ?? null ) && hash_equals( $attempt['creation_token'], $token ) ) {
+				return $key;
+			}
+		}
+		return '';
 	}
 }

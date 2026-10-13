@@ -29,6 +29,15 @@ class PaymentReturnController {
 			return;
 		}
 		$key = Order::activeKey( $order );
+		if ( array_key_exists( 'icepay-attempt', $_GET ) ) {
+			$token = is_string( $_GET['icepay-attempt'] ) ? wp_unslash( $_GET['icepay-attempt'] ) : '';
+			$key = preg_match( '/^[a-f0-9-]{36}$/i', $token ) ? Order::findKeyByToken( $order, $token ) : '';
+			if ( $key === '' ) {
+				wc_add_notice( __( 'This payment attempt could not be verified. Please check your order or contact the store.', 'icepay-for-woocommerce' ), 'notice' );
+				$this->redirectPaymentReturn( $order );
+				return;
+			}
+		}
 		if ( ! $order->is_paid() && ! $order->get_date_paid() && $key !== '' ) {
 			try {
 				$result = $this->statusHandler->refresh( $order, $key );
