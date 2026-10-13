@@ -17,6 +17,7 @@
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js",
     "test:attribution": "node tests/Browser/order-attribution.cjs",
+    "test:restrictions": "node tests/Browser/payment-restrictions.cjs",
     "build-plugin": "composer install --no-dev --prefer-dist --no-interaction && pnpm install --frozen-lockfile && pnpm run build && pnpm run archive",
     "archive": "zip -qr $npm_package_name.zip . -x@exclude.lst",
     "check:archive": "php scripts/check-archive.php icepay-for-woocommerce.zip"

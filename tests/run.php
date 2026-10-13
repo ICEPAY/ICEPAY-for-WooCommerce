@@ -5,7 +5,7 @@
 use Icepay\WooCommerce\Icepay;
 use Icepay\WooCommerce\Payment\PaymentStatusHandler;
 
-$suiteNames = [ 'PaymentStatus', 'ProviderConflict', 'PaymentCreation', 'OrderLock', 'PaymentReturn' ];
+$suiteNames = [ 'PaymentStatus', 'ProviderConflict', 'PaymentCreation', 'OrderLock', 'PaymentReturn', 'Refund', 'Restrictions' ];
 $selected = $args[0] ?? 'all';
 if ( $selected !== 'all' && ! in_array( $selected, $suiteNames, true ) ) {
 	WP_CLI::error( 'Unknown suite. Choose: ' . implode( ', ', $suiteNames ) );
@@ -16,6 +16,7 @@ foreach ( $suiteNames as $suite ) {
 	// Fresh fixtures, counters, credentials and mocks for each independently runnable suite.
 	$orders = []; $products = []; $checks = 0; $payments = []; $posts = 0;
 	$cancellations = 0; $createMode = 'normal'; $completed = 0; $emails = 0;
+	$refundPosts = 0; $refundMode = 'normal';
 	$originalQuery = $_GET;
 	$originalMerchant = get_option( Icepay::MERCHANT_ID, null );
 	$originalSecret = get_option( Icepay::SECRET, null );
@@ -39,6 +40,9 @@ foreach ( $suiteNames as $suite ) {
 		WP_CLI::log( 'Suite: ' . $suite );
 		require __DIR__ . '/Integration/' . $suite . 'Test.php';
 		$total += $checks;
+	} catch ( Throwable $exception ) {
+		// Report after finally restores credentials and deletes fixtures.
+		$failure = $exception;
 	} finally {
 		$_GET = $originalQuery;
 		remove_filter( 'pre_http_request', $mock );
@@ -54,5 +58,6 @@ foreach ( $suiteNames as $suite ) {
 		}
 		remove_filter( 'pre_wp_mail', $onMail );
 	}
+	if ( isset( $failure ) ) { WP_CLI::error( $failure->getMessage() ); }
 }
 WP_CLI::success( $total . ' payment reliability checks passed.' );

@@ -19,9 +19,25 @@ class Integration {
 	public function __invoke(): void {
 		$this->addSettings();
 		$this->addGateways();
-		$this->addGatewayFilters();
 		$this->addBlocks();
 		$this->addWebhook();
+		add_action( 'woocommerce_create_refund', [ \Icepay\WooCommerce\Payment\RefundService::class, 'prepare' ], 10, 2 );
+		add_filter( 'woocommerce_order_actions', function ( array $actions, $order ): array {
+			if ( $order instanceof \WC_Order && $order->get_meta( '_icepay_refunds' ) ) {
+				$actions['icepay_reconcile_refunds'] = __( 'Reconcile ICEPAY refunds', 'icepay-for-woocommerce' );
+			}
+			return $actions;
+		}, 10, 2 );
+		add_action( 'woocommerce_order_action_icepay_reconcile_refunds', function ( \WC_Order $order ): void {
+			try {
+				$result = ( new \Icepay\WooCommerce\Payment\PaymentStatusHandler() )->refresh( $order, $order->get_transaction_id() );
+				$order->add_order_note( is_wp_error( $result )
+					? __( 'ICEPAY refund reconciliation could not retrieve a verified payment. Check the ICEPAY Portal.', 'icepay-for-woocommerce' )
+					: __( 'ICEPAY refund reconciliation checked the latest payment. Unmatched attempts remain blocked; review the ICEPAY Portal if necessary.', 'icepay-for-woocommerce' ) );
+			} catch ( \Throwable $exception ) {
+				( new Log() )->error( 'Refund reconciliation failed.', [ 'order' => $order->get_id(), 'message' => $exception->getMessage() ] );
+			}
+		} );
 		$this->addCustomLinks();
 		$this->addMultipleCardIcons();
 		add_action( 'template_redirect', [ new PaymentReturnController(), 'handle' ] );
@@ -64,42 +80,6 @@ class Integration {
 
 	protected function addWebhook(): void {
 		add_action( 'woocommerce_api_icepay-webhook', [ new Webhook(), 'handle' ] );
-	}
-
-	protected function addGatewayFilters(): void {
-		add_filter( 'woocommerce_available_payment_gateways', function ( array $gateways ): array {
-			if ( $gateways && ! empty( WC()->cart ) ) {
-				$totalCartAmount = (float) WC()->cart->get_total( '' );
-				if ( $totalCartAmount === 0.0 ) {
-					return $gateways;
-				}
-				foreach ( $gateways as $key => $gateway ) {
-					if ( ! str_contains( $key, 'icepay_' ) ) {
-						continue;
-					}
-					if ( ! empty( $gateway->min_quote_amount ) && $totalCartAmount < $gateway->min_quote_amount ) {
-						unset( $gateways[ $key ] );
-					}
-					if ( ! empty( $gateway->max_quote_amount ) && $totalCartAmount > $gateway->max_quote_amount ) {
-						unset( $gateways[ $key ] );
-					}
-				}
-			}
-			return $gateways;
-		} );
-		add_filter( 'woocommerce_available_payment_gateways', function ( array $gateways ): array {
-			if ( $gateways && ! empty( WC()->cart ) && ( $country = WC()->customer ? WC()->customer->get_billing_country() : false ) ) {
-				foreach ( $gateways as $key => $gateway ) {
-					if ( ! str_contains( $key, 'icepay_' ) ) {
-						continue;
-					}
-					if ( ! empty( $gateway->countries ) && ! in_array( $country, $gateway->countries, true ) ) {
-						unset( $gateways[ $key ] );
-					}
-				}
-			}
-			return $gateways;
-		} );
 	}
 
 	public function addCustomLinks(): void {

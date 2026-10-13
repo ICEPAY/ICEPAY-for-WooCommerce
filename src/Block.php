@@ -28,6 +28,7 @@ class Block extends AbstractPaymentMethodType {
 				'title'       => $paymentMethod->getName(),
 				'description' => $paymentMethod->getDescription(),
 				'icon'        => $paymentMethod->getIcon(),
+				'restrictions' => $paymentMethod->getRestrictions(),
 			];
 		}
 

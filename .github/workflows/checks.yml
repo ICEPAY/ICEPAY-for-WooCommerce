@@ -40,6 +40,10 @@ jobs:
           CHROME_BIN: /usr/bin/google-chrome
           WORDPRESS_URL: http://localhost
         run: pnpm run test:attribution
+      - name: Blocks restriction checks
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: pnpm run test:restrictions
       - name: Build and validate release artifact
         run: |
           composer install --no-dev --prefer-dist --no-interaction

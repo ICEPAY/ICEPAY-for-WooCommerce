@@ -59,6 +59,22 @@ class PaymentMethod {
 		return Integration::ID . '_' . $this->getId() . '_settings';
 	}
 
+	public function getRestrictions(): array {
+		return [
+			'countries' => array_values( (array) ( $this->options['countries'] ?? [] ) ),
+			'minimum' => $this->options['minimum'] ?? '',
+			'maximum' => $this->options['maximum'] ?? '',
+		];
+	}
+
+	public function isEligible( string $country, float $total ): bool {
+		$rules = $this->getRestrictions();
+		$minimum = $rules['minimum'] === '' ? 0.0 : (float) $rules['minimum'];
+		$maximum = $rules['maximum'] === '' ? null : (float) $rules['maximum'];
+		return ( $rules['countries'] === [] || in_array( strtoupper( $country ), $rules['countries'], true ) )
+			&& round( $total, 2 ) >= $minimum && ( $maximum === null || round( $total, 2 ) <= $maximum );
+	}
+
 	public function getFormFields(): array {
 		$formFields = [
 			'enabled'     => [
@@ -78,6 +94,20 @@ class PaymentMethod {
 				'type'     => 'text',
 				'desc_tip' => __( 'The description shown during the checkout', 'icepay-for-woocommerce' ),
 				'default'  => $this->getDefaultDescription(),
+			],
+			'countries' => [
+				'title' => __( 'Allowed billing countries', 'icepay-for-woocommerce' ),
+				'type' => 'multiselect', 'class' => 'wc-enhanced-select',
+				'options' => WC()->countries->get_countries(), 'default' => [],
+				'description' => __( 'Leave empty to allow all billing countries.', 'icepay-for-woocommerce' ),
+			],
+			'minimum' => [
+				'title' => __( 'Minimum order amount', 'icepay-for-woocommerce' ), 'type' => 'text', 'default' => '',
+				'description' => __( 'Inclusive, in the order currency, including tax and shipping. Leave empty for no minimum.', 'icepay-for-woocommerce' ),
+			],
+			'maximum' => [
+				'title' => __( 'Maximum order amount', 'icepay-for-woocommerce' ), 'type' => 'text', 'default' => '',
+				'description' => __( 'Inclusive, in the order currency, including tax and shipping. Leave empty for no maximum.', 'icepay-for-woocommerce' ),
 			],
 		];
 		if ( $this->type === 'card' ) {

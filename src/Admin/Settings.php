@@ -5,7 +5,6 @@ declare( strict_types=1 );
 namespace Icepay\WooCommerce\Admin;
 
 use Icepay\WooCommerce\Admin\Tabs\GeneralTab;
-use Icepay\WooCommerce\Admin\Tabs\PaymentMethodsTab;
 use Icepay\WooCommerce\Admin\Tabs\SupportTab;
 use Icepay\WooCommerce\Admin\Tabs\TabInterface;
 use WC_Settings_Page;

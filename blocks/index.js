@@ -45,7 +45,13 @@ icepay.paymentMethods.forEach((paymentMethod) => {
         label: <Label id={paymentMethod.id} icon={paymentMethod.icon} name={paymentMethod.title}
                       description={paymentMethod.description}/>,
         edit: <div/>,
-        canMakePayment: () => true,
+        canMakePayment: ({billingAddress, cartTotals}) => {
+            const {countries, minimum, maximum} = paymentMethod.restrictions;
+            const total = Number(cartTotals.total_price) / (10 ** Number(cartTotals.currency_minor_unit));
+            return (!countries.length || countries.includes((billingAddress.country || '').toUpperCase()))
+                && (minimum === '' || total >= Number(minimum))
+                && (maximum === '' || total <= Number(maximum));
+        },
         ariaLabel: paymentMethod.title,
         content: <PaymentMethod paymentMethod={paymentMethod}/>,
     });

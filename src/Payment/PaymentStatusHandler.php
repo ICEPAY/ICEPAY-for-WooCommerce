@@ -90,6 +90,11 @@ class PaymentStatusHandler {
 			return new WP_Error( 'invalid_payment', 'Completed payment has no payment method.' );
 		}
 
+		RefundService::reconcileLocked( $order, $payment );
+		// Refund recovery may update the order status through WooCommerce.
+		if ( $order->get_meta( '_icepay_refunds' ) ) {
+			$order->get_data_store()->read( $order );
+		}
 		// A completed payment must never regress on a delayed notification.
 		if ( ( $attempt['status'] ?? '' ) === 'completed' && $status !== 'completed' ) {
 			return true;

@@ -80,6 +80,9 @@ class PaymentService {
 		if ( Icepay::getMerchantId() === '' || Icepay::getSecret() === '' ) {
 			return new WP_Error( 'configuration', __( 'This payment method is temporarily unavailable. Please choose another payment method.', 'icepay-for-woocommerce' ) );
 		}
+		if ( ! $method->isEligible( $order->get_billing_country(), (float) $order->get_total() ) ) {
+			return new WP_Error( 'restricted_method', __( 'This payment method is not available for your billing country or order amount. Please choose another method.', 'icepay-for-woocommerce' ) );
+		}
 		$token = wp_generate_uuid4();
 		$order->update_meta_data( '_icepay_creation_uncertain', [
 			'token' => $token, 'merchant' => Icepay::getMerchantId(),

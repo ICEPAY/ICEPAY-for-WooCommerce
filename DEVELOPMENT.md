@@ -49,7 +49,7 @@ docker compose exec -T app wp eval-file wp-content/plugins/icepay-for-woocommerc
 ```
 
 Available suites: `PaymentStatus`, `ProviderConflict`, `PaymentCreation`,
-`OrderLock`, and `PaymentReturn`. Each suite resets its mocks, credentials, counters,
+`OrderLock`, `PaymentReturn`, `Refund`, and `Restrictions`. Each suite resets its mocks, credentials, counters,
 and fixtures. Shared setup lives in `tests/bootstrap.php` and `tests/Support/`.
 
 Local verification commands:
@@ -61,6 +61,7 @@ composer test
 pnpm install --frozen-lockfile
 pnpm run build
 pnpm run test:attribution
+pnpm run test:restrictions
 ```
 
 The browser test requires the Docker store and Chrome. Set `CHROME_BIN` if needed,
@@ -83,11 +84,59 @@ disposable HPOS-enabled store. `pnpm run check:archive` validates release conten
 - `Payment/PaymentStatusHandler.php`: validated, idempotent status transitions.
 - `Payment/PaymentAttempts.php`: attempt metadata and legacy payment-key lookup.
 - `Payment/OrderLock.php`: database connection-scoped concurrency protection.
+- `Payment/RefundService.php`: locked refund creation, durable operation identity, and recovery.
 - `Checkout/`: return, retry, and receipt controllers.
 - `Api/IcepayClient.php`: ICEPAY HTTP transport, injectable into payment handlers.
 
 The refactor keeps existing order metadata keys and payment policies compatible.
 Frontend dependencies and cache versions come from `build/index.asset.php`.
+
+### Refund reliability and recovery
+
+Create API refunds through WooCommerce's order refund workflow (`wc_create_refund`
+with `refund_payment: true`). Each operation receives a UUID reference before save;
+the gateway requires one unambiguous WooCommerce refund rather than guessing from
+amount/reason alone. Multiple partial refunds with the same amount/reason are supported.
+Direct `process_refund` calls without a prepared WooCommerce refund are rejected.
+
+The order lock serialises ICEPAY refund requests. Before submission the plugin checks
+the original payment and both local and provider refund balances, including Portal
+refunds. `_icepay_refunds` on the parent order stores the operation before the POST,
+so WooCommerce's deletion of a failed local refund cannot erase an unknown outcome.
+ICEPAY references are not server-side idempotency keys; the plugin never blindly
+resubmits an uncertain attempt. Definitive rejections allow a fresh operation.
+
+Verified payment updates match the reference, payment, amount, currency, and unique
+refund key. They store pending/completed status on the local refund. If WooCommerce
+deleted the local record after a timeout, reconciliation recreates its accounting and
+requested line items/restocking without another API refund. Repeated updates do not
+repeat refund creation, emails, or restocking. Portal-only refunds are not automatically
+imported as WooCommerce refunds.
+
+Use the order action **Reconcile ICEPAY refunds** to retrieve current payment state
+when a webhook has not arrived. Absence from a response alone does not prove that
+an uncertain refund failed. If it remains unmatched, check the ICEPAY Portal/support.
+Only after confirming no refund was created, mark that operation's `state` as
+`rejected` in `_icepay_refunds` using WooCommerce metadata APIs. If a refund exists,
+reconcile it instead. Deleting an accepted local refund also blocks subsequent API
+refunds until its accounting is restored. No scheduled refund polling is performed.
+
+### Payment method restrictions
+
+Each payment method has **Allowed billing countries**, **Minimum order amount**, and
+**Maximum order amount** settings. Empty values impose no restriction; amount boundaries
+are inclusive and use the final order total including tax/shipping in the order currency.
+Settings reject invalid countries, negative/non-numeric amounts, excess decimal places,
+and inverted ranges. A restricted country list requires a known matching billing country.
+
+Classic checkout and order-pay use gateway availability; Blocks uses the same configured
+limits with its live billing address and cart total. Payment creation rechecks the actual
+order server-side. Historical payment confirmation/refunds are not blocked by later
+changes to availability settings.
+
+`pnpm run test:restrictions` runs the built Blocks registration in Chrome with
+checkout context fixtures, including country changes and currency minor units.
+The PHP suite exercises classic/order-pay availability and direct-submit enforcement.
 
 For release verification, also exercise classic and Blocks checkout in a browser:
 successful payment, pending confirmation, cancellation followed by retry, and
