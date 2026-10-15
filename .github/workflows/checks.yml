@@ -24,7 +24,6 @@ jobs:
       - run: pnpm run build
       - name: Start disposable WordPress
         run: |
-          # Match the app's UID/GID before Docker creates nested mount directories.
           sudo install -d -m 755 -o 1000 -g 1000 wordpress wordpress/wp-content wordpress/wp-content/plugins wordpress/wp-content/themes
           docker compose up -d --build app db
           ready=false
