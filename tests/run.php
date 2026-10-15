@@ -35,8 +35,13 @@ foreach ( $suiteNames as $suite ) {
 	add_action( 'woocommerce_payment_complete', $onComplete );
 	update_option( Icepay::MERCHANT_ID, 'regression-merchant' );
 	update_option( Icepay::SECRET, 'regression-secret' );
+	$gatewayRegistry = WC()->payment_gateways();
+	$originalGateways = $gatewayRegistry->payment_gateways;
 	$handler = new PaymentStatusHandler();
 	try {
+		// WooCommerce may have cached clients before the test credentials were installed.
+		$gatewayRegistry->payment_gateways = [];
+		$gatewayRegistry->init();
 		WP_CLI::log( 'Suite: ' . $suite );
 		require __DIR__ . '/Integration/' . $suite . 'Test.php';
 		$total += $checks;
@@ -44,6 +49,7 @@ foreach ( $suiteNames as $suite ) {
 		// Report after finally restores credentials and deletes fixtures.
 		$failure = $exception;
 	} finally {
+		$gatewayRegistry->payment_gateways = $originalGateways;
 		$_GET = $originalQuery;
 		remove_filter( 'pre_http_request', $mock );
 		remove_action( 'woocommerce_payment_complete', $onComplete );
