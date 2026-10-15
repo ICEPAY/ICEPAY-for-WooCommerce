@@ -15,7 +15,7 @@ jobs:
           tools: composer
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.20.2'
+          node-version: '22.23.3'
       - uses: pnpm/action-setup@v4
       - run: composer install --prefer-dist --no-interaction
       - run: composer check
