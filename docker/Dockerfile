@@ -6,7 +6,7 @@ RUN usermod -u ${DOCKER_ID} www-data && groupmod -g ${DOCKER_ID} www-data
 # Install MailHog's mhsendmail
 RUN curl --location --output /usr/local/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 && \
     chmod a+x /usr/local/bin/mhsendmail
-RUN echo 'sendmail_path="/usr/local/bin/mhsendmail --smtp-addr=mailhog:1025 --from=no-reply@docker.dev"' > /usr/local/etc/php/conf.d/mailhog.ini
+RUN echo 'sendmail_path="/usr/local/bin/mhsendmail --smtp-addr=mailcatcher:1025 --from=no-reply@docker.dev"' > /usr/local/etc/php/conf.d/mailcatcher.ini
 
 # Install xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
