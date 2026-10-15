@@ -2,6 +2,7 @@ services:
   app:
     depends_on:
       - db
+      - mailcatcher
     build:
       context: ./docker
       dockerfile: Dockerfile
