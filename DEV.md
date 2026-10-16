@@ -27,3 +27,23 @@
     ```console
     make install
     ```
+
+## Local email
+
+PHP's `mail()` function uses `mhsendmail` to deliver WordPress and WooCommerce
+emails to the Compose service `mailcatcher` on SMTP port `1025`. MailCatcher
+captures these messages locally.
+
+After changing the Docker mail configuration, rebuild and recreate the app:
+
+```console
+docker compose up -d --build app
+```
+
+Send a test message through WordPress:
+
+```console
+docker compose exec app wp eval 'var_export(wp_mail("local-test@example.com", "Local mail test", "WordPress mail reached MailCatcher."));'
+```
+
+The command should print `true`, and the message should appear in MailCatcher.
