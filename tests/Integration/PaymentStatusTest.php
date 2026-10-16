@@ -13,6 +13,12 @@ $p = $payment( $order, 'pi-first' );
 Order::addAttempt( $order, $p, 'card' );
 $assert( Order::findOrderByKey( 'pi-first' )->get_id() === $order->get_id(), 'Exact legacy-compatible payment-key lookup' );
 $assert( Order::findOrderByKey( 'pi-fir' ) === null, 'Partial payment keys are rejected' );
+$multi = $makeOrder();
+Order::addAttempt( $multi, $payment( $multi, 'pi-multi-a' ), 'card' );
+Order::addAttempt( $multi, $payment( $multi, 'pi-multi-b' ), 'card' );
+$assert( count( wc_get_order( $multi->get_id() )->get_meta( 'icepay-payment-key', false ) ) === 2
+	&& Order::findOrderByKey( 'pi-multi-a' )->get_id() === $multi->get_id()
+	&& Order::findOrderByKey( 'pi-multi-b' )->get_id() === $multi->get_id(), 'Each payment key is stored as a separate meta row and found exactly' );
 $wrong = $p; $wrong['amount']['value']++;
 $assert( is_wp_error( $handler->apply( $order, $wrong ) ), 'Amount mismatch cannot complete an order' );
 $wrong = $p; $wrong['amount']['currency'] = 'usd';

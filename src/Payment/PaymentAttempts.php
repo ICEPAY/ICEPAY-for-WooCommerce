@@ -19,7 +19,7 @@ class PaymentAttempts {
 			'limit'        => -1,
 			'meta_key'     => 'icepay-payment-key',
 			'meta_value'   => $key,
-			'meta_compare' => 'LIKE',
+			'meta_compare' => '=',
 		] );
 		if ( ! is_array( $orders ) ) { return null; }
 
@@ -33,9 +33,7 @@ class PaymentAttempts {
 	}
 
 	public static function addPaymentKey( \WC_Order $order, string $key ): void {
-		$currentKeys = $order->get_meta( 'icepay-payment-key' );
-
-		if ( in_array( $key, explode( ',', (string) $currentKeys ), true ) ) {
+		if ( in_array( $key, self::getPaymentKeys( $order ), true ) ) {
 			return;
 		}
 
@@ -47,12 +45,21 @@ class PaymentAttempts {
 			)
 		);
 
-		$order->update_meta_data(
-			'icepay-payment-key',
-			implode( ',', array_filter( [ $key, ...explode( ',', (string) $currentKeys ) ] ) )
-		);
+		$order->add_meta_data( 'icepay-payment-key', $key, false );
 
 		$order->save();
+	}
+
+	/** @return list<string> */
+	private static function getPaymentKeys( \WC_Order $order ): array {
+		$keys = [];
+		foreach ( (array) $order->get_meta( 'icepay-payment-key', false ) as $meta ) {
+			$value = $meta instanceof \WC_Meta_Data ? ( $meta->get_data()['value'] ?? null ) : null;
+			if ( is_string( $value ) && $value !== '' ) {
+				$keys[] = $value;
+			}
+		}
+		return $keys;
 	}
 
 	/** @return array<string, Attempt> */
@@ -64,7 +71,7 @@ class PaymentAttempts {
 				unset( $attempts[ $key ] );
 			}
 		}
-		foreach ( array_filter( explode( ',', (string) $order->get_meta( 'icepay-payment-key' ) ) ) as $key ) {
+		foreach ( self::getPaymentKeys( $order ) as $key ) {
 			if ( ! isset( $attempts[ $key ] ) ) {
 				$attempts[ $key ] = [ 'key' => $key, 'status' => 'unknown' ];
 			}
