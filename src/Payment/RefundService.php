@@ -36,6 +36,33 @@ class RefundService {
 		] );
 	}
 
+	public static function preventDelete( mixed $check, WC_Order_Refund $refund ): mixed {
+		$order = wc_get_order( $refund->get_parent_id() );
+		if ( ! $order || ! PaymentAttempts::isIcepay( $order ) || ! $order->get_date_paid() ) {
+			return $check;
+		}
+		// Allow wc_create_refund() to roll back a prepared API refund when the gateway call fails.
+		$reference = $refund->get_meta( '_icepay_refund_reference' );
+		if ( is_string( $reference ) && $reference !== '' && ! $refund->get_refunded_payment() ) {
+			try {
+				$history = self::history( $order );
+				if ( ( $history[ $reference ]['state'] ?? null ) !== 'accepted' ) {
+					return $check;
+				}
+			} catch ( \Throwable ) {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public static function hideDeleteAction( int $orderId ): void {
+		$order = wc_get_order( $orderId );
+		if ( $order && PaymentAttempts::isIcepay( $order ) && $order->get_date_paid() ) {
+			echo '<style>#order_refunds .delete_refund { display: none !important; }</style>';
+		}
+	}
+
 	public function process( int $id, mixed $amount, string $reason ): bool|WP_Error {
 		if ( ! OrderLock::acquire( $id ) ) {
 			return new WP_Error( 'busy', __( 'This order is being updated. Please wait before refunding again.', 'icepay-for-woocommerce' ) );
