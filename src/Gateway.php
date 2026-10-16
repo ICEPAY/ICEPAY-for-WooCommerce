@@ -28,7 +28,12 @@ class Gateway extends WC_Payment_Gateway {
 		$this->form_fields = $paymentMethod->getFormFields();
 		$this->plugin_id = Integration::ID . '_';
 		$this->supports = [ 'products', 'refunds' ];
-		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, function (): void { $this->process_admin_options(); } );
+		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, function (): void {
+			$this->process_admin_options();
+			foreach ( array_unique( $this->get_errors() ) as $error ) {
+				\WC_Admin_Settings::add_error( $error );
+			}
+		} );
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'display_errors' ] );
 	}
 
