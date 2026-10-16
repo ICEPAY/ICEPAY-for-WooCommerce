@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Icepay\WooCommerce;
 
 class PaymentMethod {
+	/** @var array<string, mixed> */
 	protected array $options;
 
 	public function __construct(
@@ -59,6 +60,25 @@ class PaymentMethod {
 		return Integration::ID . '_' . $this->getId() . '_settings';
 	}
 
+	/** @return array{countries: list<string>, minimum: string, maximum: string} */
+	public function getRestrictions(): array {
+		$countries = $this->options['countries'] ?? [];
+		return [
+			'countries' => is_array( $countries ) ? array_values( array_filter( $countries, 'is_string' ) ) : [],
+			'minimum' => $this->getOption( 'minimum' ) ?? '',
+			'maximum' => $this->getOption( 'maximum' ) ?? '',
+		];
+	}
+
+	public function isEligible( string $country, float $total ): bool {
+		$rules = $this->getRestrictions();
+		$minimum = $rules['minimum'] === '' ? 0.0 : (float) $rules['minimum'];
+		$maximum = $rules['maximum'] === '' ? null : (float) $rules['maximum'];
+		return ( $rules['countries'] === [] || in_array( strtoupper( $country ), $rules['countries'], true ) )
+			&& round( $total, 2 ) >= $minimum && ( $maximum === null || round( $total, 2 ) <= $maximum );
+	}
+
+	/** @return array<string, array<string, mixed>> */
 	public function getFormFields(): array {
 		$formFields = [
 			'enabled'     => [
@@ -79,6 +99,20 @@ class PaymentMethod {
 				'desc_tip' => __( 'The description shown during the checkout', 'icepay-for-woocommerce' ),
 				'default'  => $this->getDefaultDescription(),
 			],
+			'countries' => [
+				'title' => __( 'Allowed billing countries', 'icepay-for-woocommerce' ),
+				'type' => 'multiselect', 'class' => 'wc-enhanced-select',
+				'options' => WC()->countries->get_countries(), 'default' => [],
+				'description' => __( 'Leave empty to allow all billing countries.', 'icepay-for-woocommerce' ),
+			],
+			'minimum' => [
+				'title' => __( 'Minimum order amount', 'icepay-for-woocommerce' ), 'type' => 'text', 'default' => '',
+				'description' => __( 'Inclusive, in the order currency, including tax and shipping. Leave empty for no minimum.', 'icepay-for-woocommerce' ),
+			],
+			'maximum' => [
+				'title' => __( 'Maximum order amount', 'icepay-for-woocommerce' ), 'type' => 'text', 'default' => '',
+				'description' => __( 'Inclusive, in the order currency, including tax and shipping. Leave empty for no maximum.', 'icepay-for-woocommerce' ),
+			],
 		];
 		if ( $this->type === 'card' ) {
 			$formFields['separated'] = [
@@ -92,20 +126,22 @@ class PaymentMethod {
 		return $formFields;
 	}
 
+	/** @return array<string, mixed> */
 	protected function getOptions(): array {
 		$options = get_option( $this->getOptionKey(), null );
 
-		return $options ?? [];
+		return is_array( $options ) ? array_filter( $options, 'is_string', ARRAY_FILTER_USE_KEY ) : [];
 	}
 
 	protected function getOption( string $key ): ?string {
-		if ( isset( $this->options[ $key ] ) && ! empty( $this->options[ $key ] ) ) {
+		if ( isset( $this->options[ $key ] ) && is_string( $this->options[ $key ] ) && $this->options[ $key ] !== '' ) {
 			return $this->options[ $key ];
 		}
 
 		return null;
 	}
 
+	/** @return list<PaymentMethod> */
 	public static function getAll(): array {
 		return [
 			new PaymentMethod( 'ideal', 'iDEAL | Wero', '', 'ideal.svg' ),

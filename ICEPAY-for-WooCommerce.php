@@ -31,7 +31,9 @@ define( 'ICEPAY_URL', untrailingslashit( plugins_url( basename( plugin_dir_path(
 
 function onError( Throwable $throwable ): void {
 	$error = sprintf( '<strong>Error:</strong> %s <br><pre>%s</pre>', $throwable->getMessage(), $throwable->getTraceAsString() );
-	add_action( 'all_admin_notices', fn() => printf( '<div class="notice notice-error"><p>%1$s</p></div>', wp_kses_post( $error ) ) );
+	add_action( 'all_admin_notices', function () use ( $error ): void {
+		printf( '<div class="notice notice-error"><p>%1$s</p></div>', wp_kses_post( $error ) );
+	} );
 }
 
 function addIntegration(): void {

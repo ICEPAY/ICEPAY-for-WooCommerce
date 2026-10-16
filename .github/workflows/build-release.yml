@@ -13,10 +13,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
-        uses: pnpm/setup@v1
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: intl, mbstring, zip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - uses: pnpm/action-setup@v4
 
       - run: pnpm run build-plugin
+      - run: pnpm run check:archive
 
       - name: Unzip # GH currently always zips, so if we upload a zip we get a zip inside a zip
         run: unzip icepay-for-woocommerce.zip -d dist
@@ -24,9 +31,6 @@ jobs:
       - name: move composer file
         run: |
           cp composer.json dist/composer.json
-          rm dist/README.md
-          rm dist/DEVELOPMENT.md
-          rm dist/SECURITY.md
 
       - name: Upload the ZIP file
         uses: actions/upload-artifact@v4
