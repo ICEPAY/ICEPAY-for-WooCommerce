@@ -1,5 +1,13 @@
 parameters:
+    level: 6
+    phpVersion: 80200
+    stubFiles:
+        - tests/Support/woocommerce.stub
+    paths:
+        - src
+        - ICEPAY-for-WooCommerce.php
     bootstrapFiles:
+        - tests/Support/constants.php
         - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     dynamicConstantNames:
         - ICEPAY_URL

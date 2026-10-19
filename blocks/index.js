@@ -2,7 +2,7 @@ import {registerPaymentMethod} from '@woocommerce/blocks-registry';
 import {PaymentMethod} from './PaymentMethods/PaymentMethod.js';
 import {Label} from './Components/Label.js';
 
-const stylesheet = new CSSStyleSheet();
+const stylesheet = new window.CSSStyleSheet();
 stylesheet.replaceSync(`
 	.wc-block-components-radio-control__label .icepay-label {
 	    display: flex;
@@ -38,14 +38,20 @@ stylesheet.replaceSync(`
 	}
 `);
 
-document.adoptedStyleSheets = [stylesheet];
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
 icepay.paymentMethods.forEach((paymentMethod) => {
     registerPaymentMethod({
         name: paymentMethod.id,
         label: <Label id={paymentMethod.id} icon={paymentMethod.icon} name={paymentMethod.title}
                       description={paymentMethod.description}/>,
         edit: <div/>,
-        canMakePayment: () => true,
+        canMakePayment: ({billingAddress, cartTotals}) => {
+            const {countries, minimum, maximum} = paymentMethod.restrictions;
+            const total = Number(cartTotals.total_price) / (10 ** Number(cartTotals.currency_minor_unit));
+            return (!countries.length || countries.includes((billingAddress.country || '').toUpperCase()))
+                && (minimum === '' || total >= Number(minimum))
+                && (maximum === '' || total <= Number(maximum));
+        },
         ariaLabel: paymentMethod.title,
         content: <PaymentMethod paymentMethod={paymentMethod}/>,
     });

@@ -13,3 +13,14 @@ exclude.lst
 docker/*
 docker-compose.yml
 phpstan.neon
+phpcs.xml
+tests/*
+scripts/*
+.idea/*
+.vscode/*
+*.md
+*.yml
+*.yaml
+blocks/*
+icepay-for-woocommerce*.zip
+dist/*

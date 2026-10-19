@@ -7,6 +7,9 @@ namespace Icepay\WooCommerce;
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Icepay\WooCommerce\Admin\Settings;
+use Icepay\WooCommerce\Checkout\PaymentReceipt;
+use Icepay\WooCommerce\Checkout\PaymentRetryController;
+use Icepay\WooCommerce\Checkout\PaymentReturnController;
 
 class Integration {
 	public const NAME = 'ICEPAY for WooCommerce';
@@ -16,64 +19,28 @@ class Integration {
 	public function __invoke(): void {
 		$this->addSettings();
 		$this->addGateways();
-
-		$this->addGatewayFilters();
-
 		$this->addBlocks();
 		$this->addWebhook();
-
+		$this->addrefunds();
 		$this->addCustomLinks();
-
 		$this->addMultipleCardIcons();
-
-		add_action( 'template_redirect', [ $this, 'redirect' ] );
-	}
-
-	public function redirect(): void {
-		if ( ! isset( $_GET['via-icepay'] ) ) {
-			return;
-		}
-
-		$orderKey   = filter_input( INPUT_GET, 'key', FILTER_SANITIZE_SPECIAL_CHARS ) ?? null;
-		$order      = wc_get_order( wc_get_order_id_by_order_key( $orderKey ) );
-		$paymentKey = $order->get_meta( 'icepay-payment-key' );
-
-		$client = new IcepayClient(
-			Icepay::getMerchantId(),
-			Icepay::getSecret(),
-		);
-
-		[ $isSuccessful, $payment ] = $client->get( $paymentKey );
-
-		if ( ! $isSuccessful ) {
-			$log = new Log();
-			$log->error( 'Unable to create payment', $payment );
-			wp_safe_redirect( apply_filters( 'woocommerce_get_return_url', $order->get_checkout_order_received_url(),
-				$order ) );
-			die;
-		}
-
-		$redirectUrl = $payment['status'] === 'started' ? $order->get_checkout_payment_url() : apply_filters( 'woocommerce_get_return_url',
-			$order->get_checkout_order_received_url(), $order );
-
-		wp_safe_redirect( $redirectUrl );
-		die;
+		add_action( 'template_redirect', [ new PaymentReturnController(), 'handle' ] );
+		add_action( 'template_redirect', [ new PaymentRetryController(), 'handle' ] );
+		add_filter( 'woocommerce_thankyou_order_received_text', [ new PaymentReceipt(), 'text' ], 10, 2 );
 	}
 
 	protected function addSettings(): void {
-		add_filter(
-			'woocommerce_get_settings_pages',
-			fn( array $data ): array => array_merge( $data, [ new Settings() ] )
-		);
+		add_filter( 'woocommerce_get_settings_pages',
+			fn( array $data ): array => array_merge( $data, [ new Settings() ] ) );
 	}
 
 	protected function addGateways(): void {
 		add_filter( 'woocommerce_payment_gateways', fn( $gateways ) => array_merge( $gateways, $this->getGateways() ) );
 	}
 
+	/** @return array<string, Gateway> */
 	protected function getGateways(): array {
 		$gateways = [];
-
 		foreach ( PaymentMethod::getAll() as $paymentMethod ) {
 			$gateways[ $paymentMethod->getId() ] = new Gateway( $paymentMethod );
 		}
@@ -82,107 +49,83 @@ class Integration {
 	}
 
 	protected function addBlocks(): void {
-		add_action( 'before_woocommerce_init', function () {
-			if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+		add_action( 'before_woocommerce_init', function (): void {
+			if ( class_exists( FeaturesUtil::class ) ) {
 				FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', ICEPAY_FILE, true );
 			}
 		} );
-
-		add_action( 'woocommerce_blocks_loaded', fn() => Integration::addBlock() );
+		add_action( 'woocommerce_blocks_loaded', function (): void {
+			self::addBlock();
+		} );
 	}
 
 	public static function addBlock(): void {
 		if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
-			add_action(
-				'woocommerce_blocks_payment_method_type_registration',
-				fn( PaymentMethodRegistry $paymentMethodRegistry ) => $paymentMethodRegistry->register( new Block() )
-			);
+			add_action( 'woocommerce_blocks_payment_method_type_registration',
+				function ( PaymentMethodRegistry $registry ): void {
+					$registry->register( new Block() );
+				} );
 		}
 	}
 
 	protected function addWebhook(): void {
-		add_action( 'woocommerce_api_' . 'icepay-webhook', fn() => ( new Webhook )->handle() );
+		add_action( 'woocommerce_api_icepay-webhook', [ new Webhook(), 'handle' ] );
 	}
 
-	protected function addGatewayFilters(): void {
-		add_filter( 'woocommerce_available_payment_gateways', function ( array $gateways ): array {
-			if ( $gateways && ! empty( WC()->cart ) ) {
-				$totalCartAmount = (float) WC()->cart->get_total( '' );
-
-				if ( $totalCartAmount === 0.0 ) {
-					return $gateways;
-				}
-
-				foreach ( $gateways as $key => $gateway ) {
-					if ( ! str_contains( $key, 'icepay_' ) ) {
-						continue;
-					}
-
-					if ( ! empty( $gateway->min_quote_amount ) && $totalCartAmount < $gateway->min_quote_amount ) {
-						unset( $gateways[ $key ] );
-					}
-
-					if ( ! empty( $gateway->max_quote_amount ) && $totalCartAmount > $gateway->max_quote_amount ) {
-						unset( $gateways[ $key ] );
-					}
-				}
+	protected function addrefunds(): void {
+		add_action( 'woocommerce_create_refund', [ \Icepay\WooCommerce\Payment\RefundService::class, 'prepare' ], 10,
+			2 );
+		add_filter( 'woocommerce_pre_delete_order_refund',
+			[ \Icepay\WooCommerce\Payment\RefundService::class, 'preventDelete' ], 10, 2 );
+		add_action( 'woocommerce_admin_order_items_after_refunds',
+			[ \Icepay\WooCommerce\Payment\RefundService::class, 'hideDeleteAction' ] );
+		add_filter( 'woocommerce_order_actions', function ( array $actions, $order ): array {
+			if ( $order instanceof \WC_Order && $order->get_meta( '_icepay_refunds' ) ) {
+				$actions['icepay_reconcile_refunds'] = __( 'Reconcile ICEPAY refunds', 'icepay-for-woocommerce' );
 			}
 
-			return $gateways;
-		} );
-
-		add_filter( 'woocommerce_available_payment_gateways', function ( array $gateways ): array {
-			if (
-				$gateways && ! empty( WC()->cart ) && ( $customerСountry = ( WC()->customer )
-					? WC()->customer->get_billing_country() : false )
-			) {
-				foreach ( $gateways as $key => $gateway ) {
-					if ( ! str_contains( $key, 'icepay_' ) ) {
-						continue;
-					}
-
-					if (
-						! empty( $gateway->countries )
-						&& ! in_array( $customerСountry, $gateway->countries, true )
-					) {
-						unset( $gateways[ $key ] );
-					}
-				}
+			return $actions;
+		}, 10, 2 );
+		add_action( 'woocommerce_order_action_icepay_reconcile_refunds', function ( \WC_Order $order ): void {
+			try {
+				$result = ( new \Icepay\WooCommerce\Payment\PaymentStatusHandler() )->refresh( $order,
+					$order->get_transaction_id() );
+				$order->add_order_note( is_wp_error( $result )
+					? __( 'ICEPAY refund reconciliation could not retrieve a verified payment. Check the ICEPAY Portal.',
+						'icepay-for-woocommerce' )
+					: __( 'ICEPAY refund reconciliation checked the latest payment. Unmatched attempts remain blocked; review the ICEPAY Portal if necessary.',
+						'icepay-for-woocommerce' ) );
+			} catch ( \Throwable $exception ) {
+				( new Log() )->error( 'Refund reconciliation failed.',
+					[ 'order' => $order->get_id(), 'message' => $exception->getMessage() ] );
 			}
-
-			return $gateways;
 		} );
 	}
 
 	public function addCustomLinks(): void {
 		add_filter( 'plugin_action_links_' . ICEPAY_FILE, function ( array $data ): array {
-			$action_links = [
-				'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=icepay_settings' )
-				. '">' . __( 'Settings', 'icepay-for-woocommerce' )
-				. '</a>',
-				'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' )
-				. '">' . __( 'Payment Methods', 'icepay-for-woocommerce' ) . '</a>',
-				'<a href="' . admin_url( 'admin.php?page=wc-status&tab=logs' )
-				. '">' . __( 'Logs', 'icepay-for-woocommerce' ) . '</a>',
-
+			$links = [
+				'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=icepay_settings' ) . '">' . __( 'Settings',
+					'icepay-for-woocommerce' ) . '</a>',
+				'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">' . __( 'Payment Methods',
+					'icepay-for-woocommerce' ) . '</a>',
+				'<a href="' . admin_url( 'admin.php?page=wc-status&tab=logs' ) . '">' . __( 'Logs',
+					'icepay-for-woocommerce' ) . '</a>',
 			];
 
-			return array_merge( $action_links, $data );
+			return array_merge( $links, $data );
 		} );
 	}
 
 	public function addMultipleCardIcons(): void {
 		$cardOptions = get_option( Integration::ID . '_icepay-card_settings', null ) ?? [];
-
 		if ( empty( $cardOptions['separated'] ) || $cardOptions['separated'] === 'no' ) {
 			return;
 		}
-
 		add_filter( 'woocommerce_gateway_icon', function ( $icon, $gateway_id ) {
-			// Change 'cod' to your specific gateway ID
 			if ( $gateway_id === 'icepay-card' ) {
-				$icon = str_replace( 'card.svg', 'mastercard.svg', $icon ) .
-				        str_replace( 'card.svg', 'visa.svg', $icon );
+				$icon = str_replace( 'card.svg', 'mastercard.svg', $icon ) . str_replace( 'card.svg', 'visa.svg',
+						$icon );
 			}
 
 			return $icon;
