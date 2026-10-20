@@ -43,6 +43,16 @@ class Integration {
 		add_action( 'template_redirect', [ new PaymentReturnController(), 'handle' ] );
 		add_action( 'template_redirect', [ new PaymentRetryController(), 'handle' ] );
 		add_filter( 'woocommerce_thankyou_order_received_text', [ new PaymentReceipt(), 'text' ], 10, 2 );
+		add_action( 'wp_enqueue_scripts', [ self::class, 'enqueueCheckoutRestore' ] );
+	}
+
+	public static function enqueueCheckoutRestore(): void {
+		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() || is_wc_endpoint_url( 'order-received' ) ) {
+			return;
+		}
+		wp_register_script( 'icepay-checkout-restore', false, [], Integration::VERSION, true );
+		wp_enqueue_script( 'icepay-checkout-restore' );
+		wp_add_inline_script( 'icepay-checkout-restore', "window.addEventListener('pageshow',function(e){if(e.persisted){window.location.reload();}});" );
 	}
 
 	protected function addSettings(): void {
