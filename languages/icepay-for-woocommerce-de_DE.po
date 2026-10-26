@@ -1,0 +1,120 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ICEPAY for WooCommerce\n"
+"POT-Creation-Date: 2026-04-22 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "iDEAL | Wero"
+msgstr "iDEAL | Wero"
+
+msgid "Card"
+msgstr "Kreditkarte"
+
+msgid "Bancontact"
+msgstr "Bancontact"
+
+msgid "PayPal"
+msgstr "PayPal"
+
+msgid "Online Überweisen"
+msgstr "Online Überweisen"
+
+msgid "EPS"
+msgstr "EPS"
+
+msgid "Carte Bancaire"
+msgstr "Carte Bancaire"
+
+msgid "Dankort"
+msgstr "Dankort"
+
+msgid "Pay by Bank"
+msgstr "Banküberweisung"
+
+msgid "Enable/Disable"
+msgstr "Aktivieren/Deaktivieren"
+
+msgid "Enable %s"
+msgstr "%s aktivieren"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "The name shown during the checkout"
+msgstr "Der Name, der beim Checkout angezeigt wird"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "The description shown during the checkout"
+msgstr "Die Beschreibung, die beim Checkout angezeigt wird"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Payment Methods"
+msgstr "Zahlungsmethoden"
+
+msgid "Logs"
+msgstr "Protokolle"
+
+msgid "ICEPAY payment created with key: %1$s"
+msgstr "ICEPAY-Zahlung mit Schlüssel erstellt: %1$s"
+
+#: src/Admin/Tabs/GeneralTab.php:70
+msgid "Expire after"
+msgstr "Gültigkeitsdauer"
+
+#: src/Admin/Tabs/GeneralTab.php:72
+msgid "In minutes. By default the payment expires after four hours (240 minutes)."
+msgstr "In Minuten. Standardmäßig läuft die Zahlung nach vier Stunden (240 Minuten) ab."
+
+#: src/PaymentMethod.php:103
+msgid "Allowed billing countries"
+msgstr "Zulässige Rechnungsländer"
+
+#: src/PaymentMethod.php:106
+msgid "Leave empty to allow all billing countries."
+msgstr "Leer lassen, um alle Rechnungsländer zuzulassen."
+
+#: src/PaymentMethod.php:109
+msgid "Minimum order amount"
+msgstr "Mindestbestellbetrag"
+
+#: src/PaymentMethod.php:110
+msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no minimum."
+msgstr "Inklusive Grenze in der Bestellwährung, einschließlich Steuern und Versand. Für keinen Mindestbetrag leer lassen."
+
+#: src/PaymentMethod.php:113
+msgid "Maximum order amount"
+msgstr "Höchstbestellbetrag"
+
+#: src/PaymentMethod.php:114
+msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no maximum."
+msgstr "Inklusive Grenze in der Bestellwährung, einschließlich Steuern und Versand. Für keinen Höchstbetrag leer lassen."
+
+#: src/PaymentMethod.php:119
+msgid "Separate icons in legacy checkout"
+msgstr "Separate Symbole im klassischen Checkout"
+
+#: src/Gateway.php:67
+#: src/Gateway.php:70
+msgid "Select valid billing countries."
+msgstr "Wählen Sie gültige Rechnungsländer aus."
+
+#: src/Gateway.php:80
+#: src/Gateway.php:90
+msgid "The minimum order amount cannot exceed the maximum."
+msgstr "Der Mindestbestellbetrag darf den Höchstbestellbetrag nicht überschreiten."
+
+#: src/Gateway.php:101
+msgid "Order amount limits must be non-negative numbers with at most two decimal places, or empty."
+msgstr "Bestellbetragsgrenzen müssen nicht negative Zahlen mit höchstens zwei Dezimalstellen oder leer sein."
+
+#: src/Gateway.php:105
+msgid "Order amount limits must be non-negative numbers or empty."
+msgstr "Bestellbetragsgrenzen müssen nicht negative Zahlen oder leer sein."

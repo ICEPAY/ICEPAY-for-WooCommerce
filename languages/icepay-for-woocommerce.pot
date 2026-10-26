@@ -1,0 +1,190 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ICEPAY for WooCommerce 1.1.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/icepay-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-26T11:37:52+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: icepay-for-woocommerce\n"
+
+#: src/Admin/Settings.php:50
+#: src/Admin/Tabs/GeneralTab.php:36
+#: src/Integration.php:123
+msgid "Settings"
+msgstr ""
+
+#: src/Admin/Settings.php:51
+#: src/Admin/Tabs/SupportTab.php:37
+msgid "Support"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:38
+msgid "Setting for your ICEPAY account."
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:43
+msgid "Merchant ID"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:45
+msgid "Get the Merchant ID from your ICEPAY account."
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:47
+msgid "12345"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:51
+msgid "Secret"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:53
+msgid "Get the Secret from your ICEPAY account."
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:60
+msgid "Reference"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:62
+msgid "Reference shown on payment. {ORDER_ID} will be replaced with the order id."
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:65
+msgid "Order #{ORDER_ID}"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:84
+msgid "Show Icons"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:91
+msgid "Enable Logs"
+msgstr ""
+
+#: src/Admin/Tabs/SupportTab.php:39
+msgid "For support please send an email to info@icepay.com"
+msgstr ""
+
+#: src/Integration.php:125
+msgid "Payment Methods"
+msgstr ""
+
+#: src/Integration.php:127
+msgid "Logs"
+msgstr ""
+
+#: src/PaymentMethod.php:85
+msgid "Enable/Disable"
+msgstr ""
+
+#: src/PaymentMethod.php:91
+msgid "Name"
+msgstr ""
+
+#: src/PaymentMethod.php:93
+msgid "The name shown during the checkout"
+msgstr ""
+
+#: src/PaymentMethod.php:97
+msgid "Description"
+msgstr ""
+
+#: src/PaymentMethod.php:99
+msgid "The description shown during the checkout"
+msgstr ""
+
+#: src/PaymentMethod.php:147
+msgid "iDEAL | Wero"
+msgstr ""
+
+#: src/PaymentMethod.php:148
+msgid "Card"
+msgstr ""
+
+#: src/PaymentMethod.php:149
+msgid "Bancontact"
+msgstr ""
+
+#: src/PaymentMethod.php:150
+msgid "PayPal"
+msgstr ""
+
+#: src/PaymentMethod.php:151
+msgid "Online Überweisen"
+msgstr ""
+
+#: src/PaymentMethod.php:152
+msgid "EPS"
+msgstr ""
+
+#: src/PaymentMethod.php:153
+msgid "Carte Bancaire"
+msgstr ""
+
+#: src/PaymentMethod.php:154
+msgid "Dankort"
+msgstr ""
+
+#: src/PaymentMethod.php:155
+msgid "Pay by Bank"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:70
+msgid "Expire after"
+msgstr ""
+
+#: src/Admin/Tabs/GeneralTab.php:72
+msgid "In minutes. By default the payment expires after four hours (240 minutes)."
+msgstr ""
+
+#: src/PaymentMethod.php:103
+msgid "Allowed billing countries"
+msgstr ""
+
+#: src/PaymentMethod.php:106
+msgid "Leave empty to allow all billing countries."
+msgstr ""
+
+#: src/PaymentMethod.php:109
+msgid "Minimum order amount"
+msgstr ""
+
+#: src/PaymentMethod.php:110
+msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no minimum."
+msgstr ""
+
+#: src/PaymentMethod.php:113
+msgid "Maximum order amount"
+msgstr ""
+
+#: src/PaymentMethod.php:114
+msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no maximum."
+msgstr ""
+
+#: src/PaymentMethod.php:119
+msgid "Separate icons in legacy checkout"
+msgstr ""
+
+#: src/Gateway.php:67
+#: src/Gateway.php:70
+msgid "Select valid billing countries."
+msgstr ""
+
+#: src/Gateway.php:80
+#: src/Gateway.php:90
+msgid "The minimum order amount cannot exceed the maximum."
+msgstr ""
+
+#: src/Gateway.php:101
+msgid "Order amount limits must be non-negative numbers with at most two decimal places, or empty."
+msgstr ""
+
+#: src/Gateway.php:105
+msgid "Order amount limits must be non-negative numbers or empty."
+msgstr ""

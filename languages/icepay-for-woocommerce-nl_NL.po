@@ -1,0 +1,120 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ICEPAY for WooCommerce\n"
+"POT-Creation-Date: 2026-04-22 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "iDEAL | Wero"
+msgstr "iDEAL | Wero"
+
+msgid "Card"
+msgstr "Creditcard"
+
+msgid "Bancontact"
+msgstr "Bancontact"
+
+msgid "PayPal"
+msgstr "PayPal"
+
+msgid "Online Überweisen"
+msgstr "Online Überweisen"
+
+msgid "EPS"
+msgstr "EPS"
+
+msgid "Carte Bancaire"
+msgstr "Carte Bancaire"
+
+msgid "Dankort"
+msgstr "Dankort"
+
+msgid "Pay by Bank"
+msgstr "Pay by Bank"
+
+msgid "Enable/Disable"
+msgstr "Inschakelen/Uitschakelen"
+
+msgid "Enable %s"
+msgstr "%s inschakelen"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "The name shown during the checkout"
+msgstr "De naam die wordt weergegeven tijdens het afrekenen"
+
+msgid "Description"
+msgstr "Beschrijving"
+
+msgid "The description shown during the checkout"
+msgstr "De beschrijving die wordt weergegeven tijdens het afrekenen"
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Payment Methods"
+msgstr "Betaalmethoden"
+
+msgid "Logs"
+msgstr "Logboeken"
+
+msgid "ICEPAY payment created with key: %1$s"
+msgstr "ICEPAY-betaling aangemaakt met sleutel: %1$s"
+
+#: src/Admin/Tabs/GeneralTab.php:70
+msgid "Expire after"
+msgstr "Verloopt na"
+
+#: src/Admin/Tabs/GeneralTab.php:72
+msgid "In minutes. By default the payment expires after four hours (240 minutes)."
+msgstr "In minuten. Standaard verloopt de betaling na vier uur (240 minuten)."
+
+#: src/PaymentMethod.php:103
+msgid "Allowed billing countries"
+msgstr "Toegestane factuurlanden"
+
+#: src/PaymentMethod.php:106
+msgid "Leave empty to allow all billing countries."
+msgstr "Laat leeg om alle factuurlanden toe te staan."
+
+#: src/PaymentMethod.php:109
+msgid "Minimum order amount"
+msgstr "Minimaal bestelbedrag"
+
+#: src/PaymentMethod.php:110
+msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no minimum."
+msgstr "Inclusieve grens in de bestelvaluta, inclusief belasting en verzending. Laat leeg voor geen minimum."
+
+#: src/PaymentMethod.php:113
+msgid "Maximum order amount"
+msgstr "Maximaal bestelbedrag"
+
+#: src/PaymentMethod.php:114
+msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no maximum."
+msgstr "Inclusieve grens in de bestelvaluta, inclusief belasting en verzending. Laat leeg voor geen maximum."
+
+#: src/PaymentMethod.php:119
+msgid "Separate icons in legacy checkout"
+msgstr "Afzonderlijke pictogrammen in de klassieke checkout"
+
+#: src/Gateway.php:67
+#: src/Gateway.php:70
+msgid "Select valid billing countries."
+msgstr "Selecteer geldige factuurlanden."
+
+#: src/Gateway.php:80
+#: src/Gateway.php:90
+msgid "The minimum order amount cannot exceed the maximum."
+msgstr "Het minimale bestelbedrag mag het maximum niet overschrijden."
+
+#: src/Gateway.php:101
+msgid "Order amount limits must be non-negative numbers with at most two decimal places, or empty."
+msgstr "Bestelbedraglimieten moeten niet-negatieve getallen met maximaal twee decimalen zijn, of leeg blijven."
+
+#: src/Gateway.php:105
+msgid "Order amount limits must be non-negative numbers or empty."
+msgstr "Bestelbedraglimieten moeten niet-negatieve getallen zijn, of leeg blijven."

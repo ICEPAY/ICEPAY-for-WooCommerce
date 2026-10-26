@@ -17,6 +17,7 @@ class Integration {
 	public const VERSION = '1.1.2';
 
 	public function __invoke(): void {
+		add_action( 'init', [ $this, 'loadTranslations' ], 0 );
 		$this->addSettings();
 		$this->addGateways();
 		$this->addBlocks();
@@ -28,6 +29,10 @@ class Integration {
 		add_action( 'template_redirect', [ new PaymentRetryController(), 'handle' ] );
 		add_filter( 'woocommerce_thankyou_order_received_text', [ new PaymentReceipt(), 'text' ], 10, 2 );
 		add_action( 'wp_enqueue_scripts', [ self::class, 'enqueueCheckoutRestore' ] );
+	}
+
+	public function loadTranslations(): void {
+		load_plugin_textdomain( self::ID, false, dirname( ICEPAY_FILE ) . '/languages' );
 	}
 
 	public static function enqueueCheckoutRestore(): void {
