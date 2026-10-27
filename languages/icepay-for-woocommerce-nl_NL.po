@@ -36,7 +36,7 @@ msgid "Pay by Bank"
 msgstr "Pay by Bank"
 
 msgid "Enable/Disable"
-msgstr "Inschakelen/Uitschakelen"
+msgstr "In- of uitschakelen"
 
 msgid "Enable %s"
 msgstr "%s inschakelen"
@@ -45,13 +45,13 @@ msgid "Name"
 msgstr "Naam"
 
 msgid "The name shown during the checkout"
-msgstr "De naam die wordt weergegeven tijdens het afrekenen"
+msgstr "De naam die klanten zien tijdens het afrekenen"
 
 msgid "Description"
 msgstr "Beschrijving"
 
 msgid "The description shown during the checkout"
-msgstr "De beschrijving die wordt weergegeven tijdens het afrekenen"
+msgstr "De beschrijving die klanten zien tijdens het afrekenen"
 
 msgid "Settings"
 msgstr "Instellingen"
@@ -67,19 +67,19 @@ msgstr "ICEPAY-betaling aangemaakt met sleutel: %1$s"
 
 #: src/Admin/Tabs/GeneralTab.php:70
 msgid "Expire after"
-msgstr "Verloopt na"
+msgstr "Vervalt na"
 
 #: src/Admin/Tabs/GeneralTab.php:72
 msgid "In minutes. By default the payment expires after four hours (240 minutes)."
-msgstr "In minuten. Standaard verloopt de betaling na vier uur (240 minuten)."
+msgstr "Aantal minuten voordat de betaling vervalt. Standaard is dit vier uur (240 minuten)."
 
 #: src/PaymentMethod.php:103
 msgid "Allowed billing countries"
-msgstr "Toegestane factuurlanden"
+msgstr "Toegestane landen voor het factuuradres"
 
 #: src/PaymentMethod.php:106
 msgid "Leave empty to allow all billing countries."
-msgstr "Laat leeg om alle factuurlanden toe te staan."
+msgstr "Laat dit veld leeg om alle landen voor het factuuradres toe te staan."
 
 #: src/PaymentMethod.php:109
 msgid "Minimum order amount"
@@ -87,7 +87,7 @@ msgstr "Minimaal bestelbedrag"
 
 #: src/PaymentMethod.php:110
 msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no minimum."
-msgstr "Inclusieve grens in de bestelvaluta, inclusief belasting en verzending. Laat leeg voor geen minimum."
+msgstr "Een bestelbedrag dat gelijk is aan het minimum is toegestaan. Het bedrag is in de valuta van de bestelling, inclusief btw en verzendkosten. Laat dit veld leeg om geen minimum in te stellen."
 
 #: src/PaymentMethod.php:113
 msgid "Maximum order amount"
@@ -95,26 +95,26 @@ msgstr "Maximaal bestelbedrag"
 
 #: src/PaymentMethod.php:114
 msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no maximum."
-msgstr "Inclusieve grens in de bestelvaluta, inclusief belasting en verzending. Laat leeg voor geen maximum."
+msgstr "Een bestelbedrag dat gelijk is aan het maximum is toegestaan. Het bedrag is in de valuta van de bestelling, inclusief btw en verzendkosten. Laat dit veld leeg om geen maximum in te stellen."
 
 #: src/PaymentMethod.php:119
 msgid "Separate icons in legacy checkout"
-msgstr "Afzonderlijke pictogrammen in de klassieke checkout"
+msgstr "Afzonderlijke pictogrammen op de klassieke afrekenpagina"
 
 #: src/Gateway.php:67
 #: src/Gateway.php:70
 msgid "Select valid billing countries."
-msgstr "Selecteer geldige factuurlanden."
+msgstr "Selecteer geldige landen voor het factuuradres."
 
 #: src/Gateway.php:80
 #: src/Gateway.php:90
 msgid "The minimum order amount cannot exceed the maximum."
-msgstr "Het minimale bestelbedrag mag het maximum niet overschrijden."
+msgstr "Het minimumbedrag mag niet hoger zijn dan het maximumbedrag."
 
 #: src/Gateway.php:101
 msgid "Order amount limits must be non-negative numbers with at most two decimal places, or empty."
-msgstr "Bestelbedraglimieten moeten niet-negatieve getallen met maximaal twee decimalen zijn, of leeg blijven."
+msgstr "Minimum- en maximumbedragen moeten 0 of hoger zijn en mogen maximaal twee decimalen bevatten. Je kunt de velden ook leeg laten."
 
 #: src/Gateway.php:105
 msgid "Order amount limits must be non-negative numbers or empty."
-msgstr "Bestelbedraglimieten moeten niet-negatieve getallen zijn, of leeg blijven."
+msgstr "Minimum- en maximumbedragen moeten 0 of hoger zijn. Je kunt de velden ook leeg laten."

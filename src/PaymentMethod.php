@@ -88,10 +88,11 @@ class PaymentMethod {
 				'default' => 'no',
 			],
 			'title'       => [
-				'title'    => __( 'Name', 'icepay-for-woocommerce' ),
-				'type'     => 'text',
-				'desc_tip' => __( 'The name shown during the checkout', 'icepay-for-woocommerce' ),
-				'default'  => $this->getDefaultName(),
+				'title'       => __( 'Name', 'icepay-for-woocommerce' ),
+				'type'        => 'text',
+				'desc_tip'    => __( 'The name shown during the checkout', 'icepay-for-woocommerce' ),
+				'default'     => '',
+				'placeholder' => $this->getDefaultName(),
 			],
 			'description' => [
 				'title'    => __( 'Description', 'icepay-for-woocommerce' ),

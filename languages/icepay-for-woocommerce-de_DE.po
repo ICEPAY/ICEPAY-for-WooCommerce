@@ -33,10 +33,10 @@ msgid "Dankort"
 msgstr "Dankort"
 
 msgid "Pay by Bank"
-msgstr "Banküberweisung"
+msgstr "Pay by Bank"
 
 msgid "Enable/Disable"
-msgstr "Aktivieren/Deaktivieren"
+msgstr "Aktivieren oder deaktivieren"
 
 msgid "Enable %s"
 msgstr "%s aktivieren"
@@ -45,13 +45,13 @@ msgid "Name"
 msgstr "Name"
 
 msgid "The name shown during the checkout"
-msgstr "Der Name, der beim Checkout angezeigt wird"
+msgstr "Der Name, den Kunden beim Bezahlen sehen"
 
 msgid "Description"
 msgstr "Beschreibung"
 
 msgid "The description shown during the checkout"
-msgstr "Die Beschreibung, die beim Checkout angezeigt wird"
+msgstr "Die Beschreibung, die Kunden beim Bezahlen sehen"
 
 msgid "Settings"
 msgstr "Einstellungen"
@@ -63,23 +63,23 @@ msgid "Logs"
 msgstr "Protokolle"
 
 msgid "ICEPAY payment created with key: %1$s"
-msgstr "ICEPAY-Zahlung mit Schlüssel erstellt: %1$s"
+msgstr "ICEPAY-Zahlung mit dem Schlüssel %1$s erstellt"
 
 #: src/Admin/Tabs/GeneralTab.php:70
 msgid "Expire after"
-msgstr "Gültigkeitsdauer"
+msgstr "Ablauf nach"
 
 #: src/Admin/Tabs/GeneralTab.php:72
 msgid "In minutes. By default the payment expires after four hours (240 minutes)."
-msgstr "In Minuten. Standardmäßig läuft die Zahlung nach vier Stunden (240 Minuten) ab."
+msgstr "Anzahl der Minuten, nach denen die Zahlung abläuft. Standardmäßig sind es vier Stunden (240 Minuten)."
 
 #: src/PaymentMethod.php:103
 msgid "Allowed billing countries"
-msgstr "Zulässige Rechnungsländer"
+msgstr "Zulässige Länder für die Rechnungsadresse"
 
 #: src/PaymentMethod.php:106
 msgid "Leave empty to allow all billing countries."
-msgstr "Leer lassen, um alle Rechnungsländer zuzulassen."
+msgstr "Lassen Sie dieses Feld leer, um alle Länder für die Rechnungsadresse zuzulassen."
 
 #: src/PaymentMethod.php:109
 msgid "Minimum order amount"
@@ -87,7 +87,7 @@ msgstr "Mindestbestellbetrag"
 
 #: src/PaymentMethod.php:110
 msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no minimum."
-msgstr "Inklusive Grenze in der Bestellwährung, einschließlich Steuern und Versand. Für keinen Mindestbetrag leer lassen."
+msgstr "Bestellungen in Höhe des Mindestbetrags sind zulässig. Der Betrag gilt in der Bestellwährung und enthält Steuern und Versandkosten. Lassen Sie das Feld leer, um keinen Mindestbetrag festzulegen."
 
 #: src/PaymentMethod.php:113
 msgid "Maximum order amount"
@@ -95,26 +95,26 @@ msgstr "Höchstbestellbetrag"
 
 #: src/PaymentMethod.php:114
 msgid "Inclusive, in the order currency, including tax and shipping. Leave empty for no maximum."
-msgstr "Inklusive Grenze in der Bestellwährung, einschließlich Steuern und Versand. Für keinen Höchstbetrag leer lassen."
+msgstr "Bestellungen in Höhe des Höchstbetrags sind zulässig. Der Betrag gilt in der Bestellwährung und enthält Steuern und Versandkosten. Lassen Sie das Feld leer, um keinen Höchstbetrag festzulegen."
 
 #: src/PaymentMethod.php:119
 msgid "Separate icons in legacy checkout"
-msgstr "Separate Symbole im klassischen Checkout"
+msgstr "Symbole im klassischen Checkout einzeln anzeigen"
 
 #: src/Gateway.php:67
 #: src/Gateway.php:70
 msgid "Select valid billing countries."
-msgstr "Wählen Sie gültige Rechnungsländer aus."
+msgstr "Wählen Sie gültige Länder für die Rechnungsadresse aus."
 
 #: src/Gateway.php:80
 #: src/Gateway.php:90
 msgid "The minimum order amount cannot exceed the maximum."
-msgstr "Der Mindestbestellbetrag darf den Höchstbestellbetrag nicht überschreiten."
+msgstr "Der Mindestbestellbetrag darf nicht höher sein als der Höchstbestellbetrag."
 
 #: src/Gateway.php:101
 msgid "Order amount limits must be non-negative numbers with at most two decimal places, or empty."
-msgstr "Bestellbetragsgrenzen müssen nicht negative Zahlen mit höchstens zwei Dezimalstellen oder leer sein."
+msgstr "Mindest- und Höchstbestellbetrag müssen mindestens 0 betragen und dürfen höchstens zwei Nachkommastellen haben. Alternativ können die Felder leer bleiben."
 
 #: src/Gateway.php:105
 msgid "Order amount limits must be non-negative numbers or empty."
-msgstr "Bestellbetragsgrenzen müssen nicht negative Zahlen oder leer sein."
+msgstr "Mindest- und Höchstbestellbetrag müssen mindestens 0 betragen. Alternativ können die Felder leer bleiben."
