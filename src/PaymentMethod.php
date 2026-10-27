@@ -88,10 +88,11 @@ class PaymentMethod {
 				'default' => 'no',
 			],
 			'title'       => [
-				'title'    => __( 'Name', 'icepay-for-woocommerce' ),
-				'type'     => 'text',
-				'desc_tip' => __( 'The name shown during the checkout', 'icepay-for-woocommerce' ),
-				'default'  => $this->getDefaultName(),
+				'title'       => __( 'Name', 'icepay-for-woocommerce' ),
+				'type'        => 'text',
+				'desc_tip'    => __( 'The name shown during the checkout', 'icepay-for-woocommerce' ),
+				'default'     => '',
+				'placeholder' => $this->getDefaultName(),
 			],
 			'description' => [
 				'title'    => __( 'Description', 'icepay-for-woocommerce' ),
@@ -144,15 +145,15 @@ class PaymentMethod {
 	/** @return list<PaymentMethod> */
 	public static function getAll(): array {
 		return [
-			new PaymentMethod( 'ideal', 'iDEAL | Wero', '', 'ideal.svg' ),
-			new PaymentMethod( 'card', 'Card', '', 'card.svg' ),
-			new PaymentMethod( 'bancontact', 'Bancontact', '', 'bancontact.svg' ),
-			new PaymentMethod( 'paypal', 'PayPal', '', 'paypal.jpg' ),
-			new PaymentMethod( 'onlineueberweisen', 'Online Überweisen', '', 'onlineUeberweisen.svg' ),
-			new PaymentMethod( 'eps', 'EPS', '', 'eps.png' ),
-			new PaymentMethod( 'cartebancaire', 'Carte Bancaire', '', 'carteBancaire.svg' ),
-			new PaymentMethod( 'dankort', 'Dankort', '', 'dankort.svg' ),
-			new PaymentMethod( 'paybybank', 'Pay by Bank', '', 'paybybank.svg' ),
+			new PaymentMethod( 'ideal', __( 'iDEAL | Wero', 'icepay-for-woocommerce' ), '', 'ideal.svg' ),
+			new PaymentMethod( 'card', __( 'Card', 'icepay-for-woocommerce' ), '', 'card.svg' ),
+			new PaymentMethod( 'bancontact', __( 'Bancontact', 'icepay-for-woocommerce' ), '', 'bancontact.svg' ),
+			new PaymentMethod( 'paypal', __( 'PayPal', 'icepay-for-woocommerce' ), '', 'paypal.jpg' ),
+			new PaymentMethod( 'onlineueberweisen', __( 'Online Überweisen', 'icepay-for-woocommerce' ), '', 'onlineUeberweisen.svg' ),
+			new PaymentMethod( 'eps', __( 'EPS', 'icepay-for-woocommerce' ), '', 'eps.png' ),
+			new PaymentMethod( 'cartebancaire', __( 'Carte Bancaire', 'icepay-for-woocommerce' ), '', 'carteBancaire.svg' ),
+			new PaymentMethod( 'dankort', __( 'Dankort', 'icepay-for-woocommerce' ), '', 'dankort.svg' ),
+			new PaymentMethod( 'paybybank', __( 'Pay by Bank', 'icepay-for-woocommerce' ), '', 'paybybank.svg' ),
 		];
 	}
 }
