@@ -33,7 +33,9 @@ class Integration {
 
 
 	public function addTranslations(): void {
-		add_action( 'init', fn() => load_plugin_textdomain( self::ID, false, dirname( ICEPAY_FILE ) . '/languages' ), 0 );
+		add_action( 'init', function () {
+			load_plugin_textdomain( self::ID, false, dirname( ICEPAY_FILE ) . '/languages' );
+		}, 0 );
 	}
 
 	public static function enqueueCheckoutRestore(): void {
@@ -42,7 +44,8 @@ class Integration {
 		}
 		wp_register_script( 'icepay-checkout-restore', false, [], Integration::VERSION, true );
 		wp_enqueue_script( 'icepay-checkout-restore' );
-		wp_add_inline_script( 'icepay-checkout-restore', "window.addEventListener('pageshow',function(e){if(e.persisted){window.location.reload();}});" );
+		wp_add_inline_script( 'icepay-checkout-restore',
+			"window.addEventListener('pageshow',function(e){if(e.persisted){window.location.reload();}});" );
 	}
 
 	protected function addSettings(): void {
