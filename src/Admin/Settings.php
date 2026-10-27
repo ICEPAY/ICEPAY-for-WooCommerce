@@ -5,7 +5,6 @@ declare( strict_types=1 );
 namespace Icepay\WooCommerce\Admin;
 
 use Icepay\WooCommerce\Admin\Tabs\GeneralTab;
-use Icepay\WooCommerce\Admin\Tabs\PaymentMethodsTab;
 use Icepay\WooCommerce\Admin\Tabs\SupportTab;
 use Icepay\WooCommerce\Admin\Tabs\TabInterface;
 use WC_Settings_Page;
@@ -45,6 +44,7 @@ class Settings extends WC_Settings_Page {
 		$this->tabFor( (string) $current_section )->save();
 	}
 
+	/** @return array<string, string> */
 	public function get_sections(): array {
 		return [
 			GeneralTab::SECTION        => __( 'Settings', 'icepay-for-woocommerce' ),

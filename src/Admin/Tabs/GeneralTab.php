@@ -20,6 +20,7 @@ class GeneralTab implements TabInterface {
 		WC_Admin_Settings::save_fields( $this->getFilteredFields() );
 	}
 
+	/** @return list<array<string, mixed>> */
 	private function getFilteredFields(): array {
 		return apply_filters(
 			'woocommerce_get_settings_' . Settings::ID,
@@ -28,6 +29,7 @@ class GeneralTab implements TabInterface {
 		);
 	}
 
+	/** @return list<array<string, mixed>> */
 	private function getFields(): array {
 		return [
 			[
@@ -42,7 +44,7 @@ class GeneralTab implements TabInterface {
 				'type'        => 'text',
 				'desc'        => __( 'Get the Merchant ID from your ICEPAY account.', 'icepay-for-woocommerce' ),
 				'css'         => 'width: 350px',
-				'placeholder' => __( '12345', 'icepay-for-woocommerce' ),
+				'placeholder' => '12345',
 			],
 			[
 				'id'           => Icepay::SECRET,
@@ -50,7 +52,7 @@ class GeneralTab implements TabInterface {
 				'type'         => 'password',
 				'desc'         => __( 'Get the Secret from your ICEPAY account.', 'icepay-for-woocommerce' ),
 				'css'          => 'width: 350px',
-				'placeholder'  => __( 'a2Cd5...', 'icepay-for-woocommerce' ),
+				'placeholder'  => 'a2Cd5...',
 				'setting_type' => 'string',
 			],
 			[
@@ -70,7 +72,7 @@ class GeneralTab implements TabInterface {
 				'desc'              => __( 'In minutes. By default the payment expires after four hours (240 minutes).',
 					'icepay-for-woocommerce' ),
 				'css'               => 'width: 350px',
-				'placeholder'       => __( '240', 'icepay-for-woocommerce' ),
+				'placeholder'       => '240',
 				'custom_attributes' => [
 					'step' => '10',
 					'min'  => '30',

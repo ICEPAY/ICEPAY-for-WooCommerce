@@ -12,10 +12,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
-        uses: pnpm/setup@v1
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: intl, mbstring, zip
+          tools: composer, wp-cli
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - uses: pnpm/action-setup@v4
+
+      - name: Generate MO files
+        run: |
+          for po_file in languages/*.po; do
+            mo_file="${po_file%.po}.mo"
+            wp i18n make-mo "$po_file" "$mo_file" --allow-root
+          done
 
       - run: pnpm run build-plugin
+      - run: pnpm run check:archive
 
       - name: Rename output file
         run: mv icepay-for-woocommerce.zip icepay-for-woocommerce-${{ github.ref_name }}.zip
