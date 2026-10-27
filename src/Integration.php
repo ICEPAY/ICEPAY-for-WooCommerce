@@ -17,7 +17,7 @@ class Integration {
 	public const VERSION = '1.1.2';
 
 	public function __invoke(): void {
-		add_action( 'init', [ $this, 'loadTranslations' ], 0 );
+		$this->addTranslations();
 		$this->addSettings();
 		$this->addGateways();
 		$this->addBlocks();
@@ -31,8 +31,9 @@ class Integration {
 		add_action( 'wp_enqueue_scripts', [ self::class, 'enqueueCheckoutRestore' ] );
 	}
 
-	public function loadTranslations(): void {
-		load_plugin_textdomain( self::ID, false, dirname( ICEPAY_FILE ) . '/languages' );
+
+	public function addTranslations(): void {
+		add_action( 'init', fn() => load_plugin_textdomain( self::ID, false, dirname( ICEPAY_FILE ) . '/languages' ), 0 );
 	}
 
 	public static function enqueueCheckoutRestore(): void {

@@ -12,7 +12,7 @@ msgid "iDEAL | Wero"
 msgstr "iDEAL | Wero"
 
 msgid "Card"
-msgstr "Kreditkarte"
+msgstr "Card"
 
 msgid "Bancontact"
 msgstr "Bancontact"
@@ -118,3 +118,156 @@ msgstr "Mindest- und Höchstbestellbetrag müssen mindestens 0 betragen und dür
 #: src/Gateway.php:105
 msgid "Order amount limits must be non-negative numbers or empty."
 msgstr "Mindest- und Höchstbestellbetrag müssen mindestens 0 betragen. Alternativ können die Felder leer bleiben."
+
+msgid "Merchant ID"
+msgstr "Merchant ID"
+
+msgid "Secret"
+msgstr "Secret"
+
+msgid "Reference"
+msgstr "Referenz"
+
+msgid "Enable Logs"
+msgstr "Protokolle aktivieren"
+
+msgid "Show Icons"
+msgstr "Symbole anzeigen"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Get the Merchant ID from your ICEPAY account."
+msgstr "Die Merchant ID finden Sie in Ihrem ICEPAY-Konto."
+
+msgid "Get the Secret from your ICEPAY account."
+msgstr "Das Secret finden Sie in Ihrem ICEPAY-Konto."
+
+msgid "Setting for your ICEPAY account."
+msgstr "Einstellungen für Ihr ICEPAY-Konto."
+
+msgid "Reference shown on payment. {ORDER_ID} will be replaced with the order id."
+msgstr "Referenz, die bei der Zahlung angezeigt wird. {ORDER_ID} wird durch die Bestellnummer ersetzt."
+
+msgid "Order #{ORDER_ID}"
+msgstr "Bestellung #{ORDER_ID}"
+
+msgid "For support please send an email to info@icepay.com"
+msgstr "Für Support senden Sie bitte eine E-Mail an info@icepay.com"
+
+msgid "We could not start your payment. Please try again or choose another payment method."
+msgstr "Wir konnten Ihre Zahlung nicht starten. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode."
+
+msgid "We could not open your payment page. Please check your order before trying again."
+msgstr "Wir konnten Ihre Zahlungsseite nicht öffnen. Bitte prüfen Sie Ihre Bestellung, bevor Sie es erneut versuchen."
+
+msgid "We could not confirm your payment. Please check your order before trying again."
+msgstr "Wir konnten Ihre Zahlung nicht bestätigen. Bitte prüfen Sie Ihre Bestellung, bevor Sie es erneut versuchen."
+
+msgid "We could not confirm whether your payment was started. Please contact the store before paying again."
+msgstr "Wir konnten nicht bestätigen, ob Ihre Zahlung gestartet wurde. Bitte kontaktieren Sie den Shop, bevor Sie erneut zahlen."
+
+msgid "We could not confirm whether your payment was started. Please contact the store so we can check before you pay again."
+msgstr "Wir konnten nicht bestätigen, ob Ihre Zahlung gestartet wurde. Bitte kontaktieren Sie den Shop, damit wir dies prüfen können, bevor Sie erneut zahlen."
+
+msgid "We are still confirming your previous payment. Please wait before trying again."
+msgstr "Wir bestätigen Ihre vorherige Zahlung noch. Bitte warten Sie, bevor Sie es erneut versuchen."
+
+msgid "Your order has been received. Your payment is still being confirmed; please do not pay again. We will email you when it is confirmed."
+msgstr "Ihre Bestellung ist eingegangen. Ihre Zahlung wird noch bestätigt; bitte zahlen Sie nicht erneut. Wir senden Ihnen eine E-Mail, sobald sie bestätigt ist."
+
+msgid "Your payment has not been completed. You can return to checkout to continue."
+msgstr "Ihre Zahlung wurde nicht abgeschlossen. Sie können zur Kasse zurückkehren, um fortzufahren."
+
+msgid "Your payment is already being processed. Please wait before trying again."
+msgstr "Ihre Zahlung wird bereits verarbeitet. Bitte warten Sie, bevor Sie es erneut versuchen."
+
+msgid "Your payment is being confirmed. Please do not pay again while we check it."
+msgstr "Ihre Zahlung wird bestätigt. Bitte zahlen Sie nicht erneut, während wir sie prüfen."
+
+msgid "Your payment must be confirmed before you can try again. Please wait or contact the store."
+msgstr "Ihre Zahlung muss bestätigt werden, bevor Sie es erneut versuchen können. Bitte warten Sie oder kontaktieren Sie den Shop."
+
+msgid "Your payment was cancelled or expired. You can try again or choose another payment method."
+msgstr "Ihre Zahlung wurde abgebrochen oder ist abgelaufen. Sie können es erneut versuchen oder eine andere Zahlungsmethode wählen."
+
+msgid "Your previous payment needs to be checked. Please contact the store."
+msgstr "Ihre vorherige Zahlung muss geprüft werden. Bitte kontaktieren Sie den Shop."
+
+msgid "This payment attempt could not be verified. Please check your order or contact the store."
+msgstr "Dieser Zahlungsversuch konnte nicht verifiziert werden. Bitte prüfen Sie Ihre Bestellung oder kontaktieren Sie den Shop."
+
+msgid "This payment method is not available for your billing country or order amount. Please choose another method."
+msgstr "Diese Zahlungsmethode ist für Ihr Rechnungsland oder Ihren Bestellbetrag nicht verfügbar. Bitte wählen Sie eine andere Methode."
+
+msgid "This payment method is temporarily unavailable. Please choose another payment method."
+msgstr "Diese Zahlungsmethode ist vorübergehend nicht verfügbar. Bitte wählen Sie eine andere Zahlungsmethode."
+
+msgid "This payment return link is invalid. Please check your order confirmation or contact the store."
+msgstr "Dieser Zahlungsrücksprung-Link ist ungültig. Bitte prüfen Sie Ihre Bestellbestätigung oder kontaktieren Sie den Shop."
+
+msgid "This order could not be found."
+msgstr "Diese Bestellung wurde nicht gefunden."
+
+msgid "This order has been refunded and cannot be paid again."
+msgstr "Diese Bestellung wurde erstattet und kann nicht erneut bezahlt werden."
+
+msgid "Try again"
+msgstr "Erneut versuchen"
+
+msgid "A refund could not be confirmed. Check the ICEPAY Portal and reconcile it before issuing another refund."
+msgstr "Eine Erstattung konnte nicht bestätigt werden. Prüfen Sie das ICEPAY-Portal und gleichen Sie sie ab, bevor Sie eine weitere Erstattung vornehmen."
+
+msgid "Create the refund through WooCommerce so its operation can be tracked safely."
+msgstr "Erstellen Sie die Erstattung über WooCommerce, damit der Vorgang sicher nachverfolgt werden kann."
+
+msgid "Enter a positive refund amount with at most two decimal places."
+msgstr "Geben Sie einen positiven Erstattungsbetrag mit höchstens zwei Dezimalstellen ein."
+
+msgid "ICEPAY rejected the refund. Please check the payment and try again."
+msgstr "ICEPAY hat die Erstattung abgelehnt. Bitte prüfen Sie die Zahlung und versuchen Sie es erneut."
+
+msgid "ICEPAY refund %s has an unknown outcome. Further API refunds are blocked until reconciled with ICEPAY."
+msgstr "Die ICEPAY-Erstattung %s hat ein unbekanntes Ergebnis. Weitere API-Erstattungen sind gesperrt, bis sie mit ICEPAY abgeglichen wurde."
+
+msgid "ICEPAY refund reconciliation checked the latest payment. Unmatched attempts remain blocked; review the ICEPAY Portal if necessary."
+msgstr "Der ICEPAY-Erstattungsabgleich hat die letzte Zahlung geprüft. Nicht zugeordnete Versuche bleiben gesperrt; prüfen Sie bei Bedarf das ICEPAY-Portal."
+
+msgid "ICEPAY refund reconciliation could not retrieve a verified payment. Check the ICEPAY Portal."
+msgstr "Der ICEPAY-Erstattungsabgleich konnte keine verifizierte Zahlung abrufen. Prüfen Sie das ICEPAY-Portal."
+
+msgid "Only paid ICEPAY orders can be refunded through ICEPAY."
+msgstr "Nur bezahlte ICEPAY-Bestellungen können über ICEPAY erstattet werden."
+
+msgid "Reconcile ICEPAY refunds"
+msgstr "ICEPAY-Erstattungen abgleichen"
+
+msgid "Recovered ICEPAY refund %s without sending another refund request."
+msgstr "ICEPAY-Erstattung %s wiederhergestellt, ohne eine weitere Erstattungsanfrage zu senden."
+
+msgid "Review the existing refunds in ICEPAY before refunding again."
+msgstr "Prüfen Sie die vorhandenen Erstattungen in ICEPAY, bevor Sie erneut erstatten."
+
+msgid "The original ICEPAY payment could not be verified."
+msgstr "Die ursprüngliche ICEPAY-Zahlung konnte nicht verifiziert werden."
+
+msgid "The refund exceeds the remaining refundable amount."
+msgstr "Die Erstattung übersteigt den verbleibenden erstattungsfähigen Betrag."
+
+msgid "This order is being updated. Please wait before refunding again."
+msgstr "Diese Bestellung wird gerade aktualisiert. Bitte warten Sie, bevor Sie erneut erstatten."
+
+msgid "Unable to verify the original payment before refunding."
+msgstr "Die ursprüngliche Zahlung konnte vor der Erstattung nicht verifiziert werden."
+
+msgid "Additional ICEPAY payment completed (%1$s). Current gateway: %2$s; transaction: %3$s. Review this payment for a possible duplicate charge."
+msgstr "Zusätzliche ICEPAY-Zahlung abgeschlossen (%1$s). Aktuelles Gateway: %2$s; Transaktion: %3$s. Prüfen Sie diese Zahlung auf eine mögliche doppelte Abbuchung."
+
+msgid "ICEPAY payment %1$s completed after the order switched to gateway %2$s (previous transaction: %3$s). Completing the order through ICEPAY. Check both providers for a possible second payment before issuing a refund."
+msgstr "ICEPAY-Zahlung %1$s wurde abgeschlossen, nachdem die Bestellung auf das Gateway %2$s gewechselt hat (vorherige Transaktion: %3$s). Die Bestellung wird über ICEPAY abgeschlossen. Prüfen Sie beide Anbieter auf eine mögliche zweite Zahlung, bevor Sie eine Erstattung vornehmen."
+
+msgid "ICEPAY payment creation has an unknown outcome. Check the ICEPAY Portal before retrying; clear _icepay_creation_uncertain only after reconciliation."
+msgstr "Die Erstellung der ICEPAY-Zahlung hat ein unbekanntes Ergebnis. Prüfen Sie das ICEPAY-Portal, bevor Sie es erneut versuchen; löschen Sie _icepay_creation_uncertain erst nach dem Abgleich."
+
+msgid "Customer requested another payment attempt."
+msgstr "Kunde hat einen weiteren Zahlungsversuch angefordert."
