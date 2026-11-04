@@ -26,9 +26,9 @@
   "license": "GPLV3",
   "devDependencies": {
     "@woocommerce/dependency-extraction-webpack-plugin": "^5.1.0",
-    "@wordpress/scripts": "^32.6.0"
+    "@wordpress/scripts": "^37.1.0"
   },
-  "packageManager": "pnpm@11.15.1",
+  "packageManager": "pnpm@12.16.1",
   "devEngines": {
     "runtime": {
       "name": "node",
