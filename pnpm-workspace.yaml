@@ -1,4 +1,4 @@
-nodeVersion: 20.11.1
+nodeVersion: 22.23.3
 allowBuilds:
   '@parcel/watcher': true
   core-js: true

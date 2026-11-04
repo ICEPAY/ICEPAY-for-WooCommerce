@@ -1,0 +1,19 @@
+<?php
+
+// Correct upstream PHPDoc for nullable frontend objects and heterogeneous queries.
+class WooCommerce {
+	/** @var WC_Cart|null */
+	public $cart;
+	/** @var WC_Customer|null */
+	public $customer;
+}
+
+/** @param array<string, mixed> $args
+ * @return array<WC_Order|WC_Order_Refund|int>|stdClass
+ */
+function wc_get_orders( $args ) {}
+
+class WC_Cart {}
+class WC_Customer {}
+class WC_Order {}
+class WC_Order_Refund {}

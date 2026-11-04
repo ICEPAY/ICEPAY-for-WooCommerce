@@ -135,8 +135,8 @@ importers:
         specifier: ^32.6.0
         version: 32.6.0(@playwright/test@1.62.1)(@types/eslint@9.6.1)(@types/node@20.19.43)(@types/react@18.3.31)(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(eslint@10.8.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2))(eslint@10.8.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2))(@typescript-eslint/parser@8.65.0(eslint@10.8.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2))(babel-plugin-macros@3.1.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass-embedded@1.100.0)(stylelint-scss@6.14.0(stylelint@16.26.1(supports-color@8.1.1)(typescript@5.9.2)))(supports-color@8.1.1)(type-fest@4.41.0)(typescript@5.9.2)
       node:
-        specifier: runtime:^20.20.2
-        version: runtime:20.20.2
+        specifier: runtime:^22.23.3
+        version: runtime:22.23.3
 
 packages:
 
@@ -5099,7 +5099,7 @@ packages:
     resolution: {integrity: sha512-wRNIrw4DmVLKQlbgOMdkMx27Wrpzes2hh5Jtbi2bjPd+4wJstWIqP5A+lscnqbm0xxmT5Bpg8Lec5ItEBwx6BQ==}
     engines: {node: '>=18'}
 
-  node@runtime:20.20.2:
+  node@runtime:22.23.3:
     resolution:
       type: variations
       variants:
@@ -5107,9 +5107,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-PGD1QGmlOtj/7vKw8R4fiDM7Et7P7XVbJs4/y14tl+Q=
+            integrity: sha256-uF3F8NepvoA4xOc0UNkSWyQceS7H7ElSKTRfhtHj9vo=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-aix-ppc64.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-aix-ppc64.tar.gz
           targets:
             - cpu: ppc64
               os: aix
@@ -5117,9 +5117,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-Rm4F80d8IN+3IwVN/r/+Vbx0Zg7nf2EhZvyhIdrLZbY=
+            integrity: sha256-I7JSRdz7mvcmL4/xQuni4K8CU2gRcynnp0WKUeWSL1M=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-darwin-arm64.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-darwin-arm64.tar.gz
           targets:
             - cpu: arm64
               os: darwin
@@ -5127,9 +5127,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-i+b15LsSjIJ3T4oLjXocwTZaeXfZZXzs4Mpkez/gTmE=
+            integrity: sha256-imd7AhkXjv1usOR1RXxK+0UrUhqS9uZ4Rac72Fcn8qg=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-darwin-x64.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-darwin-x64.tar.gz
           targets:
             - cpu: x64
               os: darwin
@@ -5137,9 +5137,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-R+9z1UPs9usZQ19sA6CsSAmzvw3Wsmx8Vx78KmVyp00=
+            integrity: sha256-XO0tSNHXGYc5t/hoBN4Bca77aCO2hLEjQdMyGvw8sLI=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-arm64.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-arm64.tar.gz
           targets:
             - cpu: arm64
               os: linux
@@ -5147,9 +5147,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-jhXxIechyTVBMgUxiNTBoY6p40XAGe5ED7JW492n3xU=
+            integrity: sha256-i5kFjsb043K5iH+Oy1d6KSrbEy1Z5RBDVkKKdY/bEmw=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-armv7l.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-armv7l.tar.gz
           targets:
             - cpu: armv7l
               os: linux
@@ -5157,9 +5157,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-Xy/Q4M1nrqwNuACzNBUcrm6nDqM3SHsm95rJDj/hJuE=
+            integrity: sha256-I2cS3e9z9WwOBZCixJ9pyDk6LC2Cw9YsfBZWBbRys40=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-ppc64le.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-ppc64le.tar.gz
           targets:
             - cpu: ppc64le
               os: linux
@@ -5167,9 +5167,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-7hyhGT51ptMbYAfFdd7KEbEW6Epr2hNq4ODb4ZOZiJw=
+            integrity: sha256-UfZHlPX2G9/ICqGGyCcwIUc5l2Bc+Q7THtFIvuZQpVQ=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-s390x.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-s390x.tar.gz
           targets:
             - cpu: s390x
               os: linux
@@ -5177,9 +5177,20 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-GeVvCCVRAgfdkE8If+UvqgpOtrKqtfDqejODDQSIi4s=
+            integrity: sha256-Yz9JpPOIxflWTVbZwPX/o5Q0bZLKAHb+Ic93bs4ZiLw=
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-x64.tar.gz
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-x64-musl.tar.gz
+          targets:
+            - cpu: x64
+              os: linux
+              libc: musl
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-EISqNhlrukw6Xmmh7jiKbk/3KdrQlEX7zUNLKP48JK8=
+            type: binary
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-x64.tar.gz
           targets:
             - cpu: x64
               os: linux
@@ -5187,10 +5198,10 @@ packages:
             archive: zip
             bin:
               node: node.exe
-            integrity: sha256-1cWx1W9/lGmDDrH1fv7sCmqQeMCp6IzVtLS0j0bCIGk=
-            prefix: node-v20.20.2-win-arm64
+            integrity: sha256-M9rSLkzvXuj5+7Gw0Df9rNDlbRKkWA8NY/aLiU3qtTU=
+            prefix: node-v22.23.3-win-arm64
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-win-arm64.zip
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-win-arm64.zip
           targets:
             - cpu: arm64
               os: win32
@@ -5198,10 +5209,10 @@ packages:
             archive: zip
             bin:
               node: node.exe
-            integrity: sha256-3DcA/dV6Y+7bj9fjx7qqMuanQKG5BBZ/9CBLxo7Yv3c=
-            prefix: node-v20.20.2-win-x64
+            integrity: sha256-Kw/1ewSc2hu86iJA7sIEZwGHE8Hv4fc2DCaBhZuQ7XE=
+            prefix: node-v22.23.3-win-x64
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-win-x64.zip
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-win-x64.zip
           targets:
             - cpu: x64
               os: win32
@@ -5209,10 +5220,10 @@ packages:
             archive: zip
             bin:
               node: node.exe
-            integrity: sha256-zTTV2i8269hO1XJSdW7lEkR9tFAtn544yo3MtRGws1I=
-            prefix: node-v20.20.2-win-x86
+            integrity: sha256-HgesAOYbQbfs8kLejjiIPSN9WtP9ytfBby3TqIZw4rY=
+            prefix: node-v22.23.3-win-x86
             type: binary
-            url: https://nodejs.org/download/release/v20.20.2/node-v20.20.2-win-x86.zip
+            url: https://nodejs.org/download/release/v22.23.3/node-v22.23.3-win-x86.zip
           targets:
             - cpu: x86
               os: win32
@@ -5220,9 +5231,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-dUmHKo0b5GcNUhnzncCu1uZDLJdvPNJVQ7wkmqhQ8EE=
+            integrity: sha256-jOwDpJjYg3OdHcm5JP2i+GlEcFtUrHB79IpjdIN3THA=
             type: binary
-            url: https://unofficial-builds.nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-arm64-musl.tar.gz
+            url: https://unofficial-builds.nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-arm64-musl.tar.gz
           targets:
             - cpu: arm64
               os: linux
@@ -5231,14 +5242,14 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-CjNbQ7XwoyednEEbMzpVzpjAK4dboUAzlSyAnviax3M=
+            integrity: sha256-XqRolPwG4JNjhG2O1lqCK9AL6jXZdOQTICcqSK8wnjo=
             type: binary
-            url: https://unofficial-builds.nodejs.org/download/release/v20.20.2/node-v20.20.2-linux-x64-musl.tar.gz
+            url: https://unofficial-builds.nodejs.org/download/release/v22.23.3/node-v22.23.3-linux-x64-musl.tar.gz
           targets:
             - cpu: x64
               os: linux
               libc: musl
-    version: 20.20.2
+    version: 22.23.3
     hasBin: true
 
   normalize-package-data@2.5.0:
@@ -13117,7 +13128,7 @@ snapshots:
 
   node-releases@2.0.51: {}
 
-  node@runtime:20.20.2: {}
+  node@runtime:22.23.3: {}
 
   normalize-package-data@2.5.0:
     dependencies:

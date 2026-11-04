@@ -12,8 +12,8 @@ export const Label = ({id, icon, name, description}) => {
             <span className="icepay-name">{name}</span>
             <span className="icepay-description" style={{}}>{description}</span>
             <div className="icepay-icon-container">
-                {icons.filter(icon => (icon !== null) && (icon !== '')).map((icon) => (
-                    <img className="icepay-icon" src={icon} alt={`Payment Method ${name} icon`}/>
+                {icons.filter(url => (url !== null) && (url !== '')).map((url) => (
+                    <img key={url} className="icepay-icon" src={url} alt={name}/>
                 ))}
             </div>
         </div>

@@ -1,0 +1,70 @@
+<?php
+
+use Icepay\WooCommerce\Payment\PaymentAttempts as Order;
+use Icepay\WooCommerce\Webhook;
+
+$body = "{\n\"reference\":\"<order> / café\"\n}";
+$signature = base64_encode( hash_hmac( 'sha256', $body, 'regression-secret', true ) );
+$assert( Webhook::verifySignature( $body, $signature, 'regression-secret' ), 'Signature uses exact raw bytes including whitespace and special characters' );
+$assert( ! Webhook::verifySignature( sanitize_text_field( $body ), $signature, 'regression-secret' ), 'Modified signed body is rejected' );
+$assert( ! Webhook::verifySignature( $body, null, 'regression-secret' ) && ! Webhook::verifySignature( $body, $signature, '' ), 'Missing signature or merchant secret cannot authenticate webhook' );
+$order = $makeOrder();
+$p = $payment( $order, 'pi-first' );
+Order::addAttempt( $order, $p, 'card' );
+$assert( Order::findOrderByKey( 'pi-first' )->get_id() === $order->get_id(), 'Exact legacy-compatible payment-key lookup' );
+$assert( Order::findOrderByKey( 'pi-fir' ) === null, 'Partial payment keys are rejected' );
+$multi = $makeOrder();
+Order::addAttempt( $multi, $payment( $multi, 'pi-multi-a' ), 'card' );
+Order::addAttempt( $multi, $payment( $multi, 'pi-multi-b' ), 'card' );
+$assert( count( wc_get_order( $multi->get_id() )->get_meta( 'icepay-payment-key', false ) ) === 2
+	&& Order::findOrderByKey( 'pi-multi-a' )->get_id() === $multi->get_id()
+	&& Order::findOrderByKey( 'pi-multi-b' )->get_id() === $multi->get_id(), 'Each payment key is stored as a separate meta row and found exactly' );
+$wrong = $p; $wrong['amount']['value']++;
+$assert( is_wp_error( $handler->apply( $order, $wrong ) ), 'Amount mismatch cannot complete an order' );
+$wrong = $p; $wrong['amount']['currency'] = 'usd';
+$assert( is_wp_error( $handler->apply( $order, $wrong ) ), 'Currency mismatch cannot complete an order' );
+$wrong = $p; $wrong['isTest'] = false;
+$assert( is_wp_error( $handler->apply( $order, $wrong ) ), 'Processing-mode mismatch is rejected' );
+$wrong = $p; $wrong['key'] = 'pi-unknown';
+$assert( is_wp_error( $handler->apply( $order, $wrong ) ), 'Unknown payment cannot be attached by order ID' );
+$before = $completed;
+$assert( $handler->apply( $order, $p ) === true, 'Valid completed payment accepted' );
+$order = wc_get_order( $order->get_id() );
+$assert( $order->has_status( 'processing' ) && $order->get_date_paid() && $order->get_transaction_id() === 'pi-first', 'Physical order has correct status, payment date, and transaction ID' );
+$productId = array_values( $order->get_items() )[0]->get_product_id();
+$assert( (int) wc_get_product( $productId )->get_stock_quantity() === 9, 'Stock reduced once on payment completion' );
+$mailCount = $emails;
+$handler->apply( $order, $p );
+$p['status'] = 'pending'; $handler->apply( $order, $p );
+$p['status'] = 'cancelled'; $handler->apply( $order, $p );
+$assert( $completed === $before + 1 && $emails === $mailCount && (int) wc_get_product( $productId )->get_stock_quantity() === 9, 'Duplicate and stale updates do not repeat payment hooks, emails, or stock reduction' );
+$assert( wc_get_order( $order->get_id() )->has_status( 'processing' ), 'Paid order never regresses' );
+$p2 = $payment( $order, 'pi-second' ); Order::addAttempt( $order, $p2, 'card' );
+$handler->apply( $order, $p2 ); $handler->apply( $order, $p2 );
+$notes = wc_get_order_notes( [ 'order_id' => $order->get_id() ] );
+$duplicateNotes = array_filter( $notes, static fn( $note ) => str_contains( $note->content, 'possible duplicate charge' ) );
+$assert( count( $duplicateNotes ) === 1 && wc_get_order( $order->get_id() )->get_transaction_id() === 'pi-first', 'Second completed payment flagged once without replacing transaction' );
+$order = $makeOrder( true ); $p = $payment( $order, 'pi-virtual' ); Order::addAttempt( $order, $p, 'card' );
+$handler->apply( $order, $p );
+$assert( wc_get_order( $order->get_id() )->has_status( 'completed' ), 'Virtual order completes through WooCommerce' );
+$order = $makeOrder(); $order->set_status( 'checkout-draft' ); $order->save();
+$p = $payment( $order, 'pi-draft' ); Order::addAttempt( $order, $p, 'card' ); $handler->apply( $order, $p );
+$assert( wc_get_order( $order->get_id() )->is_paid(), 'Blocks checkout-draft can complete payment' );
+foreach ( [ 'paybybank', 'eps', 'onlineueberweisen' ] as $method ) {
+	$order = $makeOrder(); $p = $payment( $order, 'pi-bank-' . $method, 'completed', $method ); Order::addAttempt( $order, $p, 'card' );
+	$handler->apply( $order, $p );
+	$order = wc_get_order( $order->get_id() );
+	$assert( $order->is_paid() && $order->get_date_paid() && $order->get_payment_method() === 'icepay-' . $method, $method . ' completed status confirms payment even with uncleared financial status' );
+	$before = $completed;
+	$p['financialStatus'] = 'cleared'; $handler->apply( $order, $p );
+	$assert( $completed === $before, $method . ' financial-status change does not repeat completion' );
+}
+$order = $makeOrder(); $p = $payment( $order, 'pi-no-financial-status', 'completed', 'paybybank' ); unset( $p['financialStatus'] );
+Order::addAttempt( $order, $p, 'paybybank' ); $handler->apply( $order, $p );
+$assert( wc_get_order( $order->get_id() )->is_paid(), 'Completed payment requires no financialStatus field' );
+$order = $makeOrder(); $old = $payment( $order, 'pi-old', 'started' ); Order::addAttempt( $order, $old, 'card' );
+$new = $payment( $order, 'pi-new', 'pending' ); Order::addAttempt( $order, $new, 'card' ); $handler->apply( $order, $new );
+$old['status'] = 'cancelled'; $handler->apply( $order, $old );
+$assert( wc_get_order( $order->get_id() )->has_status( 'on-hold' ), 'Old cancellation cannot cancel newer attempt' );
+$old['status'] = 'completed'; $handler->apply( $order, $old );
+$assert( wc_get_order( $order->get_id() )->is_paid(), 'Late successful payment still accepted' );

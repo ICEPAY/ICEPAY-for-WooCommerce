@@ -1,0 +1,80 @@
+<?php
+
+use Icepay\WooCommerce\Gateway;
+use Icepay\WooCommerce\PaymentMethod;
+use Icepay\WooCommerce\Payment\PaymentAttempts as Order;
+
+$order = $makeOrder(); $gateway = new Gateway( new PaymentMethod( 'card', 'Card', '', 'card.svg' ) );
+$result = $gateway->process_payment( $order->get_id() );
+$assert( $result['result'] === 'success' && str_contains( $result['redirect'], '/checkout/' ), 'Create falls back to checkout URL when direct URL missing' );
+$firstKey = Order::activeKey( wc_get_order( $order->get_id() ) );
+$returnQuery = []; parse_str( (string) wp_parse_url( $payments[ $firstKey ]['redirectUrl'], PHP_URL_QUERY ), $returnQuery );
+$assert( ( $returnQuery['icepay-attempt'] ?? '' ) === Order::getAttempts( wc_get_order( $order->get_id() ) )[ $firstKey ]['creation_token']
+	&& $returnQuery['icepay-attempt'] === $payments[ $firstKey ]['meta']['woocommerce']['creation_token'], 'Created payment return URL identifies its persisted attempt token' );
+$count = $posts; $result = $gateway->process_payment( $order->get_id() );
+$secondKey = Order::activeKey( wc_get_order( $order->get_id() ) );
+$assert( $posts === $count + 1 && $result['result'] === 'success' && $secondKey !== $firstKey && str_contains( $result['redirect'], $secondKey ), 'Repeated submission creates a fresh payment and redirect URL' );
+$assert( $payments[ $firstKey ]['status'] === 'started' && $payments[ $secondKey ]['paymentMethod']['type'] === 'card' && isset( Order::getAttempts( wc_get_order( $order->get_id() ) )[ $firstKey ] ) && $cancellations === 0, 'Same-method retry keeps previous started payment open and tracked without cancellation' );
+$count = $posts; $key = $secondKey;
+$payments[ $key ]['status'] = 'pending'; $result = $gateway->process_payment( $order->get_id() );
+$assert( $posts === $count && str_contains( $result['redirect'], 'via-icepay' ), 'Pending payment blocks a second payment and returns to confirmation' );
+$payments[ $key ]['status'] = 'expired'; $result = $gateway->process_payment( $order->get_id() );
+$assert( $posts === $count + 1 && $result['result'] === 'success', 'Confirmed expired payment permits a new attempt' );
+$order = $makeOrder(); $createMode = 'timeout';
+$result = $gateway->process_payment( $order->get_id() ); $count = $posts;
+$assert( $result['result'] === 'failure' && wc_get_order( $order->get_id() )->get_meta( '_icepay_creation_uncertain' ), 'Creation timeout persists unknown outcome' );
+$result = $gateway->process_payment( $order->get_id() );
+$assert( $posts === $count && $result['result'] === 'failure', 'Unknown creation outcome blocks blind retry' );
+$key = 'pi-regression-' . $posts; $payments[ $key ]['status'] = 'completed';
+$result = $handler->refresh( $order, $key );
+$assert( ! is_wp_error( $result ) && wc_get_order( $order->get_id() )->is_paid() && ! wc_get_order( $order->get_id() )->get_meta( '_icepay_creation_uncertain' ), 'Authenticated attempt token recovers lost creation response' );
+$order = $makeOrder(); $createMode = 'reject'; $gateway->process_payment( $order->get_id() );
+$assert( ! wc_get_order( $order->get_id() )->get_meta( '_icepay_creation_uncertain' ), 'Definitive rejection allows retry even with non-JSON error body' );
+$order = $makeOrder(); $createMode = 'malformed'; $gateway->process_payment( $order->get_id() );
+$assert( (bool) wc_get_order( $order->get_id() )->get_meta( '_icepay_creation_uncertain' ), 'Malformed successful response treated as unknown creation outcome' );
+$createMode = 'normal'; $order = $makeOrder(); $gateway->process_payment( $order->get_id() );
+$key = Order::activeKey( wc_get_order( $order->get_id() ) ); $count = $posts;
+$bankGateway = new Gateway( new PaymentMethod( 'paybybank', 'Pay by Bank', '', 'paybybank.svg' ) );
+$result = $bankGateway->process_payment( $order->get_id() );
+$assert( $payments[ $key ]['status'] === 'started' && $posts === $count + 1 && $result['result'] === 'success' && $cancellations === 0, 'Changing methods creates a fresh payment without cancelling earlier attempt' );
+$newKey = Order::activeKey( wc_get_order( $order->get_id() ) );
+$assert( $newKey !== $key && $payments[ $newKey ]['paymentMethod']['type'] === 'paybybank' && str_contains( $result['redirect'], $newKey ), 'New payment and redirect use the newly selected payment method' );
+$payments[ $key ]['status'] = 'completed'; $handler->refresh( $order, $key );
+$assert( wc_get_order( $order->get_id() )->get_transaction_id() === $key, 'Older uncancelled payment can complete the order after a method switch' );
+$payments[ $newKey ]['status'] = 'completed'; $handler->refresh( $order, $newKey ); $handler->refresh( $order, $newKey );
+$notes = wc_get_order_notes( [ 'order_id' => $order->get_id() ] );
+$duplicateNotes = array_filter( $notes, static fn( $note ) => str_contains( $note->content, 'possible duplicate charge' ) );
+$assert( count( $duplicateNotes ) === 1 && wc_get_order( $order->get_id() )->get_transaction_id() === $key, 'Additional success from fresh payment is flagged once without replacing first transaction' );
+$order = $makeOrder(); $p = $payment( $order, 'pi-changed' ); Order::addAttempt( $order, $p, 'card' );
+$order->set_total( '20' ); $order->save();
+$assert( is_wp_error( $handler->apply( $order, $p ) ) && ! wc_get_order( $order->get_id() )->is_paid(), 'Old payment cannot fulfil an order with an increased total' );
+$order = $makeOrder(); $createMode = 'timeout'; $gateway->process_payment( $order->get_id() );
+$key = 'pi-regression-' . $posts; $payments[ $key ]['meta']['woocommerce']['creation_token'] = 'wrong-token';
+$assert( is_wp_error( $handler->refresh( $order, $key ) ) && Order::activeKey( wc_get_order( $order->get_id() ) ) === '', 'Unknown payment cannot recover creation using the wrong attempt token' );
+$createMode = 'normal'; $order = $makeOrder(); $gateway->process_payment( $order->get_id() );
+$key = Order::activeKey( wc_get_order( $order->get_id() ) ); $payments[ $key ]['status'] = 'completed';
+$payments[ $key ]['paymentMethod']['type'] = 'paybybank'; $payments[ $key ]['financialStatus'] = 'uncleared';
+$assert( ! as_has_scheduled_action( 'icepay_reconcile_payment', null, 'icepay' ), 'Payment creation and lost-response recovery do not queue reconciliation jobs' );
+$handler->refresh( $order, $key );
+$assert( wc_get_order( $order->get_id() )->is_paid(), 'Explicit payment refresh confirms completion without scheduled fallback' );
+$order = $makeOrder(); $gateway->process_payment( $order->get_id() ); $key = Order::activeKey( wc_get_order( $order->get_id() ) );
+$known = $payments[ $key ]; unset( $payments[ $key ] ); $count = $posts;
+$result = $gateway->process_payment( $order->get_id() );
+$assert( $result['result'] === 'failure' && $posts === $count, 'API outage cannot trigger a second payment' );
+$assert( is_wp_error( $handler->refresh( $order, $key ) ) && ! as_has_scheduled_action( 'icepay_reconcile_payment', null, 'icepay' ), 'API failure does not schedule fallback retries' );
+$payments[ $key ] = $known;
+$assert( $cancellations === 0, 'Checkout and retry flows never call the payment cancellation API' );
+foreach ( [ 'pending', 'unavailable', 'invalid' ] as $newestState ) {
+	$order = $makeOrder();
+	$old = $payment( $order, 'pi-success-' . $newestState );
+	Order::addAttempt( $order, $old, 'card' ); $payments[ $old['key'] ] = $old;
+	$new = $payment( $order, 'pi-newest-' . $newestState, 'pending' );
+	Order::addAttempt( $order, $new, 'card' );
+	if ( $newestState !== 'unavailable' ) { $payments[ $new['key'] ] = $new; }
+	if ( $newestState === 'invalid' ) { $payments[ $new['key'] ]['amount']['value']++; }
+	$count = $posts;
+	$result = $gateway->process_payment( $order->get_id() );
+	$fresh = wc_get_order( $order->get_id() );
+	$assert( $result['result'] === 'success' && $fresh->is_paid() && $fresh->get_transaction_id() === $old['key'] && $posts === $count,
+		'Older verified success takes priority over newest ' . $newestState . ' attempt without creating payment' );
+}

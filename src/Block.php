@@ -11,12 +11,13 @@ class Block extends AbstractPaymentMethodType {
 	protected $name = 'icepay';
 
 	public function initialize(): void {
+		$asset = require dirname( __DIR__ ) . '/build/index.asset.php';
 		wp_register_script(
 			Block::HANDLE,
 			ICEPAY_URL . '/build/index.js',
-            ['wc-blocks-registry'],
-            Integration::VERSION,
-            true,
+			$asset['dependencies'],
+			$asset['version'],
+			true,
 		);
 
 		$paymentMethods = [];
@@ -27,6 +28,7 @@ class Block extends AbstractPaymentMethodType {
 				'title'       => $paymentMethod->getName(),
 				'description' => $paymentMethod->getDescription(),
 				'icon'        => $paymentMethod->getIcon(),
+				'restrictions' => $paymentMethod->getRestrictions(),
 			];
 		}
 
