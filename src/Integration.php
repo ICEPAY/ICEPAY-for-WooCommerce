@@ -14,7 +14,7 @@ use Icepay\WooCommerce\Checkout\PaymentReturnController;
 class Integration {
 	public const NAME = 'ICEPAY for WooCommerce';
 	public const ID = 'icepay-for-woocommerce';
-	public const VERSION = '1.2.0';
+	public const VERSION = '1.2.1';
 
 	public function __invoke(): void {
 		$this->addTranslations();
